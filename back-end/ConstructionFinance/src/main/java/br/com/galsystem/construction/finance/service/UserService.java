@@ -1,7 +1,7 @@
 package br.com.galsystem.construction.finance.service;
 
-import br.com.galsystem.construction.finance.dto.UserCreateDTO;
-import br.com.galsystem.construction.finance.dto.UserDTO;
+import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
+import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import br.com.galsystem.construction.finance.response.Response;
@@ -48,6 +48,7 @@ public class UserService {
         // Normalização
         String email = userCreateDTO.getEmail().trim().toLowerCase();
         String username = userCreateDTO.getUsername().trim();
+        String fullName = userCreateDTO.getFullName().trim().toLowerCase();
 
         // Verificações de unicidade (pré-checagem)
         boolean emailExists = userRepository.existsByEmail(email);
@@ -66,11 +67,12 @@ public class UserService {
             User user = new User();
             user.setEmail(email);
             user.setUsername(username);
+            user.setFullName(fullName);
             user.setPasswordHash(passwordEncoder.encode(userCreateDTO.getPassword()));
 
             User saved = userRepository.save(user);
             // DTO de saída
-            UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername());
+            UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername(), saved.getFullName());
             resp.setStatus(201);
             resp.setMessage("Usuário cadastrado com sucesso!");
             resp.setData(dto);

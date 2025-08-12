@@ -1,11 +1,12 @@
 package br.com.galsystem.construction.finance.controller;
 
-import br.com.galsystem.construction.finance.dto.UserCreateDTO;
-import br.com.galsystem.construction.finance.dto.UserDTO;
+import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
+import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.AuthService;
 import br.com.galsystem.construction.finance.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,9 @@ public class AuthController {
 
     // DTO simples para login
     public static class LoginRequestDTO {
-        @jakarta.validation.constraints.NotBlank
+        @NotBlank
         private String username;
-        @jakarta.validation.constraints.NotBlank
+        @NotBlank
         private String password;
 
         public String getUsername() { return username; }

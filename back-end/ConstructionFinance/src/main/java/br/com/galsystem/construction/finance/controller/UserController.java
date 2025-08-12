@@ -1,6 +1,6 @@
 package br.com.galsystem.construction.finance.controller;
 
-import br.com.galsystem.construction.finance.dto.UserDTO;
+import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.UserService;

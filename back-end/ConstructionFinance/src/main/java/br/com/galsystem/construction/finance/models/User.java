@@ -24,6 +24,9 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column(name = "full_name")
+    private String fullName;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
