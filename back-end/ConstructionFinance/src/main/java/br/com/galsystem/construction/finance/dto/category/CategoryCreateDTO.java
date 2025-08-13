@@ -9,6 +9,5 @@ import lombok.Setter;
 public class CategoryCreateDTO {
     @NotBlank(message = "Nome da categoria é obrigatório.")
     private String name;
-
     private String description;
 }

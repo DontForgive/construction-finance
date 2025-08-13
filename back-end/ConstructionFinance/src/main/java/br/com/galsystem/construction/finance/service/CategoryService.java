@@ -1,8 +1,16 @@
 package br.com.galsystem.construction.finance.service;
 
+import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
+import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
+import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.models.Category;
+import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.repository.CategoryRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +34,34 @@ public class CategoryService {
 
     public Category save(Category category) {
         return categoryRepository.save(category);
+    }
+
+    @Transactional
+    public CategoryDTO create(CategoryCreateDTO dto) {
+        String name = dto.getName().trim();
+        String description = dto.getDescription().trim();
+
+        if (categoryRepository.existsByNameIgnoreCase(name)) {
+            throw new ConflictException("Já existe uma categoria com o nome informado.");
+        }
+
+        Category entity = new Category();
+        entity.setName(name);
+        entity.setDescription(description);
+
+        try {
+            return toDTO(categoryRepository.save(entity));
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Já existe uma categoria com o nome informado.");
+        }
+    }
+
+    private CategoryDTO toDTO(Category p) {
+        CategoryDTO out = new CategoryDTO();
+        out.setId(p.getId());
+        out.setName(p.getName());
+        out.setDescription(p.getDescription());
+        return out;
     }
 
     public void deleteById(Long id) {

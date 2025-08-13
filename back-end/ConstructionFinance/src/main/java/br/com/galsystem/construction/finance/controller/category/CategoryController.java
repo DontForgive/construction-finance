@@ -2,6 +2,8 @@ package br.com.galsystem.construction.finance.controller.category;
 
 import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
 import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.models.Category;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.CategoryService;
@@ -25,27 +27,11 @@ public class CategoryController {
 
     // POST /categories - criar
     @PostMapping
-    public ResponseEntity<Response<CategoryDTO>> create(@Valid @RequestBody CategoryCreateDTO dto, BindingResult result) {
-        // (opcional) normalização de nome
-        String name = dto.getName().trim();
-
-        Category entity = new Category();
-        entity.setName(name);
-        entity.setDescription(dto.getDescription());
-
-        Category saved = categoryService.save(entity);
-
-        CategoryDTO out = new CategoryDTO();
-        out.setId(saved.getId());
-        out.setName(saved.getName());
-        out.setDescription(saved.getDescription());
-
-        Response<CategoryDTO> resp = new Response<>();
-        resp.setStatus(201);
-        resp.setMessage("Categoria criada com sucesso!");
-        resp.setData(out);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    public ResponseEntity<Response<CategoryDTO>> create(@Valid @RequestBody CategoryCreateDTO dto) {
+        CategoryDTO out = categoryService.create(dto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new Response<>(201, "Categoria criado com sucesso!", out));
     }
 
     // GET /categories - listar todas (pode paginar depois)
