@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.controller;
+package br.com.galsystem.construction.finance.controller.user;
 
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.models.User;

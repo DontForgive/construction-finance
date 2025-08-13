@@ -3,7 +3,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "payer")
+@Table(name = "payer", uniqueConstraints = {
+        @UniqueConstraint(name = "uq_payer_name", columnNames = "name")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
