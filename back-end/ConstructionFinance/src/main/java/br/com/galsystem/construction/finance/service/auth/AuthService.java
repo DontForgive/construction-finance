@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.service;
+package br.com.galsystem.construction.finance.service.auth;
 
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;

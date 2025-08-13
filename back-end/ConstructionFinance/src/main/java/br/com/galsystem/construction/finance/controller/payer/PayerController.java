@@ -5,12 +5,11 @@ import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
 import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.response.Response;
-import br.com.galsystem.construction.finance.service.PayerService;
+import br.com.galsystem.construction.finance.service.payer.PayerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

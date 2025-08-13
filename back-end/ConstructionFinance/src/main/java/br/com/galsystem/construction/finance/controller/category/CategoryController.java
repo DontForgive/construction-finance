@@ -2,16 +2,13 @@ package br.com.galsystem.construction.finance.controller.category;
 
 import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
 import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.models.Category;
 import br.com.galsystem.construction.finance.response.Response;
-import br.com.galsystem.construction.finance.service.CategoryService;
+import br.com.galsystem.construction.finance.service.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    // POST /categories - criar
     @PostMapping
     public ResponseEntity<Response<CategoryDTO>> create(@Valid @RequestBody CategoryCreateDTO dto) {
         CategoryDTO out = categoryService.create(dto);
@@ -34,7 +30,6 @@ public class CategoryController {
                 .body(new Response<>(201, "Categoria criado com sucesso!", out));
     }
 
-    // GET /categories - listar todas (pode paginar depois)
     @GetMapping
     public ResponseEntity<Response<List<CategoryDTO>>> listAll() {
         List<Category> list = categoryService.findAll();

@@ -1,9 +1,8 @@
-package br.com.galsystem.construction.finance.service;
+package br.com.galsystem.construction.finance.service.payer;
 
 import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
-import br.com.galsystem.construction.finance.exception.BadRequestException;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.models.Payer;
@@ -46,7 +45,7 @@ public class PayerService {
         try {
             return toDTO(payerRepository.save(entity));
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("Já existe um pagador com o nome informado.");
+            throw new ConflictException("Ocorreu um erro: " + e.getMessage());
         }
     }
 

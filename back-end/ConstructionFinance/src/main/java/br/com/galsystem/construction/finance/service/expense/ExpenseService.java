@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.service;
+package br.com.galsystem.construction.finance.service.expense;
 
 import br.com.galsystem.construction.finance.models.Expense;
 import br.com.galsystem.construction.finance.repository.ExpenseRepository;

@@ -1,12 +1,9 @@
-package br.com.galsystem.construction.finance.service;
+package br.com.galsystem.construction.finance.service.category;
 
 import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
 import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.models.Category;
-import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.repository.CategoryRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -52,7 +49,7 @@ public class CategoryService {
         try {
             return toDTO(categoryRepository.save(entity));
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("Já existe uma categoria com o nome informado.");
+            throw new ConflictException("Ocorre um erro: " + e.getMessage());
         }
     }
 
