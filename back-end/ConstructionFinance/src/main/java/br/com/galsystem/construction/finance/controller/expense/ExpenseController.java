@@ -10,8 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/expenses")
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class ExpenseController {
 
     private final ExpenseService service;
+
 
     @GetMapping
     public ResponseEntity<Response<Page<ExpenseDTO>>> list(
@@ -66,4 +69,21 @@ public class ExpenseController {
         service.delete(id);
         return ResponseEntity.ok(new Response<>(200, "Despesa removida com sucesso", null));
     }
+
+    @PutMapping(value = "/{id}/attachment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<ExpenseDTO>> attach(
+            @PathVariable Long id,
+            @RequestPart("file") MultipartFile file
+    ) {
+        ExpenseDTO updated = service.attachFile(id, file);
+        return ResponseEntity.ok(new Response<>(200, "Anexo adicionado/atualizado", updated));
+    }
+
+    @DeleteMapping("/{id}/attachment")
+    public ResponseEntity<Response<Void>> removeAttachment(@PathVariable Long id) {
+        service.removeAttachment(id);
+        return ResponseEntity.ok(new Response<>(200, "Anexo removido", null));
+    }
+
+
 }

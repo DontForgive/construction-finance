@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -114,5 +115,13 @@ public class ApiExceptionHandler {
         body.setStatus(500);
         body.setMessage("Erro interno do servidor");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Response<Void>> handleStaticNotFound(NoResourceFoundException ex) {
+        Response<Void> body = new Response<>();
+        body.setStatus(404);
+        body.setMessage("Recurso não encontrado");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 }

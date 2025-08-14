@@ -4,6 +4,7 @@ import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
+import br.com.galsystem.construction.finance.files.UploadArea;
 import br.com.galsystem.construction.finance.mapper.ExpenseMapper;
 import br.com.galsystem.construction.finance.models.Expense;
 import br.com.galsystem.construction.finance.models.Payer;
@@ -14,12 +15,14 @@ import br.com.galsystem.construction.finance.repository.PayerRepository;
 import br.com.galsystem.construction.finance.repository.SupplierRepository;
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
+import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -32,6 +35,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepository;
     private final ExpenseMapper mapper;
     private final CurrentUser currentUser;
+    private final FileStorageService storageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -117,4 +121,49 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
         repository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public ExpenseDTO attachFile(Long id, MultipartFile file) {
+        Expense entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Despesa com ID %d não encontrada".formatted(id)));
+
+        // (opcional) garantir que a despesa pertence ao usuário autenticado
+        Long uid = currentUser.id();
+        if (!entity.getUser().getId().equals(uid)) {
+            throw new AccessDeniedException("Acesso negado");
+        }
+
+        // apaga o arquivo antigo se existir
+        if (entity.getAttachmentUrl() != null && !entity.getAttachmentUrl().isBlank()) {
+            storageService.deleteByPublicUrl(entity.getAttachmentUrl());
+        }
+
+        // salva novo arquivo e atualiza a URL
+        String url = storageService.store(UploadArea.EXPENSES, file);
+        entity.setAttachmentUrl(url);
+
+        Expense saved = repository.save(entity);
+        return mapper.toDTO(saved);
+    }
+
+    @Override
+    @Transactional
+    public void removeAttachment(Long id) {
+        Expense entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Despesa com ID %d não encontrada".formatted(id)));
+
+        Long uid = currentUser.id();
+        if (!entity.getUser().getId().equals(uid)) {
+            throw new AccessDeniedException("Acesso negado");
+        }
+
+        if (entity.getAttachmentUrl() != null && !entity.getAttachmentUrl().isBlank()) {
+            storageService.deleteByPublicUrl(entity.getAttachmentUrl());
+            entity.setAttachmentUrl(null);
+            repository.save(entity);
+        }
+    }
+
+
 }

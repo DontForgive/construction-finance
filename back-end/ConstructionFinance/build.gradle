@@ -46,6 +46,9 @@ dependencies {
     // Integração Lombok + MapStruct (evita problemas de detecção de getters/setters)
     annotationProcessor  'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
+    implementation 'commons-io:commons-io:2.16.1'
+
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly     'org.postgresql:postgresql'
 
