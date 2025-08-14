@@ -1,16 +1,10 @@
 package br.com.galsystem.construction.finance.dto.payer;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Size;
 
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class PayerUpdateDTO {
-    @NotBlank(message = "Nome é obrigatório.")
-    private String name;
-    // getters/setters
-}
+public record PayerUpdateDTO (
+        @NotBlank(message = "Nome é obrigatório")
+        @Size(max = 120, message = "Nome deve ter no máximo 120 caracteres")
+                String name
+){}
