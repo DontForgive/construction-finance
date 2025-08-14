@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.security;
+package br.com.galsystem.construction.finance.security.jwt;
 
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

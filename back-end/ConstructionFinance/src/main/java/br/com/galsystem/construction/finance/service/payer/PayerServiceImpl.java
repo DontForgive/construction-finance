@@ -23,13 +23,13 @@ public class PayerServiceImpl implements PayerService {
     private final PayerMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<PayerDTO> listar(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDTO);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public PayerDTO findById(Long id) {
         Payer entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pagador com ID %d não encontrado".formatted(id)));

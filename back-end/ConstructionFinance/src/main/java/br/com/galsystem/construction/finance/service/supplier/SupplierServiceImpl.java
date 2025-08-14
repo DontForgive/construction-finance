@@ -23,13 +23,13 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierMapper supplierMapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<SupplierDTO> listar(Pageable pageable) {
         return supplierRepository.findAll(pageable).map(supplierMapper::toDTO);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public SupplierDTO findById(Long id) {
         Supplier entity = supplierRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Fornecedor com ID %d não encontrado".formatted(id)));
@@ -37,6 +37,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    @Transactional
     public SupplierDTO create(SupplierCreateDTO dto) {
         String name = dto.name().trim();
         if (supplierRepository.existsByNameIgnoreCase(name)) {
@@ -50,6 +51,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    @Transactional
     public SupplierDTO update(Long id, SupplierUpdateDTO dto) {
         Supplier entity = supplierRepository.findById(id).orElseThrow(
                 ()-> new NotFoundException("Fornecedor com o ID %d não encontrado".formatted(id)));
@@ -66,6 +68,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         if(!supplierRepository.existsById(id)) {
             throw new NotFoundException("Fornecedor com o ID %d não encontrado".formatted(id));

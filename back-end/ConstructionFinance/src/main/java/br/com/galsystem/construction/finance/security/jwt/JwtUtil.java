@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.security;
+package br.com.galsystem.construction.finance.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

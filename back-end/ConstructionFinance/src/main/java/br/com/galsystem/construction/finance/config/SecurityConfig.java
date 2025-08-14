@@ -1,7 +1,7 @@
 package br.com.galsystem.construction.finance.config;
 
-import br.com.galsystem.construction.finance.security.JwtAuthFilter;
-import br.com.galsystem.construction.finance.security.JwtAuthenticationEntryPoint;
+import br.com.galsystem.construction.finance.security.jwt.JwtAuthFilter;
+import br.com.galsystem.construction.finance.security.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,7 +2,7 @@ package br.com.galsystem.construction.finance.service.auth;
 
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;
-import br.com.galsystem.construction.finance.security.JwtUtil;
+import br.com.galsystem.construction.finance.security.jwt.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

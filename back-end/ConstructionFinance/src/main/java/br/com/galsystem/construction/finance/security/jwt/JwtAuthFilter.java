@@ -1,4 +1,4 @@
-package br.com.galsystem.construction.finance.security;
+package br.com.galsystem.construction.finance.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
