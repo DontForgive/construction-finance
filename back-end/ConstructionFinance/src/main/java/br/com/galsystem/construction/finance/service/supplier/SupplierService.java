@@ -1,12 +1,8 @@
 package br.com.galsystem.construction.finance.service.supplier;
 
-import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
-import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.models.Supplier;
 import br.com.galsystem.construction.finance.repository.SupplierRepository;
 import org.springframework.dao.DataIntegrityViolationException;
