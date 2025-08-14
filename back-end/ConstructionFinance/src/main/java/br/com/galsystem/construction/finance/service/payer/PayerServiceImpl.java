@@ -5,6 +5,7 @@ import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
+import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.mapper.PayerMapper;
 import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.repository.PayerRepository;
@@ -31,7 +32,7 @@ public class PayerServiceImpl implements PayerService {
     @Transactional
     public PayerDTO findById(Long id) {
         Payer entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pagador com ID %d não encontrado".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagador com ID %d não encontrado".formatted(id)));
         return mapper.toDTO(entity);
     }
 
@@ -53,7 +54,7 @@ public class PayerServiceImpl implements PayerService {
     @Transactional
     public PayerDTO update(Long id, PayerUpdateDTO dto) {
         Payer entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pagador com ID %d não encontrado".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Pagador com ID %d não encontrado".formatted(id)));
 
         String name = dto.name().trim();
         if (!entity.getName().equalsIgnoreCase(name)

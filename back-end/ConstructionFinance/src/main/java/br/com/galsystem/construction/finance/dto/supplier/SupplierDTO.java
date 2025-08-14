@@ -1,4 +1,3 @@
 package br.com.galsystem.construction.finance.dto.supplier;
 
-public class SupplierDTO {
-}
+public record SupplierDTO(Long id, String name) {}

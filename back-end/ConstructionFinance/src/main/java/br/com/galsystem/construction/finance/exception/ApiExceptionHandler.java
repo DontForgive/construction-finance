@@ -11,6 +11,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    @ExceptionHandler({ ResourceNotFoundException.class, NotFoundException.class })
+    public ResponseEntity<Response<Void>> handleNotFound(RuntimeException ex) {
+        Response<Void> body = new Response<>();
+        body.setStatus(404);
+        body.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
     public ResponseEntity<Response<Void>> handleNotFound(ChangeSetPersister.NotFoundException ex) {
         Response<Void> body = new Response<>();
