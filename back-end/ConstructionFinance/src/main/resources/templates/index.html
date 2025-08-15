@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Construction Finance · API</title>
+    <style>
+        :root{
+            --bg: #f7f8fc;
+            --card: rgba(255,255,255,0.72);
+            --stroke:#e8ebf4;
+            --text:#1d2533;
+            --muted:#6b7280;
+            --brand1:#8ec5fc; /* azul pastel */
+            --brand2:#e0c3fc; /* lilás pastel */
+            --accent:#2563eb; /* ação */
+            --ok:#16a34a;
+            --bad:#dc2626;
+            --shadow: 0 8px 30px rgba(0,0,0,.08);
+            --blur: blur(10px);
+            --radius: 18px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0; color:var(--text); background:var(--bg);
+            background-image: radial-gradient(1200px 600px at 80% -10%, #e0c3fc33, transparent 60%),
+            radial-gradient(1000px 800px at -10% 20%, #8ec5fc33, transparent 55%);
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+        }
+        .wrap{max-width:1100px; margin:0 auto; padding:28px 18px 60px}
+        header{
+            background: linear-gradient(120deg, var(--brand1), var(--brand2));
+            color:#0b1020; border-radius: calc(var(--radius) + 6px);
+            padding: 22px 22px; box-shadow: var(--shadow);
+            display:flex; align-items:center; justify-content:space-between; gap:18px;
+        }
+        .brand{font-weight:800; letter-spacing:.2px; font-size:clamp(18px,2.2vw,22px)}
+        .sub{opacity:.8; font-size:14px}
+        .buttons a{
+            text-decoration:none; color:#0b1020; background:#ffffffcc; border:1px solid #00000014;
+            padding:10px 14px; border-radius:12px; display:inline-block; margin-left:10px;
+            backdrop-filter: var(--blur);
+        }
+        .buttons a:hover{background:#fff}
+
+        .grid{
+            display:grid; gap:18px; margin-top:22px;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+        }
+        .card{
+            background: var(--card); border:1px solid var(--stroke);
+            border-radius: var(--radius); padding:18px; box-shadow: var(--shadow);
+            backdrop-filter: var(--blur);
+        }
+        h3{margin:0 0 8px 0; font-size:18px}
+        .muted{color:var(--muted); font-size:13px}
+        .status-up{color:var(--ok); font-weight:700}
+        .status-down{color:var(--bad); font-weight:700}
+        .btn{
+            appearance:none; border:1px solid #dbe2f2; background:#fff; color:var(--text);
+            padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600;
+        }
+        .btn:hover{border-color:#cbd5e1}
+        ul{margin:.5rem 0 0 1rem; padding:0}
+        li{margin:.25rem 0}
+        code{background:#eef2ff; padding:2px 6px; border-radius:8px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+        .big{
+            display:flex; align-items:center; justify-content:space-between; gap:12px;
+            padding:18px; border-radius: var(--radius); border:1px dashed #d8def0; background:#fff7;
+        }
+        .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:#ffffffcc; border:1px solid #e7eaf3; font-size:12px}
+        footer{margin-top:22px; text-align:center; color:var(--muted); font-size:13px}
+        .links a{display:inline-block; margin-right:10px; color:var(--accent); text-decoration:none}
+        .links a:hover{text-decoration:underline}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div>
+            <div class="brand">Construction Finance · API</div>
+            <div class="sub">Bem-vindo! Esta é a página inicial da API — verificação rápida, exemplos e links.</div>
+        </div>
+        <div class="buttons">
+            <a href="/swagger-ui/index.html">Swagger UI</a>
+            <a href="/v3/api-docs">OpenAPI</a>
+            <a href="/actuator">Actuator</a>
+        </div>
+    </header>
+
+    <div class="grid" style="margin-top:20px">
+        <section class="card">
+            <h3>Status</h3>
+            <div class="big">
+                <div>
+                    <div id="health">Checando...</div>
+                    <div class="muted">Fonte: <code>/actuator/health</code></div>
+                </div>
+                <span id="pillEnv" class="pill">prod</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>Exemplo · Categorias</h3>
+            <div class="muted">GET <code>/api/categories/list</code></div>
+            <button id="btnLoad" class="btn" style="margin:10px 0">Carregar categorias</button>
+            <ul id="cats"></ul>
+        </section>
+
+        <section class="card">
+            <h3>Links úteis</h3>
+            <p class="links">
+                <a href="/swagger-ui/index.html">/swagger-ui</a>
+                <a href="/v3/api-docs">/v3/api-docs</a>
+                <a href="/actuator/health">/actuator/health</a>
+                <a href="/actuator/info">/actuator/info</a>
+            </p>
+            <p class="muted">Garanta liberação no SecurityConfig conforme necessidade.</p>
+        </section>
+    </div>
+
+    <footer>
+        © 2025 GALSYSTEM · Todos os direitos reservados.
+    </footer>
+</div>
+
+<script>
+    async function getJSON(url) {
+        const r = await fetch(url, { headers: { 'Accept':'application/json' } });
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+        return r.json();
+    }
+
+    // Health
+    (async () => {
+        const el = document.getElementById('health');
+        try {
+            const data = await getJSON('/actuator/health');
+            const s = (data && data.status) || 'UNKNOWN';
+            el.innerHTML = `Status: <strong class="${s === 'UP' ? 'status-up' : 'status-down'}">${s}</strong>`;
+        } catch (e) {
+            el.innerHTML = `<span class="status-down">Falhou</span> — ${e.message}`;
+        }
+    })();
+
+    // Categorias
+    document.getElementById('btnLoad').addEventListener('click', async () => {
+        const ul = document.getElementById('cats');
+        ul.innerHTML = '<li>Carregando...</li>';
+        try {
+            const data = await getJSON('/api/categories/list');
+            ul.innerHTML = '';
+            if (!Array.isArray(data) || data.length === 0) {
+                ul.innerHTML = '<li>(sem resultados)</li>';
+                return;
+            }
+            data.forEach(c => {
+                const li = document.createElement('li');
+                li.textContent = c.name || c.nome || JSON.stringify(c);
+                ul.appendChild(li);
+            });
+        } catch (e) {
+            ul.innerHTML = `<li class="status-down">Erro: ${e.message}</li>`;
+        }
+    });
+
+    // Ambiente/porta (opcional: edite aqui se quiser exibir dinâmico)
+    document.getElementById('pillEnv').textContent = 'prod';
+</script>
+</body>
+</html>

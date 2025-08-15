@@ -77,8 +77,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
                         // (opcional) swagger/actuator, se usar:
                          .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-
-
+                        .requestMatchers("/","/index.html","/index", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
