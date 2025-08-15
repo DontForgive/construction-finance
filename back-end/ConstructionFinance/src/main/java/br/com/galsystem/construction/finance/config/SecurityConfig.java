@@ -49,7 +49,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         var cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://seu-front.com", "http://localhost:3000"));
+        cfg.setAllowedOrigins(List.of("https://apiconstrucao.galsystems.com.br", "http://localhost:9090"));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setExposedHeaders(List.of("Location", "Content-Disposition"));
@@ -66,20 +66,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {}) // ① habilita CORS (bean abaixo)
                 .authorizeHttpRequests(auth -> auth
-                        // público
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
-                        // ② preflight CORS liberado
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // ③ arquivos estáticos mapeados pelo ResourceHandler
                         .requestMatchers(HttpMethod.GET,  "/files/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/files/**").permitAll()
-                        // uploads autenticados
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
-                        // (opcional) swagger/actuator, se usar:
                          .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/","/index.html","/index").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

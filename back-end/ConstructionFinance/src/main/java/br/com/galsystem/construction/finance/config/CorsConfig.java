@@ -13,14 +13,19 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // libera todos os endpoints
-                        .allowedOrigins("http://localhost:9090") // seu domínio
-                        .allowedOrigins("http://apiconstrucao.galsystems.com.br") // seu domínio
-                        .allowedOrigins("https://apiconstrucao.galsystems.com.br") // seu domínio
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "http://localhost:9090",
+                                "https://localhost:9090",
+                                "http://apiconstrucao.galsystems.com.br",
+                                "https://apiconstrucao.galsystems.com.br"
+                        )
+                        .allowedMethods("GET","POST","PUT","DELETE","PATCH","OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .maxAge(3600);
             }
         };
     }
+
 }
