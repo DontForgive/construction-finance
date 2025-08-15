@@ -14,6 +14,8 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // libera todos os endpoints
+                        .allowedOrigins("http://localhost:9090") // seu domínio
+                        .allowedOrigins("http://apiconstrucao.galsystems.com.br") // seu domínio
                         .allowedOrigins("https://apiconstrucao.galsystems.com.br") // seu domínio
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
