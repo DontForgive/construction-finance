@@ -1,5 +1,4 @@
 package br.com.galsystem.construction.finance.config;
-
 import br.com.galsystem.construction.finance.security.jwt.JwtAuthFilter;
 import br.com.galsystem.construction.finance.security.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +30,6 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationEntryPoint authEntryPoint;
     private final JwtAuthFilter jwtAuthFilter;
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,31 +46,40 @@ public class SecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        var cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("https://apiconstrucao.galsystems.com.br", "http://localhost:9090"));
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
-        cfg.setAllowedHeaders(List.of("*"));
-        cfg.setExposedHeaders(List.of("Location", "Content-Disposition"));
+        CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowCredentials(true);
-        var source = new UrlBasedCorsConfigurationSource();
+        // use UMA lista; evite múltiplas chamadas que se sobrescrevem
+        cfg.setAllowedOrigins(List.of(
+                "https://apiconstrucao.galsystems.com.br",
+                "http://localhost:9090"
+                // adicione outras origens se precisar
+        ));
+        // Se precisar de curingas com credentials:
+        // cfg.setAllowedOriginPatterns(List.of("https://*.galsystems.com.br","http://localhost:*","https://localhost:*"));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS","HEAD"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setExposedHeaders(List.of("Location","Content-Disposition","Authorization"));
+        cfg.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);
         return source;
     }
-
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {}) // ① habilita CORS (bean abaixo)
+                // usar o bean acima (em vez de cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/files/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/files/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
-                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/","/index.html","/index").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/", "/index.html", "/index").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -85,11 +92,10 @@ public class SecurityConfig {
                             res.setStatus(HttpStatus.FORBIDDEN.value());
                             res.setContentType("application/json");
                             res.getWriter().write("""
-                    {"status":403,"message":"Acesso negado","data":null,"erros":[]}
-                """);
+                        {"status":403,"message":"Acesso negado","data":null,"erros":[]}
+                    """);
                         })
                 );
-
         return http.build();
     }
 }
