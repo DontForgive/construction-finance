@@ -5,6 +5,7 @@ import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.auth.AuthService;
 import br.com.galsystem.construction.finance.service.user.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
+@Tag(name = "Auth", description = "Login")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -36,15 +37,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO body) {
-        Optional<String> token = authService.login(body.getUsername(), body.getPassword());
-
-        if (token.isPresent()) {
-            return ResponseEntity.ok(Map.of("token", token.get()));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Usuário ou senha inválidos"));
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDTO body) {
+        return authService.login(body.getUsername(), body.getPassword())
+                .map(t -> ResponseEntity.ok(Map.of("token", t)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Usuário ou senha inválidos")));
     }
+
 
     // DTO simples para login
     public static class LoginRequestDTO {

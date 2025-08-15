@@ -4,6 +4,7 @@ import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.user.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Users", description = "Usuários")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 

@@ -1,14 +1,10 @@
 package br.com.galsystem.construction.finance.controller.supplier;
-
-
-import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
-import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
-import br.com.galsystem.construction.finance.dto.category.CategoryUpdateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.supplier.SupplierService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,11 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/supplier")
+
+@Tag(name = "Supplier", description = "Fornecedor")
+@RestController
+@RequestMapping("/api/supplier")
 @RequiredArgsConstructor
 public class SupplierController {
 

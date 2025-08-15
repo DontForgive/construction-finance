@@ -1,6 +1,7 @@
 package br.com.galsystem.construction.finance.exception;
 
 import br.com.galsystem.construction.finance.response.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "br.com.galsystem.construction.finance.controller")
 public class ApiExceptionHandler {
 
     // 404 - not found (suas exceções)
@@ -109,8 +110,12 @@ public class ApiExceptionHandler {
 
     // 500 - fallback genérico
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response<Void>> handleGeneric(Exception ex) {
+    public ResponseEntity<Response<Void>> handleGeneric(Exception ex, HttpServletRequest req) throws Exception {
         // TODO: log detalhado aqui com um correlationId
+        String uri = req.getRequestURI();
+        if (uri.startsWith("/v3/api-docs") || uri.startsWith("/swagger-ui") || uri.startsWith("/swagger-resources")) {
+            throw ex; // deixa o springdoc tratar
+        }
         Response<Void> body = new Response<>();
         body.setStatus(500);
         body.setMessage("Erro interno do servidor");

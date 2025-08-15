@@ -1,12 +1,10 @@
 package br.com.galsystem.construction.finance.controller.payer;
-
-import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
-import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.payer.PayerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,11 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/payer")
+@Tag(name = "Payer", description = "Pagador de despesas")
+@RestController
+@RequestMapping("/api/payer")
 @RequiredArgsConstructor
 public class PayerController {
 
@@ -65,12 +63,13 @@ public class PayerController {
     public ResponseEntity<Response<PayerDTO>> update(@PathVariable Long id, @Valid @RequestBody PayerUpdateDTO dto) {
         PayerDTO updated = service.update(id, dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Response<>(201, "Pagador atualizado com sucesso", updated));
+                .body(new Response<>(200, "Pagador atualizado com sucesso", updated));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Response<Void>> delete(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response<Void>> delete(@PathVariable("id") Long id) {
         service.delete(id);
         return ResponseEntity.ok(new Response<>(200, "Pagador removido com sucesso", null));
     }
+
 }

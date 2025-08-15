@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .cors(cors -> {}) // ① habilita CORS (bean abaixo)
                 .authorizeHttpRequests(auth -> auth
                         // público
-                        .requestMatchers("/auth/register", "/auth/login", "/error").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
                         // ② preflight CORS liberado
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // ③ arquivos estáticos mapeados pelo ResourceHandler
@@ -76,7 +76,9 @@ public class SecurityConfig {
                         // uploads autenticados
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
                         // (opcional) swagger/actuator, se usar:
-                        // .requestMatchers("/v3/api-docs/**","/swagger-ui/**","/actuator/health").permitAll()
+                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

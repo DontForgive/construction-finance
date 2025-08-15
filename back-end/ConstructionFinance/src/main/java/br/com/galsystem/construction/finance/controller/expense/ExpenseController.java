@@ -3,6 +3,8 @@ package br.com.galsystem.construction.finance.controller.expense;
 import br.com.galsystem.construction.finance.dto.expense.*;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.expense.ExpenseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,8 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Expenses", description = "Operações de despesas")
 @RestController
-@RequestMapping("/expenses")
+@RequestMapping("/api/expenses")
 @RequiredArgsConstructor
 public class ExpenseController {
 
@@ -50,6 +53,7 @@ public class ExpenseController {
         return ResponseEntity.ok(new Response<>(200, "Despesa encontrada", dto));
     }
 
+    @Operation(summary = "Criar despesa")
     @PostMapping
     public ResponseEntity<Response<ExpenseDTO>> create(@Valid @RequestBody ExpenseCreateDTO dto) {
         ExpenseDTO created = service.create(dto);
