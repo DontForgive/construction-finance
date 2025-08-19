@@ -25,6 +25,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AdminLayoutRoutes } from './admin-layout.routing';
 import { SupplierComponent } from 'app/pages/supplier/supplier.component';
 import { SupplierAddDialogComponent } from 'app/pages/supplier/supplier-add-dialog.component';
+import { ToastService } from 'app/utils/toastr';
 
 
 
@@ -64,7 +65,8 @@ import { SupplierAddDialogComponent } from 'app/pages/supplier/supplier-add-dial
     CategoryComponent,
     SupplierComponent,
     CategoryAddDialogComponent,
-    SupplierAddDialogComponent
+    SupplierAddDialogComponent,
+    
   ]
 })
 

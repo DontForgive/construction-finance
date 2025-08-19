@@ -2,9 +2,9 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CategoryService } from './category.service';
-import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from 'app/utils/response';
 import { Category } from './category';
+import { ToastService } from 'app/utils/toastr';
 
 @Component({
   selector: 'app-category-add-dialog',
@@ -56,7 +56,8 @@ export class CategoryAddDialogComponent {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CategoryAddDialogComponent>,
     private categoryService: CategoryService,
-    private toastr: ToastrService,
+     private toast: ToastService,
+    
     @Inject(MAT_DIALOG_DATA) public data: any
 
   ) {
@@ -78,23 +79,26 @@ export class CategoryAddDialogComponent {
     if (this.data?.id) {
       this.categoryService.updateCategory(this.data.id, category).subscribe({
         next: (res: ApiResponse<Category>) => {
-          this.toastr.success('Categoria atualizada com sucesso!', 'Sucesso');
+          this.toast.success(
+            'Categoria atualizada com sucesso!');
           this.dialogRef.close(res.data); // agora o TS sabe que existe res.data
         },
         error: (err) => {
           console.error('Erro ao atualizar categoria:', err);
-          this.toastr.error('Erro ao atualizar categoria.', 'Erro');
+          this.toast.error('Erro ao atualizar categoria.', 'Erro');
         }
       });
     } else {
       this.categoryService.createCategory(category).subscribe({
         next: (res: ApiResponse<Category>) => {
-          this.toastr.success('Categoria criada com sucesso!', 'Sucesso');
+          this.toast.success(
+            'Categoria criada com sucesso!',
+          );
           this.dialogRef.close(res.data);
         },
         error: (err) => {
           console.error('Erro ao criar categoria:', err);
-          this.toastr.error('Erro ao criar categoria.', 'Erro');
+          this.toast.error('Erro ao criar categoria.', 'Erro'); 
         }
       });
     }

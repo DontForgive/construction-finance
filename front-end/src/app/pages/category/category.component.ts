@@ -3,8 +3,8 @@ import { CategoryService } from './category.service';
 import { Category } from './category';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryAddDialogComponent } from './category-add-dialog.component';
-import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { ToastService } from 'app/utils/toastr';
 
 @Component({
   selector: 'app-category',
@@ -20,7 +20,7 @@ export class CategoryComponent implements OnInit {
   pageSizes: number[] = [5, 10, 20, 50];
 
   constructor(private service: CategoryService, private dialog: MatDialog,
-    private toastr: ToastrService
+     private toast: ToastService,
   ) { }
 
   public list_categories: Category[] = [];
@@ -49,6 +49,7 @@ export class CategoryComponent implements OnInit {
         this.totalPages = res.data.totalPages;
       },
       (error) => {
+        this.toast.error('Erro ao buscar categorias', 'Erro');
         console.error('Erro ao buscar categorias:', error);
       }
     );

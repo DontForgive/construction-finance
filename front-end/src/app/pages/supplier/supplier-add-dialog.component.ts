@@ -6,6 +6,7 @@ import { ApiResponse } from 'app/utils/response';
 import { SupplierService } from './supplier.service';
 import { Supplier } from './supplier';
 import Swal from 'sweetalert2';
+import { ToastService } from 'app/utils/toastr';
 
 @Component({
   selector: 'app-category-add-dialog',
@@ -50,7 +51,7 @@ export class SupplierAddDialogComponent {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<SupplierAddDialogComponent>,
     private supplierService: SupplierService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     @Inject(MAT_DIALOG_DATA) public data: any
 
   ) {
@@ -70,7 +71,9 @@ export class SupplierAddDialogComponent {
     if (this.data?.id) {
       this.supplierService.updateSupplier(this.data.id, supplier).subscribe({
         next: (res: ApiResponse<Supplier>) => {
-          this.toastr.success('Categoria atualizada com sucesso!', 'Sucesso');
+          this.toast.success(
+            'Fornecedor atualizado com sucesso!',
+          );
           this.dialogRef.close(res.data); // agora o TS sabe que existe res.data
         },
         error: (err) => {
@@ -84,18 +87,11 @@ export class SupplierAddDialogComponent {
     } else {
       this.supplierService.createSupplier(supplier).subscribe({
         next: (res: ApiResponse<Supplier>) => {
-          this.toastr.success(
-            '<span data-notify="icon" class="nc-icon nc-bell-55"></span>' +
-            '<span data-notify="message">Fornecedor Criado com sucesso</span>',
-            "",
-            {
-              timeOut: 2000,
-              closeButton: true,
-              enableHtml: true,
-              toastClass: "alert alert-success alert-with-icon",
-              positionClass: "toast-top-right"
-            }
+
+          this.toast.success(
+            'Fornecedor criado com sucesso!',
           );
+          
 
           this.dialogRef.close(res.data);
         },

@@ -5,6 +5,7 @@ import { Supplier } from './supplier';
 import { SupplierAddDialogComponent } from './supplier-add-dialog.component';
 import { error } from 'console';
 import Swal from 'sweetalert2';
+import { ToastService } from 'app/utils/toastr';
 
 @Component({
   selector: 'app-supplier',
@@ -19,7 +20,9 @@ export class SupplierComponent implements OnInit {
   pageSize = 5;
   pageSizes: number[] = [5, 10, 20, 50];
 
-  constructor(private service: SupplierService, private dialog: MatDialog) { }
+  constructor(private service: SupplierService, private dialog: MatDialog,
+     private toast: ToastService,
+  ) { }
 
   public list_suppliers: Supplier[] = [];
   filterName: string = '';
@@ -50,6 +53,7 @@ export class SupplierComponent implements OnInit {
         this.totalPages = res.data.totalPages;
       },
       (error) => {
+        this.toast.error('Erro ao buscar fornecedores \n' + error, "Error");
         console.error('Erro ao buscar fornecedores:', error);
       }
     );
