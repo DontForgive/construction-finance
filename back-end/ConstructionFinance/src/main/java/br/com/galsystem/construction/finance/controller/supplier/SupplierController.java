@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Supplier", description = "Fornecedor")
 @RestController
-@RequestMapping("/api/supplier")
+@RequestMapping("/supplier")
 @RequiredArgsConstructor
 public class SupplierController {
 

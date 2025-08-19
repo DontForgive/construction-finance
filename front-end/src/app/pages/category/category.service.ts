@@ -22,18 +22,34 @@ constructor(private httpClient:HttpClient,  private authService: AuthService) { 
     });
   }
 
-getCategories(page: number = 0, size: number = 10, sort: string = 'id', dir: string = 'ASC') {
-  const params = {
+getCategories(
+  page: number = 0,
+  size: number = 10,
+  sort: string = 'id',
+  dir: string = 'ASC',
+  name?: string,
+  description?: string
+) {
+  const params: any = {
     page: page,
     size: size,
     sort: sort,
-    dir: dir
+    dir: dir,
+    name: '',
+    description: ''
   };
+
+  if (name) params.name = name;
+  if (description) params.description = description;
+
   return this.httpClient.get<ApiResponse<Category>>(`${this.API}categories`, {
     params: params,
-     headers: this.getAuthHeaders()
+    headers: this.getAuthHeaders()
   });
 }
+
+
+
 
 createCategory(category: Category): Observable<ApiResponse<Category>> {
   return this.httpClient.post<ApiResponse<Category>>(

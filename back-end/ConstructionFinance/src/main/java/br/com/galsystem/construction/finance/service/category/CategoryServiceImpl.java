@@ -23,8 +23,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CategoryDTO> list(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDTO);
+    public Page<CategoryDTO> list(String name, String description, Pageable pageable) {
+        return repository.findByFilters(name, description, pageable)
+                .map(mapper::toDTO);
     }
 
     @Override

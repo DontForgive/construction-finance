@@ -10,7 +10,7 @@ import { environment } from 'environments/environment';
 export class AuthService {
   private tokenKey = 'auth_token';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(credentials: { username: string; password: string }): Observable<any> {
     return this.http.post<any>(`${environment.API}auth/login`, credentials);
@@ -25,11 +25,13 @@ export class AuthService {
   }
 
   getUser(): any {
+
     const token = this.getToken();
-    if (!token) return null;
+    if (!token) return null; ''
 
     try {
-      return jwtDecode<any>(token);
+      var decodedToken = jwtDecode<any>(token);
+      return decodedToken;
     } catch (e) {
       return null;
     }

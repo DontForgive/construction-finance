@@ -18,7 +18,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CategoryAddDialogComponent } from 'app/pages/category/category-add-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ToastrModule } from 'ngx-toastr';
@@ -45,6 +45,7 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
       progressBar: true,
       preventDuplicates: true,
     }),
+    FormsModule          
 
   ],
   declarations: [
@@ -58,6 +59,7 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
     MapsComponent,
     NotificationsComponent,
     CategoryAddDialogComponent,
+    
 
 
   ]

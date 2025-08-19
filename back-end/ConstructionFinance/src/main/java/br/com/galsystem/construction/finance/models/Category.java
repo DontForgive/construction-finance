@@ -1,5 +1,4 @@
 package br.com.galsystem.construction.finance.models;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,3 +18,4 @@ public class Category {
 
     private String description;
 }
+

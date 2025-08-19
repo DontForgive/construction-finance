@@ -16,8 +16,8 @@ export class CategoryComponent implements OnInit {
   currentPage = 0;
   totalPages = 0;
   totalElements = 0;
-  pageSize = 10;
-  pageSizes: number[] = [3, 5, 10, 20, 50];
+  pageSize = 5;
+  pageSizes: number[] = [5, 10, 20, 50];
 
   constructor(private service: CategoryService, private dialog: MatDialog,
     private toastr: ToastrService
@@ -29,22 +29,38 @@ export class CategoryComponent implements OnInit {
     this.listCategories();
   }
 
+filterName: string = '';
+filterDescription: string = '';
 
-  listCategories(page: number = 0) {
-    this.currentPage = page;
-    this.service.getCategories(this.currentPage, this.pageSize, 'id', 'DESC').subscribe(
-      (res) => {
+listCategories(page: number = 0) {
+  this.currentPage = page;
 
-        console.log('API Response:', res); // Adicione esta linha
-        this.list_categories = res.data.content;
-        this.totalElements = res.data.totalElements;
-        this.totalPages = res.data.totalPages;
-      },
-      (error) => {
-        console.error('Erro ao buscar categorias:', error);
-      }
-    );
-  }
+  this.service.getCategories(
+    this.currentPage,
+    this.pageSize,
+    'id',
+    'DESC',
+    this.filterName,
+    this.filterDescription
+  ).subscribe(
+    (res) => {
+      this.list_categories = res.data.content;
+      this.totalElements = res.data.totalElements;
+      this.totalPages = res.data.totalPages;
+    },
+    (error) => {
+      console.error('Erro ao buscar categorias:', error);
+    }
+  );
+}
+
+clearFilters() {
+  this.filterName = '';
+  this.filterDescription = '';
+  this.listCategories(0);
+}
+
+
 
   onPageChange(event: any) {
     this.pageSize = event.pageSize;

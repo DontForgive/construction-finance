@@ -15,25 +15,27 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService service;
 
-    @GetMapping("/list")
+    @GetMapping()
     public ResponseEntity<Response<Page<CategoryDTO>>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "ASC") String dir
+            @RequestParam(defaultValue = "ASC") String dir,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description
     ) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
         Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<CategoryDTO> result = service.list(pageable);
+        Page<CategoryDTO> result = service.list(name, description, pageable);
 
         Response<Page<CategoryDTO>> resp = new Response<>();
         resp.setStatus(200);
@@ -48,7 +50,7 @@ public class CategoryController {
         return ResponseEntity.ok(new Response<>(200, "Categoria encontrada", dto));
     }
 
-    @PostMapping("/create")
+    @PostMapping("  ")
     public ResponseEntity<Response<CategoryDTO>> create(@Valid @RequestBody CategoryCreateDTO dto) {
         CategoryDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED)

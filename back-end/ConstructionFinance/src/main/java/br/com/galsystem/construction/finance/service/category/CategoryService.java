@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    Page<CategoryDTO> list(Pageable pageable);
+    Page<CategoryDTO> list(String name, String description, Pageable pageable);
     CategoryDTO findById(Long id);
     CategoryDTO create(CategoryCreateDTO dto);
     CategoryDTO update(Long id, CategoryUpdateDTO dto);

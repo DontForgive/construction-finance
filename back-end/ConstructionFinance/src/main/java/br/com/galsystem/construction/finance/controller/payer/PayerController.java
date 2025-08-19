@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Payer", description = "Pagador de despesas")
 @RestController
-@RequestMapping("/api/payer")
+@RequestMapping("/payer")
 @RequiredArgsConstructor
 public class PayerController {
 

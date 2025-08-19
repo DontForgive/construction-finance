@@ -51,7 +51,8 @@ public class SecurityConfig {
         // use UMA lista; evite múltiplas chamadas que se sobrescrevem
         cfg.setAllowedOrigins(List.of(
                 "https://apiconstrucao.galsystems.com.br",
-                "http://localhost:9090"
+                "http://localhost:9090",
+                "http://localhost:4200"
                 // adicione outras origens se precisar
         ));
         // Se precisar de curingas com credentials:
@@ -73,7 +74,7 @@ public class SecurityConfig {
                 // usar o bean acima (em vez de cors -> {})
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
+                        .requestMatchers("/auth/register", "/auth/login", "/error").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/files/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/files/**").permitAll()

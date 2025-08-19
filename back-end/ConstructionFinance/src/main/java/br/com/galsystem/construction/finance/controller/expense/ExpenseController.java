@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Expenses", description = "Operações de despesas")
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping("/expenses")
 @RequiredArgsConstructor
 public class ExpenseController {
 
