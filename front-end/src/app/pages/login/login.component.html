@@ -1,0 +1,43 @@
+<div class="container" id="container">
+  <!-- Formulário de Login -->
+  <div class="form-container sign-in-container">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h1>Entrar</h1>
+      <span>Use sua conta para acessar</span>
+
+      <input
+        type="text"
+        formControlName="username"
+        placeholder="Usuário"
+      />
+      <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched" class="error">
+        O usuário é obrigatório.
+      </div>
+
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Senha"
+      />
+      <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="error">
+        A senha é obrigatória.
+      </div>
+
+      <a href="#">Esqueceu sua senha?</a>
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Painel lateral -->
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-right">
+        <h1>Bem-vindo de volta!</h1>
+        <p>Para continuar conectado, faça login com suas informações pessoais</p>
+      </div>
+    </div>
+  </div>
+</div>
