@@ -24,8 +24,8 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PayerDTO> listar(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDTO);
+    public Page<PayerDTO> listar(String name, Pageable pageable) {
+        return repository.findByFilters(name, pageable).map(mapper::toDTO);
     }
 
     @Override

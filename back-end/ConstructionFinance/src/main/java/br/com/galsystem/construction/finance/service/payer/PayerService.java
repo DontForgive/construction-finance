@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PayerService {
 
-    Page<PayerDTO> listar(Pageable pageable);
+    Page<PayerDTO> listar(String name, Pageable pageable);
     PayerDTO findById(Long id);
     PayerDTO create(PayerCreateDTO dto);
     PayerDTO update(Long id, PayerUpdateDTO dto);

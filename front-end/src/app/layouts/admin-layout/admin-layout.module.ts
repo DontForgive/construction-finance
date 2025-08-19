@@ -26,6 +26,8 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
 import { SupplierComponent } from 'app/pages/supplier/supplier.component';
 import { SupplierAddDialogComponent } from 'app/pages/supplier/supplier-add-dialog.component';
 import { ToastService } from 'app/utils/toastr';
+import { PayerAddDialogComponent } from 'app/pages/payer/payer-add-dialog.component';
+import { PayerComponent } from 'app/pages/payer/payer.component';
 
 
 
@@ -66,6 +68,9 @@ import { ToastService } from 'app/utils/toastr';
     SupplierComponent,
     CategoryAddDialogComponent,
     SupplierAddDialogComponent,
+    PayerComponent,
+    PayerAddDialogComponent
+
     
   ]
 })

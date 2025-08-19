@@ -1,0 +1,30 @@
+<h2 mat-dialog-title class="mat-headline-6 d-flex align-items-center">
+    <mat-icon color="primary" class="me-2">pagador</mat-icon>
+    <span class="text-muted">Adicionar Pagador</span>
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Nome</mat-label>
+            <input matInput formControlName="name" maxlength="120" required>
+            <mat-error *ngIf="form.get('name')?.hasError('required')">
+                Nome é obrigatório
+            </mat-error>
+            <mat-error *ngIf="form.get('name')?.hasError('maxlength')">
+                Nome deve ter no máximo 120 caracteres
+            </mat-error>
+        </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-stroked-button color="warn" mat-dialog-close type="button">
+            <mat-icon class="me-1">close</mat-icon>
+            Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon class="me-1">save</mat-icon>
+            Salvar
+        </button>
+    </mat-dialog-actions>
+</form>
