@@ -23,6 +23,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ToastrModule } from 'ngx-toastr';
 import { AdminLayoutRoutes } from './admin-layout.routing';
+import { SupplierComponent } from 'app/pages/supplier/supplier.component';
+import { SupplierAddDialogComponent } from 'app/pages/supplier/supplier-add-dialog.component';
 
 
 
@@ -50,7 +52,6 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
   ],
   declarations: [
     DashboardComponent,
-    CategoryComponent,
     UserComponent,
     TableComponent,
     UpgradeComponent,
@@ -58,10 +59,12 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
     IconsComponent,
     MapsComponent,
     NotificationsComponent,
+
+    /*  MY PAGES E COMPONENTS  */
+    CategoryComponent,
+    SupplierComponent,
     CategoryAddDialogComponent,
-    
-
-
+    SupplierAddDialogComponent
   ]
 })
 

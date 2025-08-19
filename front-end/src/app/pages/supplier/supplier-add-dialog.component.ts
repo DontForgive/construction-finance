@@ -1,10 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CategoryService } from './category.service';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from 'app/utils/response';
-import { Category } from './category';
+import { SupplierService } from './supplier.service';
+import { Supplier } from './supplier';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category-add-dialog',
@@ -27,13 +28,6 @@ import { Category } from './category';
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Descrição</mat-label>
-          <textarea matInput formControlName="description" maxlength="255" rows="3"></textarea>
-          <mat-error *ngIf="form.get('description')?.hasError('maxlength')">
-            Descrição deve ter no máximo 255 caracteres
-          </mat-error>
-        </mat-form-field>
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
@@ -49,20 +43,19 @@ import { Category } from './category';
     </form>
   `
 })
-export class CategoryAddDialogComponent {
+export class SupplierAddDialogComponent {
   form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<CategoryAddDialogComponent>,
-    private categoryService: CategoryService,
+    private dialogRef: MatDialogRef<SupplierAddDialogComponent>,
+    private supplierService: SupplierService,
     private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any
 
   ) {
     this.form = this.fb.group({
-      name: [data?.name || '', [Validators.required, Validators.maxLength(120)]],
-      description: [data?.description || '', [Validators.maxLength(255)]]
+      name: [data?.name || '', [Validators.required, Validators.maxLength(120)]]
     });
   }
 
@@ -72,33 +65,51 @@ export class CategoryAddDialogComponent {
       return;
     }
 
-    const category = this.form.value;
-
+    const supplier = this.form.value;
 
     if (this.data?.id) {
-      this.categoryService.updateCategory(this.data.id, category).subscribe({
-        next: (res: ApiResponse<Category>) => {
+      this.supplierService.updateSupplier(this.data.id, supplier).subscribe({
+        next: (res: ApiResponse<Supplier>) => {
           this.toastr.success('Categoria atualizada com sucesso!', 'Sucesso');
           this.dialogRef.close(res.data); // agora o TS sabe que existe res.data
         },
         error: (err) => {
-          console.error('Erro ao atualizar categoria:', err);
-          this.toastr.error('Erro ao atualizar categoria.', 'Erro');
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro ao atualizar o Fornecedor',
+            text: err.error?.message || 'Erro desconhecido',
+          });
         }
       });
     } else {
-      this.categoryService.createCategory(category).subscribe({
-        next: (res: ApiResponse<Category>) => {
-          this.toastr.success('Categoria criada com sucesso!', 'Sucesso');
+      this.supplierService.createSupplier(supplier).subscribe({
+        next: (res: ApiResponse<Supplier>) => {
+          this.toastr.success(
+            '<span data-notify="icon" class="nc-icon nc-bell-55"></span>' +
+            '<span data-notify="message">Fornecedor Criado com sucesso</span>',
+            "",
+            {
+              timeOut: 2000,
+              closeButton: true,
+              enableHtml: true,
+              toastClass: "alert alert-success alert-with-icon",
+              positionClass: "toast-top-right"
+            }
+          );
+
           this.dialogRef.close(res.data);
         },
         error: (err) => {
-          console.error('Erro ao criar categoria:', err);
-          this.toastr.error('Erro ao criar categoria.', 'Erro');
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro ao criar Fornecedor',
+            text: err.error?.message || 'Erro desconhecido',
+          });
         }
       });
     }
 
   }
-
 }
+
+

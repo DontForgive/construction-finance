@@ -24,8 +24,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SupplierDTO> listar(Pageable pageable) {
-        return supplierRepository.findAll(pageable).map(supplierMapper::toDTO);
+    public Page<SupplierDTO> listar(String name, Pageable pageable) {
+        return supplierRepository.findByFilters(name, pageable).map(supplierMapper::toDTO);
     }
 
     @Override

@@ -29,37 +29,36 @@ export class CategoryComponent implements OnInit {
     this.listCategories();
   }
 
-filterName: string = '';
-filterDescription: string = '';
+  filterName: string = '';
+  filterDescription: string = '';
 
-listCategories(page: number = 0) {
-  this.currentPage = page;
+  listCategories(page: number = 0) {
+    this.currentPage = page;
 
-  this.service.getCategories(
-    this.currentPage,
-    this.pageSize,
-    'id',
-    'DESC',
-    this.filterName,
-    this.filterDescription
-  ).subscribe(
-    (res) => {
-      this.list_categories = res.data.content;
-      this.totalElements = res.data.totalElements;
-      this.totalPages = res.data.totalPages;
-    },
-    (error) => {
-      console.error('Erro ao buscar categorias:', error);
-    }
-  );
-}
+    this.service.getCategories(
+      this.currentPage,
+      this.pageSize,
+      'id',
+      'DESC',
+      this.filterName,
+      this.filterDescription
+    ).subscribe(
+      (res) => {
+        this.list_categories = res.data.content;
+        this.totalElements = res.data.totalElements;
+        this.totalPages = res.data.totalPages;
+      },
+      (error) => {
+        console.error('Erro ao buscar categorias:', error);
+      }
+    );
+  }
 
-clearFilters() {
-  this.filterName = '';
-  this.filterDescription = '';
-  this.listCategories(0);
-}
-
+  clearFilters() {
+    this.filterName = '';
+    this.filterDescription = '';
+    this.listCategories(0);
+  }
 
 
   onPageChange(event: any) {
@@ -82,52 +81,48 @@ clearFilters() {
   openEditDialog(category: Category) {
     const dialogRef = this.dialog.open(CategoryAddDialogComponent, {
       width: '500px',
-      data: category // passa os dados da categoria
+      data: category
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Chama o service de update passando o id e os dados editados
-        this.service.updateCategory(category.id, result).subscribe({
-          next: () => {
-            this.toastr.success('Categoria atualizada com sucesso!', 'Sucesso');
-            this.listCategories(this.currentPage); // Atualiza tabela
-          },
-          error: (err) => {
-            console.error('Erro ao atualizar categoria:', err);
-            this.toastr.error('Erro ao atualizar categoria', 'Erro');
-          }
-        });
+        this.listCategories(this.currentPage);
       }
     });
   }
 
 
-deleteCategory(category: Category) {
-  Swal.fire({
-    title: 'Tem certeza?',
-    text: `A categoria "${category.name}" será excluída!`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#6c757d',
-    confirmButtonText: 'Sim, excluir',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.service.deleteCategory(category.id).subscribe({
-        next: () => {
-          Swal.fire('Excluída!', 'A categoria foi removida com sucesso.', 'success');
-          this.listCategories(this.currentPage); // Atualiza tabela
-        },
-        error: (err) => {
-          console.error('Erro ao excluir categoria:', err);
-          Swal.fire('Erro!', 'Não foi possível excluir a categoria.', 'error');
-        }
-      });
-    }
-  });
-}
+  deleteCategory(category: Category) {
+    Swal.fire({
+      title: 'Tem certeza?',
+      text: `A categoria "${category.name}" será excluída!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.service.deleteCategory(category.id).subscribe({
+          next: () => {
+             Swal.fire({
+                          icon: 'success',
+                          title: 'Excluída!',
+                          text: 'A categoria foi removida com sucesso.',
+                          showConfirmButton: false,
+                          timer: 1000
+                        });
+            this.listCategories(this.currentPage); 
+          },
+          error: (err) => {
+            console.error('Erro ao excluir categoria:', err);
+            Swal.fire('Erro!', 'Não foi possível excluir a categoria.', 'error');
+          }
+        });
+      }
+    });
+  }
 
 
 }

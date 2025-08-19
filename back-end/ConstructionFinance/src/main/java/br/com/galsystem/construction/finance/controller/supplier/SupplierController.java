@@ -29,14 +29,15 @@ public class SupplierController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "ASC") String dir
+            @RequestParam(defaultValue = "ASC") String dir,
+            @RequestParam(required = false) String name
     ) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
         Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<SupplierDTO> result = service.listar(pageable);
+        Page<SupplierDTO> result = service.listar(name, pageable);
 
         Response<Page<SupplierDTO>> resp = new Response<>();
         resp.setStatus(200);

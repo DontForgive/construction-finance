@@ -1,0 +1,76 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form class="g-2 align-items-end">
+          <div class="row">
+            <!-- Campo Nome -->
+            <div class="col-md-6">
+              <label for="filterName" class="form-label">Nome</label>
+              <input type="text" id="filterName" class="form-control" placeholder="Pesquisar por nome"
+                [(ngModel)]="filterName" name="filterName">
+            </div>
+
+            <!-- Botão Filtrar -->
+            <div class="col-md-3 d-flex">
+              <button type="button" class="btn btn-lg btn-primary flex-fill" (click)="listSuppliers(0)">
+                <i class="nc-icon nc-zoom-split"></i> Filtrar
+              </button>
+            </div>
+
+            <!-- Botão Limpar -->
+            <div class="col-md-3 d-flex">
+              <button type="button" class="btn btn-lg btn-secondary flex-fill" (click)="clearFilters()">
+                <i class="nc-icon nc-refresh-69"></i> Limpar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Fornecedores</h4>
+        <button class="btn btn btn-primary" (click)="openAddDialog()">
+          <i class="nc-icon nc-simple-add me-1"></i> Novo Fornecedor
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="text-primary">
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let supplier of list_suppliers">
+                <td>{{ supplier.id }}</td>
+                <td>{{ supplier.name }}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(supplier)" title="Editar">
+                    <i class="nc-icon nc-ruler-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="deleteSupplier(supplier)" title="Excluir">
+                    <i class="nc-icon nc-simple-remove"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Paginação Material -->
+        <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="pageSizes"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>

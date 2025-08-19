@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Category } from './category';
-import { ApiResponse } from 'app/utils/response';
-import { Observable } from 'rxjs/internal/Observable';
 import { AuthService } from '../login/auth.service';
+import { ApiResponse } from 'app/utils/response';
+import { Supplier } from './supplier';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
+export class SupplierService {
 
   private readonly API = `${environment.API}`
+
 
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
@@ -22,57 +22,51 @@ export class CategoryService {
     });
   }
 
-  getCategories(
+
+  getSuppliers(
     page: number = 0,
     size: number = 10,
     sort: string = 'id',
     dir: string = 'ASC',
-    name?: string,
-    description?: string
-  ) {
+    name?: string) {
     const params: any = {
       page: page,
       size: size,
       sort: sort,
       dir: dir,
-      name: '',
-      description: ''
+      name: ''
     };
 
     if (name) params.name = name;
-    if (description) params.description = description;
 
-    return this.httpClient.get<ApiResponse<Category>>(`${this.API}categories`, {
+    return this.httpClient.get<ApiResponse<Supplier>>(`${this.API}supplier`, {
       params: params,
       headers: this.getAuthHeaders()
     });
+
   }
 
 
-
-
-  createCategory(category: Category): Observable<ApiResponse<Category>> {
-    return this.httpClient.post<ApiResponse<Category>>(
-      `${this.API}categories`,
-      category,
+  createSupplier(supplier: Supplier) {
+    return this.httpClient.post<ApiResponse<Supplier>>(
+      `${this.API}supplier`,
+      supplier,
       {
         headers: this.getAuthHeaders()
       }
     );
   }
 
-  updateCategory(id: number, data: { name: string; description: string }) {
-    return this.httpClient.put(`${this.API}categories/${id}`, data, {
+    updateSupplier(id: number, data: { name: string; }) {
+    return this.httpClient.put(`${this.API}supplier/${id}`, data, {
       headers: this.getAuthHeaders()
     });
   }
 
-  deleteCategory(id: number) {
-    return this.httpClient.delete(`${this.API}categories/${id}`, {
+  deleteSupplier(id: number) {
+    return this.httpClient.delete(`${this.API}supplier/${id}`, {
       headers: this.getAuthHeaders()
     });
   }
-
-
 
 }

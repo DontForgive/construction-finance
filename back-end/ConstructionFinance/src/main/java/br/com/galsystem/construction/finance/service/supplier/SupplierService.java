@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface SupplierService {
-    Page<SupplierDTO> listar(Pageable pageable);
+    Page<SupplierDTO> listar(String name, Pageable pageable);
     SupplierDTO findById(Long id);
     SupplierDTO create(SupplierCreateDTO dto);
     SupplierDTO update(Long id, SupplierUpdateDTO dto);
