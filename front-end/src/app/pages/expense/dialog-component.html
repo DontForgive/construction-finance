@@ -18,7 +18,8 @@
         <!-- Valor -->
         <mat-form-field appearance="outline" class="w-100 mb-3">
             <mat-label>Valor</mat-label>
-            <input matInput formControlName="amount" type="number" step="0.01" required>
+            <input matInput formControlName="amount" type="text" mask="separator.2" thousandSeparator="."
+                decimalMarker="," prefix="R$ " required>
             <mat-error *ngIf="form.get('amount')?.hasError('required')">
                 Valor é obrigatório
             </mat-error>
@@ -58,6 +59,19 @@
             </mat-select>
             <mat-error *ngIf="form.get('payerId')?.hasError('required')">
                 Pagador é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Categoria -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Categoria</mat-label>
+            <mat-select formControlName="categoryId" required>
+                <mat-option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('categoryId')?.hasError('required')">
+                Categoria é obrigatório
             </mat-error>
         </mat-form-field>
 

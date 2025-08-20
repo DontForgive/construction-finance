@@ -31,7 +31,7 @@ import { PayerComponent } from 'app/pages/payer/payer.component';
 import { ExpenseComponent } from 'app/pages/expense/expense.component';
 import { ExpenseAddDialogComponent } from 'app/pages/expense/expense-add-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
@@ -60,7 +60,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatSelectModule,
     MatOptionModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
 
   ],
   declarations: [
@@ -81,9 +81,14 @@ import { MatNativeDateModule } from '@angular/material/core';
     PayerComponent,
     PayerAddDialogComponent,
     ExpenseComponent,
-    ExpenseAddDialogComponent
+    ExpenseAddDialogComponent,
+    
 
-  ]
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+   
+  ],
 })
 
 export class AdminLayoutModule { }

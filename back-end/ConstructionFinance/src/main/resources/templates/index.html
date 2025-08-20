@@ -149,7 +149,7 @@
         const ul = document.getElementById('cats');
         ul.innerHTML = '<li>Carregando...</li>';
         try {
-            const data = await getJSON('/api/categories/list');
+            const data = await getJSON('/categories');
             ul.innerHTML = '';
             if (!Array.isArray(data) || data.length === 0) {
                 ul.innerHTML = '<li>(sem resultados)</li>';
