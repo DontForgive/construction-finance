@@ -1,0 +1,157 @@
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form class="g-2 align-items-end">
+          <div class="row">
+            <!-- Filtro Descrição -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Descrição</mat-label>
+                <input matInput id="filterDescription" placeholder="Pesquisar por descrição"
+                  [(ngModel)]="filterDescription" name="filterDescription">
+              </mat-form-field>
+            </div>
+
+
+            <!-- Filtro Fornecedor -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-select [(ngModel)]="filterSupplierId" name="filterSupplierId" placeholder="Selecione o fornecedor">
+                  <mat-option [value]="null">Todos</mat-option>
+                  <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                    {{ supplier.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- Filtro Pagador -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-select [(ngModel)]="filterPayerId" name="filterPayerId" placeholder="Selecione o pagador">
+                  <mat-option [value]="null">Todos</mat-option>
+                  <mat-option *ngFor="let payer of payers" [value]="payer.id">
+                    {{ payer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- Filtro Categoria -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Categoria</mat-label>
+                <mat-select [(ngModel)]="filterCategoryId" name="filterCategoryId">
+                  <mat-option [value]="null">Todas</mat-option>
+                  <mat-option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+
+            <!-- Filtro Método de Pagamento -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Método de Pagamento</mat-label>
+                <input matInput id="filterPaymentMethod" placeholder="Pesquisar por método"
+                  [(ngModel)]="filterPaymentMethod" name="filterPaymentMethod">
+              </mat-form-field>
+            </div>
+
+            <!-- Filtro Data -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Data</mat-label>
+                <input matInput [matDatepicker]="picker" placeholder="Selecionar data" [(ngModel)]="filterDate"
+                  name="filterDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+
+          </div>
+
+          <div class="row mt-3">
+            <!-- Botão Filtrar -->
+            <div class="col-md-6 d-flex">
+              <button type="button" class="btn btn-lg btn-primary flex-fill" (click)="listExpenses(0)">
+                <i class="nc-icon nc-zoom-split"></i> Filtrar
+              </button>
+            </div>
+
+            <!-- Botão Limpar -->
+            <div class="col-md-6 d-flex">
+              <button type="button" class="btn btn-lg btn-secondary flex-fill" (click)="clearFilters()">
+                <i class="nc-icon nc-refresh-69"></i> Limpar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Despesas</h4>
+        <button class="btn btn btn-primary" (click)="openAddDialog()">
+          <i class="nc-icon nc-simple-add me-1"></i> Nova Despesa
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="text-primary">
+              <tr>
+                <th>#</th>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Fornecedor</th>
+                <th>Pagador</th>
+                <th>Categoria</th>
+                <th>Método</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let expense of list_expenses">
+                <td>{{ expense.id }}</td>
+                <td>{{ expense.date | date:'dd/MM/yyyy' }}</td>
+                <td>{{ expense.description }}</td>
+                <td>{{ expense.amount | currency:'BRL' }}</td>
+                <td>{{ expense.supplierName || '-' }}</td>
+                <td>{{ expense.payerName || '-' }}</td>
+                <td>{{ expense.categoryName || '-' }}</td>
+
+                <td>{{ expense.paymentMethod }}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(expense)" title="Editar">
+                    <i class="nc-icon nc-ruler-pencil"></i>
+                  </button>
+
+                  <button class="btn btn-sm btn-danger" (click)="deleteExpense(expense)" title="Excluir">
+                    <i class="nc-icon nc-simple-remove"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginação Material -->
+        <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="pageSizes"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>

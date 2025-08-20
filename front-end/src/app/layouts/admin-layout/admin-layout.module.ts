@@ -28,13 +28,19 @@ import { SupplierAddDialogComponent } from 'app/pages/supplier/supplier-add-dial
 import { ToastService } from 'app/utils/toastr';
 import { PayerAddDialogComponent } from 'app/pages/payer/payer-add-dialog.component';
 import { PayerComponent } from 'app/pages/payer/payer.component';
+import { ExpenseComponent } from 'app/pages/expense/expense.component';
+import { ExpenseAddDialogComponent } from 'app/pages/expense/expense-add-dialog.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild(AdminLayoutRoutes ),
+    RouterModule.forChild(AdminLayoutRoutes),
     NgbModule,
     MatPaginatorModule,
     MatDialogModule,
@@ -50,7 +56,11 @@ import { PayerComponent } from 'app/pages/payer/payer.component';
       progressBar: true,
       preventDuplicates: true,
     }),
-    FormsModule          
+    FormsModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatDatepickerModule,
+    MatNativeDateModule
 
   ],
   declarations: [
@@ -69,9 +79,10 @@ import { PayerComponent } from 'app/pages/payer/payer.component';
     CategoryAddDialogComponent,
     SupplierAddDialogComponent,
     PayerComponent,
-    PayerAddDialogComponent
+    PayerAddDialogComponent,
+    ExpenseComponent,
+    ExpenseAddDialogComponent
 
-    
   ]
 })
 

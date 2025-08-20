@@ -10,8 +10,13 @@ import { environment } from 'environments/environment';
 export class AuthService {
   private tokenKey = 'auth_token';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
+  /**
+   * Faz o login do usuário e salva o token no localStorage.
+   * @param credentials - Objeto contendo username e password.
+   * @returns Observable com a resposta da requisição.
+   */
   login(credentials: { username: string; password: string }): Observable<any> {
     return this.http.post<any>(`${environment.API}auth/login`, credentials);
   }
@@ -24,21 +29,53 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  /**
+   * Retorna o payload decodificado do usuário (claims do JWT).
+   */
   getUser(): any {
-
     const token = this.getToken();
-    if (!token) return null; ''
+    if (!token) return null;
 
     try {
-      var decodedToken = jwtDecode<any>(token);
+      const decodedToken = jwtDecode<any>(token);
       return decodedToken;
     } catch (e) {
       return null;
     }
   }
 
+  /**
+   * Verifica se o token é válido e não está expirado.
+   */
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const decoded: any = jwtDecode<any>(token);
+
+      if (!decoded || !decoded.exp) {
+        return false;
+      }
+
+      const currentTime = Date.now() / 1000; // em segundos
+      if (decoded.exp < currentTime) {
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      this.logout();
+      return false;
+    }
+  }
+
+  /**
+   * (Opcional) valida o token no backend, para garantir que ainda é aceito.
+   */
+  validateTokenWithBackend(): Observable<any> {
+    return this.http.get<any>(`${environment.API}auth/validate`);
   }
 
   logout(): void {

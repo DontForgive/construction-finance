@@ -1,0 +1,98 @@
+<h2 mat-dialog-title class="mat-headline-6 d-flex align-items-center">
+    <mat-icon color="primary" class="me-2">receipt_long</mat-icon>
+    <span class="text-muted">Adicionar Despesa</span>
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+
+        <!-- Descrição -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Descrição</mat-label>
+            <input matInput formControlName="description" maxlength="255" required>
+            <mat-error *ngIf="form.get('description')?.hasError('required')">
+                Descrição é obrigatória
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Valor -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Valor</mat-label>
+            <input matInput formControlName="amount" type="number" step="0.01" required>
+            <mat-error *ngIf="form.get('amount')?.hasError('required')">
+                Valor é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Data -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Data</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="form.get('date')?.hasError('required')">
+                Data é obrigatória
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Fornecedor -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Fornecedor</mat-label>
+            <mat-select formControlName="supplierId" required>
+                <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                    {{ supplier.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('supplierId')?.hasError('required')">
+                Fornecedor é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Pagador -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Pagador</mat-label>
+            <mat-select formControlName="payerId" required>
+                <mat-option *ngFor="let payer of payers" [value]="payer.id">
+                    {{ payer.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('payerId')?.hasError('required')">
+                Pagador é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Método de Pagamento -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Método de Pagamento</mat-label>
+            <mat-select formControlName="paymentMethod" required>
+                <mat-option value="PIX">PIX</mat-option>
+                <mat-option value="BOLETO">Boleto</mat-option>
+                <mat-option value="TRANSFERENCIA">Transferência</mat-option>
+                <mat-option value="CARTAO">Cartão</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('paymentMethod')?.hasError('required')">
+                Método de pagamento é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Anexo -->
+        <div class="w-100 mb-3">
+            <label for="fileUpload" class="form-label">Anexo</label>
+            <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png"
+                class="form-control">
+        </div>
+
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-stroked-button color="warn" mat-dialog-close type="button">
+            <mat-icon class="me-1">close</mat-icon>
+            Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon class="me-1">save</mat-icon>
+            Salvar
+        </button>
+    </mat-dialog-actions>
+</form>
