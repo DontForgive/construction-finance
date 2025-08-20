@@ -38,7 +38,7 @@ export class ExpenseComponent implements OnInit {
   payers: Payer[] = [];
   categories: Category[] = [];
 
-  private readonly API = `${environment.API2}`;
+  private readonly API = `${environment.API_NO_BAR}`;
 
   constructor(
     private service: ExpenseService,
