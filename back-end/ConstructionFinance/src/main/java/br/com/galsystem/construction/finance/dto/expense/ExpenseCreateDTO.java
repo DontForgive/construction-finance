@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ExpenseCreateDTO(
+
         @NotNull(message = "Data é obrigatória")
         LocalDate date,
 
@@ -16,6 +17,8 @@ public record ExpenseCreateDTO(
 
         Long supplierId,
         Long payerId,
+
+        Long categoryId,
 
         @Size(max = 60, message = "Forma de pagamento deve ter no máximo 60 caracteres")
         String paymentMethod,

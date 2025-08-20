@@ -8,9 +8,12 @@ public record ExpenseDTO(
         LocalDate date,
         String description,
         Long supplierId,
+        String supplierName,
         Long payerId,
+        String payerName,
+        Long categoryId,
+        String categoryName,
         String paymentMethod,
         BigDecimal amount,
         String attachmentUrl
-) {
-}
+) {}

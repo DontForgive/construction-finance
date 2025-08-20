@@ -6,14 +6,8 @@ import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.files.UploadArea;
 import br.com.galsystem.construction.finance.mapper.ExpenseMapper;
-import br.com.galsystem.construction.finance.models.Expense;
-import br.com.galsystem.construction.finance.models.Payer;
-import br.com.galsystem.construction.finance.models.Supplier;
-import br.com.galsystem.construction.finance.models.User;
-import br.com.galsystem.construction.finance.repository.ExpenseRepository;
-import br.com.galsystem.construction.finance.repository.PayerRepository;
-import br.com.galsystem.construction.finance.repository.SupplierRepository;
-import br.com.galsystem.construction.finance.repository.UserRepository;
+import br.com.galsystem.construction.finance.models.*;
+import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
 import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,16 +29,30 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final SupplierRepository supplierRepository;
     private final PayerRepository payerRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final ExpenseMapper mapper;
     private final CurrentUser currentUser;
     private final FileStorageService storageService;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ExpenseDTO> list(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDTO);
+    public Page<ExpenseDTO> list(
+            String description,
+            Long supplierId,
+            Long payerId,
+            Long categoryId,
+            String paymentMethod,
+            LocalDate date,
+            Pageable pageable
+    ) {
+        if (paymentMethod != null && paymentMethod.isBlank()) {
+            paymentMethod = null;
+        }
 
+        return repository.findByFilters(description, supplierId, payerId, categoryId, paymentMethod, date, pageable)
+                .map(mapper::toDTO);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -73,6 +83,13 @@ public class ExpenseServiceImpl implements ExpenseService {
             entity.setPayer(payer);
         }
 
+        if (dto.categoryId() != null) {
+            Category category = categoryRepository.findById(dto.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Categoria com ID %d não encontrada".formatted(dto.categoryId())));
+            entity.setCategory(category);
+        }
+
         // >>> usuário do token (NÃO aceite userId no JSON)
         Long uid = currentUser.id();
         User user = userRepository.findById(uid)
@@ -91,10 +108,8 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Despesa com ID %d não encontrada".formatted(id)));
 
-        // Atualiza campos simples
         mapper.updateEntity(entity, dto);
 
-        // Atualiza associações se enviado no DTO
         if (dto.supplierId() != null) {
             Supplier supplier = supplierRepository.findById(dto.supplierId())
                     .orElseThrow(() -> new ResourceNotFoundException(
@@ -109,9 +124,17 @@ public class ExpenseServiceImpl implements ExpenseService {
             entity.setPayer(payer);
         }
 
+        if (dto.categoryId() != null) {
+            Category category = categoryRepository.findById(dto.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Categoria com ID %d não encontrada".formatted(dto.categoryId())));
+            entity.setCategory(category);
+        }
+
         Expense saved = repository.save(entity);
         return mapper.toDTO(saved);
     }
+
 
     @Override
     @Transactional
@@ -121,6 +144,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
         repository.deleteById(id);
     }
+
 
     @Override
     @Transactional
@@ -146,6 +170,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense saved = repository.save(entity);
         return mapper.toDTO(saved);
     }
+
 
     @Override
     @Transactional

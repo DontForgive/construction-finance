@@ -11,11 +11,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 @Tag(name = "Expenses", description = "Operações de despesas")
 @RestController
@@ -31,14 +34,20 @@ public class ExpenseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "DESC") String dir
+            @RequestParam(defaultValue = "DESC") String dir,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String paymentMethod,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
         Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<ExpenseDTO> result = service.list(pageable);
+        Page<ExpenseDTO> result = service.list(description, supplierId, payerId, categoryId, paymentMethod, date, pageable);
 
         Response<Page<ExpenseDTO>> resp = new Response<>();
         resp.setStatus(200);
@@ -46,6 +55,8 @@ public class ExpenseController {
         resp.setData(result);
         return ResponseEntity.ok(resp);
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Response<ExpenseDTO>> findById(@PathVariable Long id) {

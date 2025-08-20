@@ -10,7 +10,11 @@ import org.mapstruct.MappingTarget;
 public interface ExpenseMapper {
 
     @Mapping(source = "supplier.id", target = "supplierId")
+    @Mapping(source = "supplier.name", target = "supplierName")
     @Mapping(source = "payer.id", target = "payerId")
+    @Mapping(source = "payer.name", target = "payerName")
+    @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "category.name", target = "categoryName")
     ExpenseDTO toDTO(Expense entity);
 
     // Associações (supplier/payer) são setadas no service

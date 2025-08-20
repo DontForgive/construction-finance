@@ -4,8 +4,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 public interface ExpenseService {
-    Page<ExpenseDTO> list(Pageable pageable);
+    Page<ExpenseDTO> list(
+            String description,
+            Long supplierId,
+            Long payerId,
+            Long categoryId,
+            String paymentMethod,
+            LocalDate date,
+            Pageable pageable
+    );
     ExpenseDTO findById(Long id);
     ExpenseDTO create(ExpenseCreateDTO dto);
     ExpenseDTO update(Long id, ExpenseUpdateDTO dto);
