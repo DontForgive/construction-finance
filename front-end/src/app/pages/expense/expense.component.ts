@@ -12,6 +12,7 @@ import { PayerService } from "../payer/payer.service";
 import { Category } from "../category/category";
 import { CategoryService } from "../category/category.service";
 import Swal from "sweetalert2";
+import { environment } from "environments/environment";
 
 @Component({
   selector: "app-expense",
@@ -36,6 +37,8 @@ export class ExpenseComponent implements OnInit {
   suppliers: Supplier[] = [];
   payers: Payer[] = [];
   categories: Category[] = [];
+
+  private readonly API = `${environment.API2}`;
 
   constructor(
     private service: ExpenseService,

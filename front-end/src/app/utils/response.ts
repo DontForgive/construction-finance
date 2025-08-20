@@ -14,6 +14,13 @@ export interface ApiResponse<T> {
   erros: any[];
 }
 
+export interface ApiResponseTest<T>{
+    status: number;
+  message: string;
+  data: T;
+  erros: any[];
+}
+
 export interface ApiResponsCreate<T> {
   status: number;
   message: string;

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ApiResponse } from 'app/utils/response';
+import { ApiResponse, ApiResponseTest } from 'app/utils/response';
 import { ToastService } from 'app/utils/toastr';
 import { ExpenseService } from './expense.service';
 import { Expense } from './expense';
@@ -88,15 +88,15 @@ export class ExpenseAddDialogComponent implements OnInit {
     } else {
       // Create expense
       this.service.createExpense(expenseData).subscribe({
-        next: (res: ApiResponse<Expense>) => {
+        next: (res: ApiResponseTest<Expense>) => {
           this.toast.success('Despesa criada com sucesso!');
           this.dialogRef.close(res.data);
-          // if (this.selectedFile) {
-          //   this.uploadAttachment(res.data.id!); // ✅ agora reconhece id
-          // } else {
-          //   this.dialogRef.close(res.data);
+          if (this.selectedFile) {
+            this.uploadAttachment(res.data.id!); // ✅ agora reconhece id
+          } else {
+            this.dialogRef.close(res.data);
           
-          // }
+          }
         },
         error: (err) => {
           this.toast.error('Erro ao criar despesa', 'Erro');

@@ -6,4 +6,5 @@
 export const environment = {
   production: false,
     API: 'http://localhost:9090/',
+    API2:'http://localhost:9090',
 };

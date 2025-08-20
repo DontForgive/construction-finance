@@ -134,6 +134,9 @@
 
                 <td>{{ expense.paymentMethod }}</td>
                 <td class="text-center">
+                  <a *ngIf="expense.attachmentUrl" class="btn btn-sm btn-info me-2" href="{{API}}{{ expense.attachmentUrl}}" target="_blank">
+                    <i class="nc-icon nc-single-copy-04"></i>
+                  </a>
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(expense)" title="Editar">
                     <i class="nc-icon nc-ruler-pencil"></i>
                   </button>

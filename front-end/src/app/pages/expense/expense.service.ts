@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
-import { ApiResponse } from 'app/utils/response';
+import { ApiResponse, ApiResponseTest } from 'app/utils/response';
 import { Expense } from './expense';
 
 @Injectable({
@@ -65,7 +65,7 @@ export class ExpenseService {
   }
 
   createExpense(expense: Expense) {
-  return this.httpClient.post<ApiResponse<Expense>>(
+  return this.httpClient.post<ApiResponseTest<Expense>>(
     `${this.API}expenses`,
     expense,
     { headers: this.getAuthHeaders() }
