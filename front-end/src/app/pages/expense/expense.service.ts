@@ -102,21 +102,21 @@ export class ExpenseService {
     );
   }
 
-  uploadAttachment(expenseId: number, file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
+uploadAttachment(expenseId: number, file: File) {
+  const formData = new FormData();
+  formData.append("file", file); // nome TEM que ser "file"
 
-    const token = this.authService.getToken(); // pega só o token
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
+  return this.httpClient.put<ApiResponse<Expense>>(
+    `${this.API}expenses/${expenseId}/attachment`,
+    formData,
+    {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.authService.getToken()}`
+      })
+    }
+  );
+}
 
-    return this.httpClient.put<ApiResponse<Expense>>(
-      `${this.API}expenses/${expenseId}/attachment`,
-      formData,
-      { headers: this.getAuthHeaders() }
-    );
-  }
 
 
   removeAttachment(expenseId: number) {
