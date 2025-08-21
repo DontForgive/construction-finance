@@ -54,23 +54,35 @@
 
             <!-- Filtro Método de Pagamento -->
             <div class="col-md-3">
-              <mat-form-field appearance="outline" class="w-100">
+              <mat-form-field appearance="outline" class="w-100 mb-3">
                 <mat-label>Método de Pagamento</mat-label>
-                <input matInput id="filterPaymentMethod" placeholder="Pesquisar por método"
-                  [(ngModel)]="filterPaymentMethod" name="filterPaymentMethod">
+                <mat-select matInput id="filterPaymentMethod" [(ngModel)]="filterPaymentMethod">
+                  <mat-option value="PIX">PIX</mat-option>
+                  <mat-option value="BOLETO">Boleto</mat-option>
+                  <mat-option value="TRANSFERENCIA">Transferência</mat-option>
+                  <mat-option value="CARTAO">Cartão</mat-option>
+                </mat-select>
               </mat-form-field>
+
             </div>
+
+
 
             <!-- Filtro Data -->
             <div class="col-md-3">
               <mat-form-field appearance="outline" class="w-100">
-                <mat-label>Data</mat-label>
-                <input matInput [matDatepicker]="picker" placeholder="Selecionar data" [(ngModel)]="filterDate"
-                  name="filterDate">
+                <mat-label>Período</mat-label>
+                <mat-date-range-input [rangePicker]="picker" 
+                  name="dateRange">
+                  <input matStartDate placeholder="Data Inicial" [(ngModel)]="filterStartDate" name="filterStartDate">
+                  <input matEndDate placeholder="Data Final" [(ngModel)]="filterEndDate" name="filterEndDate">
+                </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
+                <mat-date-range-picker #picker></mat-date-range-picker>
               </mat-form-field>
             </div>
+
+
 
 
           </div>
@@ -134,7 +146,8 @@
 
                 <td>{{ expense.paymentMethod }}</td>
                 <td class="text-center">
-                  <a *ngIf="expense.attachmentUrl" class="btn btn-sm btn-info me-2" href="{{API}}{{ expense.attachmentUrl}}" target="_blank">
+                  <a *ngIf="expense.attachmentUrl" class="btn btn-sm btn-info me-2"
+                    href="{{API}}{{ expense.attachmentUrl}}" target="_blank">
                     <i class="nc-icon nc-single-copy-04"></i>
                   </a>
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(expense)" title="Editar">

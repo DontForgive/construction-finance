@@ -15,21 +15,24 @@ import java.time.LocalDate;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("""
-        SELECT e FROM Expense e
-        WHERE (:description IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%')))
-          AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
-          AND (:payerId IS NULL OR e.payer.id = :payerId)
-          AND (:categoryId IS NULL OR e.category.id = :categoryId)
-          AND ((:paymentMethod IS NULL OR :paymentMethod = '') OR e.paymentMethod = :paymentMethod)
-          AND (:date IS NULL OR e.date = :date)
-    """)
+                SELECT e FROM Expense e
+                WHERE (:description IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%')))
+                  AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
+                  AND (:payerId IS NULL OR e.payer.id = :payerId)
+                  AND (:categoryId IS NULL OR e.category.id = :categoryId)
+                  AND ((:paymentMethod IS NULL OR :paymentMethod = '') OR e.paymentMethod = :paymentMethod)
+                    AND (e.date >= COALESCE(:startDate, e.date))
+                   AND (e.date <= COALESCE(:endDate, e.date))
+            """)
     Page<Expense> findByFilters(
             @Param("description") String description,
             @Param("supplierId") Long supplierId,
             @Param("payerId") Long payerId,
             @Param("categoryId") Long categoryId,
             @Param("paymentMethod") String paymentMethod,
-            @Param("date") LocalDate date,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+
 }

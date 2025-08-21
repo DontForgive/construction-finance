@@ -31,7 +31,8 @@ export class ExpenseComponent implements OnInit {
   filterPayerId: number | null = null;
   filterCategoryId: number | null = null;
   filterPaymentMethod: string = "";
-  filterDate: string = "";
+  filterStartDate: string = "";
+  filterEndDate: string = "";
 
   public list_expenses: Expense[] = [];
   suppliers: Supplier[] = [];
@@ -58,29 +59,31 @@ export class ExpenseComponent implements OnInit {
 
   /** Lista com filtros e paginação */
   listExpenses(page: number = 0) {
-    this.currentPage = page;
+  this.currentPage = page;
 
-    this.service
-      .getExpenses(this.currentPage, this.pageSize, "id", "DESC", {
-        description: this.filterDescription,
-        supplierId: this.filterSupplierId,
-        payerId: this.filterPayerId,
-        categoryId: this.filterCategoryId,
-        paymentMethod: this.filterPaymentMethod,
-        date: this.filterDate,
-      })
-      .subscribe({
-        next: (res) => {
-          this.list_expenses = res.data.content;
-          this.totalElements = res.data.totalElements;
-          this.totalPages = res.data.totalPages;
-        },
-        error: (err) => {
-          this.toast.error("Erro ao buscar despesas", "Erro");
-          console.error("Erro ao buscar despesas:", err);
-        },
-      });
-  }
+  this.service
+    .getExpenses(this.currentPage, this.pageSize, "id", "DESC", {
+      description: this.filterDescription,
+      supplierId: this.filterSupplierId,
+      payerId: this.filterPayerId,
+      categoryId: this.filterCategoryId,
+      paymentMethod: this.filterPaymentMethod,
+      startDate: this.filterStartDate, // 🔹 início do período
+      endDate: this.filterEndDate,     // 🔹 fim do período
+    })
+    .subscribe({
+      next: (res) => {
+        this.list_expenses = res.data.content;
+        this.totalElements = res.data.totalElements;
+        this.totalPages = res.data.totalPages;
+      },
+      error: (err) => {
+        this.toast.error("Erro ao buscar despesas", "Erro");
+        console.error("Erro ao buscar despesas:", err);
+      },
+    });
+}
+
 
   /** Abre o dialog para criar uma nova despesa */
   openAddDialog() {
@@ -156,7 +159,8 @@ export class ExpenseComponent implements OnInit {
     this.filterSupplierId = null;
     this.filterPayerId = null;
     this.filterPaymentMethod = "";
-    this.filterDate = "";
+    this.filterStartDate = "";
+    this.filterEndDate = "";
     this.filterCategoryId = null;
     this.listExpenses(0);
   }

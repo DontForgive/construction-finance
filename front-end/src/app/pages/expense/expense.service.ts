@@ -21,6 +21,15 @@ export class ExpenseService {
     });
   }
 
+  private formatDate(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${year}-${month}-${day}`; // 🔹 formato ISO (yyyy-MM-dd)
+  }
+
   getExpenses(
     page: number = 0,
     size: number = 10,
@@ -32,7 +41,8 @@ export class ExpenseService {
       payerId?: number;
       categoryId?: number;
       paymentMethod?: string;
-      date?: string;
+      startDate?: string; 
+      endDate?: string; 
     }
   ) {
     const params: any = {
@@ -45,8 +55,8 @@ export class ExpenseService {
       payerId: '',
       categoryId: '',
       paymentMethod: '',
-      date: '',
-
+      startDate: '',
+      endDate: ''
     };
 
     if (filters) {
@@ -55,7 +65,8 @@ export class ExpenseService {
       if (filters.payerId) params.payerId = filters.payerId;
       if (filters.categoryId) params.categoryId = filters.categoryId;
       if (filters.paymentMethod) params.paymentMethod = filters.paymentMethod;
-      if (filters.date) params.date = filters.date;
+      if (filters.startDate) params.startDate = this.formatDate(filters.startDate);
+      if (filters.endDate) params.endDate = this.formatDate(filters.endDate);
     }
 
     return this.httpClient.get<ApiResponse<Expense>>(`${this.API}expenses`, {
@@ -64,13 +75,14 @@ export class ExpenseService {
     });
   }
 
+
   createExpense(expense: Expense) {
-  return this.httpClient.post<ApiResponseTest<Expense>>(
-    `${this.API}expenses`,
-    expense,
-    { headers: this.getAuthHeaders() }
-  );
-}
+    return this.httpClient.post<ApiResponseTest<Expense>>(
+      `${this.API}expenses`,
+      expense,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 
 
 

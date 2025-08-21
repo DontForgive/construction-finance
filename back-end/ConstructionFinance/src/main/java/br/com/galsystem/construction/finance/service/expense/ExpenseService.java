@@ -13,7 +13,8 @@ public interface ExpenseService {
             Long payerId,
             Long categoryId,
             String paymentMethod,
-            LocalDate date,
+            LocalDate startDate,
+            LocalDate endDate,
             Pageable pageable
     );
     ExpenseDTO findById(Long id);

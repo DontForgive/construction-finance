@@ -29,7 +29,7 @@ public class ExpenseController {
     private final ExpenseService service;
 
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<Response<Page<ExpenseDTO>>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -40,21 +40,40 @@ public class ExpenseController {
             @RequestParam(required = false) Long payerId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String paymentMethod,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate
     ) {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), 100);
+
         Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<ExpenseDTO> result = service.list(description, supplierId, payerId, categoryId, paymentMethod, date, pageable);
+
+        Page<ExpenseDTO> result = service.list(
+                description, supplierId, payerId, categoryId,
+                paymentMethod, startDate, endDate, pageable
+        );
 
         Response<Page<ExpenseDTO>> resp = new Response<>();
         resp.setStatus(200);
         resp.setMessage("Lista de despesas");
         resp.setData(result);
+
         return ResponseEntity.ok(resp);
     }
+
+
+
+    @GetMapping("/data")
+    public ResponseEntity<?> list(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate
+    ) {
+        // ✅ Aqui já chega convertido automaticamente
+        return ResponseEntity.ok("Start: " + startDate + " | End: " + endDate);
+    }
+
 
 
 
