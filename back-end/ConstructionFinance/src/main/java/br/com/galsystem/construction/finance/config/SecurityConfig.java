@@ -81,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/files/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/files/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/expenses/*/attachment").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/", "/index.html", "/index").permitAll()
                         .requestMatchers("/categories").permitAll()
