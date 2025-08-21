@@ -51,6 +51,8 @@ public class SecurityConfig {
         // use UMA lista; evite múltiplas chamadas que se sobrescrevem
         cfg.setAllowedOrigins(List.of(
                 "https://apiconstrucao.galsystems.com.br",
+                "https://construcao.galsystems.com.br",
+                "http://construcao.galsystems.com.br",
                 "http://localhost:9090",
                 "http://localhost:4200"
                 // adicione outras origens se precisar
