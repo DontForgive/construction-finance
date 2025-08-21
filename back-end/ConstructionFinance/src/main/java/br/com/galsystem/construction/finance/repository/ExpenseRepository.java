@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
@@ -34,5 +35,36 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+
+    // Total por categoria
+    @Query("SELECT e.category.name, SUM(e.amount) " +
+            "FROM Expense e " +
+            "GROUP BY e.category.name")
+    List<Object[]> getTotalByCategory();
+
+    // Total por mês
+    @Query("SELECT FUNCTION('MONTH', e.date), SUM(e.amount) " +
+            "FROM Expense e " +
+            "GROUP BY FUNCTION('MONTH', e.date) " +
+            "ORDER BY FUNCTION('MONTH', e.date)")
+    List<Object[]> getTotalByMonth();
+
+    // Total por fornecedor
+    @Query("SELECT e.supplier.name, SUM(e.amount) " +
+            "FROM Expense e " +
+            "GROUP BY e.supplier.name")
+    List<Object[]> getTotalBySupplier();
+
+    // Total por forma de pagamento
+    @Query("SELECT e.paymentMethod, SUM(e.amount) " +
+            "FROM Expense e " +
+            "GROUP BY e.paymentMethod")
+    List<Object[]> getTotalByPaymentMethod();
+
+    // Total por pagador
+    @Query("SELECT e.payer.name, SUM(e.amount) " +
+            "FROM Expense e " +
+            "GROUP BY e.payer.name")
+    List<Object[]> getTotalByPayer();
 
 }
