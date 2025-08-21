@@ -114,10 +114,9 @@ export class ExpenseService {
     return this.httpClient.put<ApiResponse<Expense>>(
       `${this.API}expenses/${expenseId}/attachment`,
       formData,
-      { headers }
+      { headers: this.getAuthHeaders() }
     );
   }
-
 
 
   removeAttachment(expenseId: number) {
