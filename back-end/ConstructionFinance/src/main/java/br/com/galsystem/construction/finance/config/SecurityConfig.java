@@ -84,7 +84,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/expenses/*/attachment").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/", "/index.html", "/index").permitAll()
-                        .requestMatchers("/categories").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
