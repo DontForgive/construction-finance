@@ -25,6 +25,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MAT_DATE_LOCALE, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
 
 
 
@@ -52,6 +53,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatOptionModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatCardModule
 
   ],
   declarations: [

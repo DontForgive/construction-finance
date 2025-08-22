@@ -1,171 +1,188 @@
-<!-- <div class="row">
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card card-stats">
-      <div class="card-body ">
-        <div class="row">
-          <div class="col-5 col-md-4">
-            <div class="icon-big text-center icon-warning">
-              <i class="nc-icon nc-globe text-warning"></i>
-            </div>
+<div class="container-fluid mt-3">
+
+  <!-- 🔹 Filtros -->
+  <mat-card class="mb-4 shadow-sm">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon color="primary" class="me-2">filter_alt</mat-icon>
+        Filtros
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="row g-3">
+
+        <!-- Data (range) -->
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Período</mat-label>
+            <mat-date-range-input [formGroup]="filterForm" [rangePicker]="picker">
+              <input matStartDate formControlName="startDate" placeholder="Início">
+              <input matEndDate formControlName="endDate" placeholder="Fim">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+
+        <!-- Categoria -->
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Categoria</mat-label>
+            <mat-select formControlName="categoryId">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Fornecedor -->
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fornecedor</mat-label>
+            <mat-select formControlName="supplierId">
+              <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                {{ supplier.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Pagador -->
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Pagador</mat-label>
+            <mat-select formControlName="payerId">
+              <mat-option *ngFor="let payer of payers" [value]="payer.id">
+                {{ payer.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="row justify-content-end">
+
+          <!-- Botão aplicar -->
+          <div class="col-md-2 d-flex align-items-center">
+            <button mat-raised-button color="primary" type="submit" class="w-100">
+              <mat-icon class="me-1">search</mat-icon>
+              Aplicar
+            </button>
           </div>
-          <div class="col-7 col-md-8">
-            <div class="numbers">
-              <p class="card-category">Capacity</p>
-              <p class="card-title">150GB
-                <p>
+
+          <!-- Botão limpar -->
+          <div class="col-md-2 d-flex align-items-center">
+            <button mat-raised-button color="warn" type="button" class="w-100" (click)="onClear()">
+              <mat-icon class="me-1">clear</mat-icon>
+              Limpar
+            </button>
+          </div>
+
+        </div>
+
+
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- 🔹 KPIs -->
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let kpi of kpis">
+      <div class="card card-stats">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5 col-md-4">
+              <div class="icon-big text-center" [ngClass]="kpi.iconColor">
+                <i class="{{ kpi.icon }}"></i>
+              </div>
+            </div>
+            <div class="col-7 col-md-8">
+              <div class="numbers">
+                <p class="card-category">{{ kpi.label }}</p>
+                <p class="card-title">{{ kpi.value }}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="card-footer ">
-        <hr>
-        <div class="stats">
-          <i class="fa fa-refresh"></i> Update Now
+        <div class="card-footer">
+          <hr>
+          <div class="stats">
+            <i class="fa fa-refresh"></i> {{ kpi.footer }}
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card card-stats">
-      <div class="card-body ">
-        <div class="row">
-          <div class="col-5 col-md-4">
-            <div class="icon-big text-center icon-warning">
-              <i class="nc-icon nc-money-coins text-success"></i>
-            </div>
-          </div>
-          <div class="col-7 col-md-8">
-            <div class="numbers">
-              <p class="card-category">Revenue</p>
-              <p class="card-title">$ 1,345
-                <p>
-            </div>
-          </div>
+
+  <!-- 🔹 Gráficos -->
+  <div class="row mt-4">
+    <!-- Categoria -->
+    <div class="col-md-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-title">Despesas por Categoria</h5>
+          <p class="card-category">Distribuição por categorias</p>
+        </div>
+        <div class="card-body">
+          <canvas id="chartCategory"></canvas>
         </div>
       </div>
-      <div class="card-footer ">
-        <hr>
-        <div class="stats">
-          <i class="fa fa-calendar-o"></i> Last day
+    </div>
+
+    <!-- Método de Pagamento -->
+    <div class="col-md-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-title">Despesas por Método de Pagamento</h5>
+          <p class="card-category">Formas de pagamento utilizadas</p>
+        </div>
+        <div class="card-body">
+          <canvas id="chartPaymentMethod"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mês -->
+    <div class="col-md-4">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-title">Despesas por Mês</h5>
+          <p class="card-category">Evolução mensal</p>
+        </div>
+        <div class="card-body">
+          <canvas id="chartMonth"></canvas>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card card-stats">
-      <div class="card-body ">
-        <div class="row">
-          <div class="col-5 col-md-4">
-            <div class="icon-big text-center icon-warning">
-              <i class="nc-icon nc-vector text-danger"></i>
-            </div>
-          </div>
-          <div class="col-7 col-md-8">
-            <div class="numbers">
-              <p class="card-category">Errors</p>
-              <p class="card-title">23
-                <p>
-            </div>
-          </div>
+
+  <div class="row mt-4">
+    <!-- Fornecedor -->
+    <div class="col-md-6">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-title">Despesas por Fornecedor</h5>
+          <p class="card-category">Top fornecedores</p>
+        </div>
+        <div class="card-body">
+          <canvas id="chartSupplier"></canvas>
         </div>
       </div>
-      <div class="card-footer ">
-        <hr>
-        <div class="stats">
-          <i class="fa fa-clock-o"></i> In the last hour
+    </div>
+
+    <!-- Pagador -->
+    <div class="col-md-6">
+      <div class="card card-chart">
+        <div class="card-header">
+          <h5 class="card-title">Despesas por Pagador</h5>
+          <p class="card-category">Quem realizou os pagamentos</p>
+        </div>
+        <div class="card-body">
+          <canvas id="chartPayer"></canvas>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card card-stats">
-      <div class="card-body ">
-        <div class="row">
-          <div class="col-5 col-md-4">
-            <div class="icon-big text-center icon-warning">
-              <i class="nc-icon nc-favourite-28 text-primary"></i>
-            </div>
-          </div>
-          <div class="col-7 col-md-8">
-            <div class="numbers">
-              <p class="card-category">Followers</p>
-              <p class="card-title">+45K
-                <p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-footer ">
-        <hr>
-        <div class="stats">
-          <i class="fa fa-refresh"></i> Update now
-        </div>
-      </div>
-    </div>
-  </div>
+
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="card ">
-      <div class="card-header ">
-        <h5 class="card-title">Users Behavior</h5>
-        <p class="card-category">24 Hours performance</p>
-      </div>
-      <div class="card-body ">
-        <canvas id=chartHours width="400" height="100"></canvas>
-      </div>
-      <div class="card-footer ">
-        <hr>
-        <div class="stats">
-          <i class="fa fa-history"></i> Updated 3 minutes ago
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-4">
-    <div class="card ">
-      <div class="card-header ">
-        <h5 class="card-title">Email Statistics</h5>
-        <p class="card-category">Last Campaign Performance</p>
-      </div>
-      <div class="card-body ">
-        <canvas id="chartEmail"></canvas>
-      </div>
-      <div class="card-footer ">
-        <div class="legend">
-          <i class="fa fa-circle text-primary"></i> Opened
-          <i class="fa fa-circle text-warning"></i> Read
-          <i class="fa fa-circle text-danger"></i> Deleted
-          <i class="fa fa-circle text-gray"></i> Unopened
-        </div>
-        <hr>
-        <div class="stats">
-          <i class="fa fa-calendar"></i> Number of emails sent
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-8">
-    <div class="card card-chart">
-      <div class="card-header">
-        <h5 class="card-title">NASDAQ: AAPL</h5>
-        <p class="card-category">Line Chart with Points</p>
-      </div>
-      <div class="card-body">
-        <canvas id="speedChart" width="400" height="100"></canvas>
-      </div>
-      <div class="card-footer">
-        <div class="chart-legend">
-          <i class="fa fa-circle text-info"></i> Tesla Model S
-          <i class="fa fa-circle text-warning"></i> BMW 5 Series
-        </div>
-        <hr/>
-        <div class="card-stats">
-          <i class="fa fa-check"></i> Data information certified
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

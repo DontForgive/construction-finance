@@ -1,209 +1,264 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import Chart from 'chart.js';
-
+import { ExpenseReportService, ChartDataDTO } from './expense-report.service';
+import { Supplier } from '../supplier/supplier';
+import { Payer } from '../payer/Payer';
+import { Category } from '../category/category';
+import { SupplierService } from '../supplier/supplier.service';
+import { PayerService } from '../payer/payer.service';
+import { CategoryService } from '../category/category.service';
+import { ToastService } from 'app/utils/toastr';
 
 @Component({
-    selector: 'dashboard-cmp',
-    moduleId: module.id,
-    templateUrl: 'dashboard.component.html'
+  selector: 'dashboard-cmp',
+  moduleId: module.id,
+  templateUrl: 'dashboard.component.html'
 })
+export class DashboardComponent implements OnInit {
 
-export class DashboardComponent implements OnInit{
+  public chartCategory: any;
+  public chartPaymentMethod: any;
+  public chartMonth: any;
+  public chartSupplier: any;
+  public chartPayer: any;
+  public ctx: any;
 
-  public canvas : any;
-  public ctx;
-  public chartColor;
-  public chartEmail;
-  public chartHours;
+  filterForm: FormGroup;
 
-    ngOnInit(){
-      this.chartColor = "#FFFFFF";
+  // KPIs (valores mockados, depois você pode ligar ao backend)
+  kpis = [
+    { label: 'Total Despesas', value: 'R$ 0,00', icon: 'nc-icon nc-money-coins text-success', footer: 'Total geral de despesas' },
+    { label: 'Pagadores', value: '0', icon: 'nc-icon nc-single-02 text-info', footer: 'Usuários ativos' },
+    { label: 'Fornecedores', value: '0', icon: 'nc-icon nc-shop text-warning', footer: 'Cadastrados' },
+    { label: 'Categorias', value: '0', icon: 'nc-icon nc-tag-content text-danger', footer: 'Categorias de despesa' }
+  ];
 
-      this.canvas = document.getElementById("chartHours");
-      this.ctx = this.canvas.getContext("2d");
+  // Mock de dados (substituir por chamadas de serviço depois)
+  suppliers: Supplier[] = [];
+  payers: Payer[] = [];
+  categories: Category[] = [];
 
-      this.chartHours = new Chart(this.ctx, {
-        type: 'line',
+  constructor(
+    private fb: FormBuilder,
+    private reportService: ExpenseReportService,
+    private supplierService: SupplierService,
+    private payerService: PayerService,
+    private categoryService: CategoryService,
+    private toast: ToastService
+  ) {
+    this.filterForm = this.fb.group({
+      startDate: [null],
+      endDate: [null],
+      categoryId: [null],
+      supplierId: [null],
+      payerId: [null]
+    });
+  }
 
-        data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-          datasets: [{
-              borderColor: "#6bd098",
-              backgroundColor: "#6bd098",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
-            },
-            {
-              borderColor: "#f17e5d",
-              backgroundColor: "#f17e5d",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
-            },
-            {
-              borderColor: "#fcc468",
-              backgroundColor: "#fcc468",
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              borderWidth: 3,
-              data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
-            }
-          ]
-        },
-        options: {
-          legend: {
-            display: false
-          },
+  ngOnInit() {
+    this.loadAllCharts();
+    this.loadKpis();
+    this.loadPayers();
+    this.loadSuppliers();
+    this.loadCategories();
+  }
 
-          tooltips: {
-            enabled: false
-          },
+  onClear(): void {
+    this.filterForm.reset();  
+    this.loadAllCharts();
 
-          scales: {
-            yAxes: [{
-
-              ticks: {
-                fontColor: "#9f9f9f",
-                beginAtZero: false,
-                maxTicksLimit: 5,
-                //padding: 20
-              },
-              gridLines: {
-                drawBorder: false,
-                zeroLineColor: "#ccc",
-                color: 'rgba(255,255,255,0.05)'
-              }
-
-            }],
-
-            xAxes: [{
-              barPercentage: 1.6,
-              gridLines: {
-                drawBorder: false,
-                color: 'rgba(255,255,255,0.1)',
-                zeroLineColor: "transparent",
-                display: false,
-              },
-              ticks: {
-                padding: 20,
-                fontColor: "#9f9f9f"
-              }
-            }]
-          },
-        }
-      });
+}
 
 
-      this.canvas = document.getElementById("chartEmail");
-      this.ctx = this.canvas.getContext("2d");
-      this.chartEmail = new Chart(this.ctx, {
+  /** Aplica os filtros e recarrega gráficos */
+  applyFilters() {
+    this.loadAllCharts();
+  }
+
+  /** 🔹 Carrega todos os gráficos */
+  private loadAllCharts() {
+    this.loadCategoryChart();
+    this.loadPaymentMethodChart();
+    this.loadMonthChart();
+    this.loadSupplierChart();
+    this.loadPayerChart();
+  }
+
+  /** 🔹 Monta filtros */
+  private getFilters() {
+    const f = this.filterForm.value;
+    return {
+      start: f.startDate,
+      end: f.endDate,
+      categoryId: f.categoryId,
+      supplierId: f.supplierId,
+      payerId: f.payerId
+    };
+  }
+
+  /** 🔹 KPI mockado (pode puxar de API depois) */
+  private loadKpis() {
+  this.reportService.getKpis(this.getFilters()).subscribe(data => {
+    this.kpis[0].value = `R$ ${data.totalExpenses.toFixed(2)}`;
+    this.kpis[1].value = data.totalPayers;
+    this.kpis[2].value = data.totalSuppliers;
+    this.kpis[3].value = data.totalCategories;
+  });
+}
+
+
+  /** 🔹 Gráfico por Categoria */
+  private loadCategoryChart() {
+    this.reportService.getByCategory(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
+
+      this.ctx = document.getElementById('chartCategory');
+      if (this.chartCategory) this.chartCategory.destroy();
+
+      this.chartCategory = new Chart(this.ctx, {
         type: 'pie',
         data: {
-          labels: [1, 2, 3],
+          labels,
           datasets: [{
-            label: "Emails",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            backgroundColor: [
-              '#e3e3e3',
-              '#4acccd',
-              '#fcc468',
-              '#ef8157'
-            ],
+            backgroundColor: ['#e3e3e3', '#4acccd', '#fcc468', '#ef8157', '#6bd098'],
             borderWidth: 0,
-            data: [342, 480, 530, 120]
+            data: values
           }]
         },
-
-        options: {
-
-          legend: {
-            display: false
-          },
-
-          pieceLabel: {
-            render: 'percentage',
-            fontColor: ['white'],
-            precision: 2
-          },
-
-          tooltips: {
-            enabled: false
-          },
-
-          scales: {
-            yAxes: [{
-
-              ticks: {
-                display: false
-              },
-              gridLines: {
-                drawBorder: false,
-                zeroLineColor: "transparent",
-                color: 'rgba(255,255,255,0.05)'
-              }
-
-            }],
-
-            xAxes: [{
-              barPercentage: 1.6,
-              gridLines: {
-                drawBorder: false,
-                color: 'rgba(255,255,255,0.1)',
-                zeroLineColor: "transparent"
-              },
-              ticks: {
-                display: false,
-              }
-            }]
-          },
-        }
+        options: { legend: { display: true } }
       });
+    });
+  }
 
-      var speedCanvas = document.getElementById("speedChart");
+  /** 🔹 Gráfico por Método de Pagamento */
+  private loadPaymentMethodChart() {
+    this.reportService.getByPaymentMethod(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
 
-      var dataFirst = {
-        data: [0, 19, 15, 20, 30, 40, 40, 50, 25, 30, 50, 70],
-        fill: false,
-        borderColor: '#fbc658',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#fbc658',
-        pointRadius: 4,
-        pointHoverRadius: 4,
-        pointBorderWidth: 8,
-      };
+      this.ctx = document.getElementById('chartPaymentMethod');
+      if (this.chartPaymentMethod) this.chartPaymentMethod.destroy();
 
-      var dataSecond = {
-        data: [0, 5, 10, 12, 20, 27, 30, 34, 42, 45, 55, 63],
-        fill: false,
-        borderColor: '#51CACF',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#51CACF',
-        pointRadius: 4,
-        pointHoverRadius: 4,
-        pointBorderWidth: 8
-      };
+      this.chartPaymentMethod = new Chart(this.ctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [{
+            backgroundColor: ['#51CACF', '#fbc658', '#ef8157', '#6bd098'],
+            borderWidth: 0,
+            data: values
+          }]
+        },
+        options: { legend: { display: true } }
+      });
+    });
+  }
 
-      var speedData = {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [dataFirst, dataSecond]
-      };
+  /** 🔹 Gráfico por Mês */
+  private loadMonthChart() {
+    this.reportService.getByMonth(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
 
-      var chartOptions = {
-        legend: {
-          display: false,
-          position: 'top'
-        }
-      };
+      this.ctx = document.getElementById('chartMonth');
+      if (this.chartMonth) this.chartMonth.destroy();
 
-      var lineChart = new Chart(speedCanvas, {
+      this.chartMonth = new Chart(this.ctx, {
         type: 'line',
-        hover: false,
-        data: speedData,
-        options: chartOptions
+        data: {
+          labels,
+          datasets: [{
+            label: 'Despesas por mês',
+            borderColor: '#6bd098',
+            backgroundColor: 'transparent',
+            borderWidth: 3,
+            data: values
+          }]
+        },
+        options: {
+          legend: { display: true },
+          scales: {
+            yAxes: [{ ticks: { beginAtZero: true } }],
+            xAxes: [{ ticks: { autoSkip: true, maxTicksLimit: 12 } }]
+          }
+        }
       });
-    }
+    });
+  }
+
+  /** 🔹 Gráfico por Fornecedor */
+  private loadSupplierChart() {
+    this.reportService.getBySupplier(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
+
+      this.ctx = document.getElementById('chartSupplier');
+      if (this.chartSupplier) this.chartSupplier.destroy();
+
+      this.chartSupplier = new Chart(this.ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Despesas por fornecedor',
+            backgroundColor: '#f17e5d',
+            data: values
+          }]
+        },
+        options: { legend: { display: false } }
+      });
+    });
+  }
+
+  /** 🔹 Gráfico por Pagador */
+  private loadPayerChart() {
+    this.reportService.getByPayer(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
+
+      this.ctx = document.getElementById('chartPayer');
+      if (this.chartPayer) this.chartPayer.destroy();
+
+      this.chartPayer = new Chart(this.ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Despesas por pagador',
+            backgroundColor: '#fcc468',
+            data: values
+          }]
+        },
+        options: { legend: { display: false } }
+      });
+    });
+  }
+
+    loadSuppliers() {
+    this.supplierService.getSuppliers(0, 100).subscribe({
+      next: (res) => (this.suppliers = res.data.content),
+      error: (err) => console.error("Erro ao carregar fornecedores:", err),
+    });
+  }
+
+  loadPayers() {
+    this.payerService.getPayers(0, 100).subscribe({
+      next: (res) => (this.payers = res.data.content),
+      error: (err) => console.error("Erro ao carregar pagadores:", err),
+    });
+  }
+
+  loadCategories() {
+    this.categoryService.getCategories(0, 100, "id", "ASC").subscribe({
+      next: (res) => {
+        this.categories = res.data.content;
+      },
+      error: (err) => {
+        this.toast.error("Erro ao carregar categorias", "Erro");
+        console.error(err);
+      },
+    });
+  }
 }
