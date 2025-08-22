@@ -46,6 +46,10 @@ dependencies {
     // Integração Lombok + MapStruct (evita problemas de detecção de getters/setters)
     annotationProcessor  'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
+    // cachê
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
     implementation 'commons-io:commons-io:2.16.1'
     implementation platform("org.springdoc:springdoc-openapi-bom:2.8.9")
 

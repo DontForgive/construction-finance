@@ -11,6 +11,7 @@ import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
 import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -36,6 +37,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("ExpenseList")
     public Page<ExpenseDTO> list(
             String description,
             Long supplierId,
@@ -57,6 +59,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("ExpenseFindById")
     public ExpenseDTO findById(Long id) {
         Expense entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

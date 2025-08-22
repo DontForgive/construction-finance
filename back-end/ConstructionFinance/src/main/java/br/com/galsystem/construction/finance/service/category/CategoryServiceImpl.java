@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("categorylist")
     public Page<CategoryDTO> list(String name, String description, Pageable pageable) {
         return repository.findByFilters(name, description, pageable)
                 .map(mapper::toDTO);
@@ -30,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("categoryfindById")
     public CategoryDTO findById(Long id) {
         Category entity = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Categoria com ID %d não encontrada".formatted(id)));
