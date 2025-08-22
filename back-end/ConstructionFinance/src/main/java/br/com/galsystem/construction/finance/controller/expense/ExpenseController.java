@@ -29,7 +29,7 @@ public class ExpenseController {
     private final ExpenseService service;
 
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Response<Page<ExpenseDTO>>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -64,7 +64,6 @@ public class ExpenseController {
     }
 
 
-
     @GetMapping("/data")
     public ResponseEntity<?> list(
             @RequestParam(required = false) LocalDate startDate,
@@ -73,8 +72,6 @@ public class ExpenseController {
         // ✅ Aqui já chega convertido automaticamente
         return ResponseEntity.ok("Start: " + startDate + " | End: " + endDate);
     }
-
-
 
 
     @GetMapping("/{id}")

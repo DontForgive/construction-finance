@@ -53,8 +53,8 @@ export class SupplierComponent implements OnInit {
         this.totalPages = res.data.totalPages;
       },
       (error) => {
-        this.toast.error('Erro ao buscar fornecedores \n' + error, "Error");
-        console.error('Erro ao buscar fornecedores:', error);
+        this.toast.error('Erro ao buscar fornecedores \n' + error.message, "Error");
+        console.error('Erro ao buscar fornecedores:', error.message);
       }
     );
   }

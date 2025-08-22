@@ -21,7 +21,7 @@ public class CategoryController {
 
     private final CategoryService service;
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Response<Page<CategoryDTO>>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -50,7 +50,7 @@ public class CategoryController {
         return ResponseEntity.ok(new Response<>(200, "Categoria encontrada", dto));
     }
 
-    @PostMapping("  ")
+    @PostMapping
     public ResponseEntity<Response<CategoryDTO>> create(@Valid @RequestBody CategoryCreateDTO dto) {
         CategoryDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED)

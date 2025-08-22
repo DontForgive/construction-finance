@@ -58,7 +58,6 @@ public class SecurityConfig {
                 "https://apiconstrucao.galsystems.com.br:9090",
                 "https://construcao.galsystems.com.br",
                 "http://construcao.galsystems.com.br"
-                // adicione outras origens se precisar
         ));
         // Se precisar de curingas com credentials:
         // cfg.setAllowedOriginPatterns(List.of("https://*.galsystems.com.br","http://localhost:*","https://localhost:*"));
