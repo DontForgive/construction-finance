@@ -19,7 +19,6 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 
         System.out.println("➡️ " + request.getMethod() + " " + request.getRequestURI());
 
-        // Loga todos os headers recebidos
         Collections.list(request.getHeaderNames())
                 .forEach(header -> System.out.println(header + ": " + request.getHeader(header)));
 
