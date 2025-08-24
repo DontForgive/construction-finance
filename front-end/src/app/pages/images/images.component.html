@@ -1,0 +1,53 @@
+<div class="gallery-container mat-elevation-z2">
+
+  <!-- Header -->
+  <div class="gallery-header">
+    <h2><mat-icon>photo_library</mat-icon> Galeria</h2>
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      <mat-icon>cloud_upload</mat-icon>
+      Enviar Foto
+    </button>
+    <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
+  </div>
+
+  <!-- Navegação de pastas -->
+  <div class="breadcrumb" *ngIf="selectedYear || selectedMonth">
+    <span class="breadcrumb-link" (click)="backToYears()">Anos</span>
+    <span *ngIf="selectedYear"> / 
+      <span class="breadcrumb-link" (click)="backToMonths()">{{ selectedYear }}</span>
+    </span>
+    <span *ngIf="selectedMonth"> / {{ selectedMonth }}</span>
+  </div>
+
+  <!-- Lista de anos -->
+  <div class="folders" *ngIf="!selectedYear">
+    <div class="folder" *ngFor="let year of years" (click)="openYear(year)">
+      <mat-icon>folder</mat-icon>
+      <span>{{ year }}</span>
+    </div>
+  </div>
+
+  <!-- Lista de meses -->
+  <div class="folders" *ngIf="selectedYear && !selectedMonth">
+    <div class="folder" *ngFor="let month of months" (click)="openMonth(month)">
+      <mat-icon>folder</mat-icon>
+      <span>{{ monthNames[month-1] }}</span>
+    </div>
+  </div>
+
+  <!-- Galeria de fotos -->
+  <div class="gallery-grid" *ngIf="selectedYear && selectedMonth && photos.length > 0">
+    <div class="gallery-item" *ngFor="let photo of photos" (click)="openPhoto(photo)">
+      <img [src]="apiUrl + photo.url" [alt]="photo.filename" loading="lazy" />
+      <div class="overlay">
+        <span>{{ photo.uploadedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caso não tenha fotos -->
+  <div class="empty-state" *ngIf="selectedYear && selectedMonth && photos.length === 0">
+    <mat-icon>photo_library</mat-icon>
+    <p>Nenhuma foto encontrada</p>
+  </div>
+</div>

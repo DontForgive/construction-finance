@@ -1,0 +1,5 @@
+export interface PhotoDTO {
+  filename: string;
+  url: string;
+  uploadedAt: string;
+}

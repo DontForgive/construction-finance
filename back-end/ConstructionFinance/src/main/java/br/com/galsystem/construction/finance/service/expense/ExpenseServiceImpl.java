@@ -156,18 +156,15 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Despesa com ID %d não encontrada".formatted(id)));
 
-        // (opcional) garantir que a despesa pertence ao usuário autenticado
         Long uid = currentUser.id();
         if (!entity.getUser().getId().equals(uid)) {
             throw new AccessDeniedException("Acesso negado");
         }
 
-        // apaga o arquivo antigo se existir
         if (entity.getAttachmentUrl() != null && !entity.getAttachmentUrl().isBlank()) {
             storageService.deleteByPublicUrl(entity.getAttachmentUrl());
         }
 
-        // salva novo arquivo e atualiza a URL
         String url = storageService.store(UploadArea.EXPENSES, file);
         entity.setAttachmentUrl(url);
 

@@ -26,6 +26,8 @@ import { MAT_DATE_LOCALE, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
+import { ImagesComponent } from 'app/pages/images/images.component';
+import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 
 
 
@@ -53,7 +55,8 @@ import { MatCardModule } from '@angular/material/card';
     MatOptionModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCardModule
+    MatCardModule,
+    
 
   ],
   declarations: [
@@ -69,6 +72,8 @@ import { MatCardModule } from '@angular/material/card';
     PayerAddDialogComponent,
     ExpenseComponent,
     ExpenseAddDialogComponent,
+    ImagesComponent,
+    PhotoDialogComponent
     
 
   ],

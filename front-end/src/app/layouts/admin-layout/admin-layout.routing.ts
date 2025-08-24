@@ -6,6 +6,7 @@ import { AuthGuard } from 'app/pages/login/auth.guard';
 import { SupplierComponent } from 'app/pages/supplier/supplier.component';
 import { PayerComponent } from 'app/pages/payer/payer.component';
 import { ExpenseComponent } from 'app/pages/expense/expense.component';
+import { ImagesComponent } from 'app/pages/images/images.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuard]  },
@@ -13,5 +14,6 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'supplier',       component: SupplierComponent,  canActivate: [AuthGuard]  },
     { path: 'payer',          component: PayerComponent,     canActivate: [AuthGuard]  },
     { path: 'expense',        component: ExpenseComponent,   canActivate: [AuthGuard]  },
-    { path: '**', redirectTo: 'dashboard' }
+    { path: 'images',         component: ImagesComponent,    canActivate: [AuthGuard]  },
+    { path: '**', redirectTo: 'dashboard' } 
 ];
