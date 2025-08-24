@@ -88,7 +88,10 @@ export class ImagesComponent implements OnInit {
   }
 
   openPhoto(photo: PhotoDTO): void {
-    // aqui você pode abrir um MatDialog para exibir a foto em tela cheia
-    console.log('Abrir foto:', photo);
-  }
+  this.dialog.open(PhotoDialogComponent, {
+    data: photo,
+    panelClass: 'photo-dialog'
+  });
+}
+
 }
