@@ -40,6 +40,8 @@
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
     "ngx-toastr": "14.3.0",
+    "primeicons": "^6.0.1",
+    "primeng": "^14.2.3",
     "rxjs": "~7.5.0",
     "sweetalert2": "^11.22.4",
     "web-animations-js": "2.3.2",

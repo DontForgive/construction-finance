@@ -13,4 +13,7 @@ public class PhotoDTO {
     private String filename;
     private String url;
     private LocalDateTime uploadedAt;
+    private String type;
+    private String mimeType;
+
 }

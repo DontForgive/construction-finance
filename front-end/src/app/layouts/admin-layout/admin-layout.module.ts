@@ -28,6 +28,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { ImagesComponent } from 'app/pages/images/images.component';
 import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
+import { GalleriaModule } from 'primeng/galleria';
 
 
 
@@ -56,6 +57,7 @@ import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
+    GalleriaModule
     
 
   ],

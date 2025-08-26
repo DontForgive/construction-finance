@@ -12,7 +12,7 @@ import { environment } from 'environments/environment';
 })
 export class ImagesComponent implements OnInit {
 
-  
+
   apiUrl = environment.API_NO_BAR;
   years: number[] = [];
   months: number[] = [];
@@ -21,15 +21,19 @@ export class ImagesComponent implements OnInit {
   selectedYear: number | null = null;
   selectedMonth: number | null = null;
 
+  displayFullscreen: boolean = false;
+  activeIndex: number = 0;
+
   monthNames = [
-    'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-    'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ];
 
-  constructor(private imagesService: ImagesService, private dialog: MatDialog) {}
+  constructor(private imagesService: ImagesService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.loadYears();
+    
   }
 
   loadYears(): void {
@@ -42,19 +46,30 @@ export class ImagesComponent implements OnInit {
   openYear(year: number): void {
     this.selectedYear = year;
     this.imagesService.listMonths(year).subscribe({
-      next: (res) => this.months = res.data,
+      next: (res) => (this.months = res.data, console.log("data: ", res.data)), // ⚠️ se sua API também retorna wrapper, use res.data
       error: (err) => console.error(err)
     });
   }
 
   openMonth(month: number): void {
+
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+
     if (!this.selectedYear) return;
     this.selectedMonth = month;
     this.imagesService.listPhotos(this.selectedYear, month).subscribe({
-      next: (res) => this.photos = res.data,
+      next: (res) => {
+        this.photos = res.data.map(item => {
+          console.log("item.url: ", item.url);
+          const lower = item.url.toLowerCase();
+          const isVideo = videoExtensions.some(ext => lower.endsWith(ext));
+          return { ...item, type: isVideo ? 'video' : 'photo' };
+        });
+      },
       error: (err) => console.error(err)
     });
   }
+
 
   backToYears(): void {
     this.selectedYear = null;
@@ -87,11 +102,10 @@ export class ImagesComponent implements OnInit {
     });
   }
 
-  openPhoto(photo: PhotoDTO): void {
-  this.dialog.open(PhotoDialogComponent, {
-    data: photo,
-    panelClass: 'photo-dialog'
-  });
-}
+  openPhoto(index: number): void {
+    this.activeIndex = index;
+    this.displayFullscreen = true;
+  }
+
 
 }

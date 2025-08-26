@@ -42,9 +42,19 @@ public class PhotoServiceImpl implements PhotoService {
             FileTime fileTime = Files.getLastModifiedTime(path);
             LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
 
+            String fileName = path.getFileName().toString();
+            String fileType = "";
+            String mimeType = Files.probeContentType(path);
+
+
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                fileType = fileName.substring(dotIndex + 1).toLowerCase();
+            }
+
             return new PhotoDTO(filename,
                     "/files/images/" + year + "/" + month + "/" + filename,
-                    uploadedAt);
+                    uploadedAt, fileType, mimeType);
         } catch (IOException e) {
             throw new RuntimeException("Erro ao salvar foto", e);
         }
@@ -88,9 +98,21 @@ public class PhotoServiceImpl implements PhotoService {
                         try {
                             FileTime fileTime = Files.getLastModifiedTime(path);
                             LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+
+                            String fileName = path.getFileName().toString();
+                            String fileType = "";
+                            String mimeType = Files.probeContentType(path);
+
+
+                            int dotIndex = fileName.lastIndexOf('.');
+                            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                                fileType = fileName.substring(dotIndex + 1).toLowerCase();
+                            }
+
+
                             return new PhotoDTO(
                                     path.getFileName().toString(),"/files/images/" + year + "/" + String.format("%02d", month) + "/" + path.getFileName(),
-                                    uploadedAt
+                                    uploadedAt, fileType, mimeType
                             );
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -117,10 +139,20 @@ public class PhotoServiceImpl implements PhotoService {
                             FileTime fileTime = Files.getLastModifiedTime(path);
                             LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
 
+                            String fileName = path.getFileName().toString();
+                            String fileType = "";
+                            String mimeType = Files.probeContentType(path);
+
+
+                            int dotIndex = fileName.lastIndexOf('.');
+                            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                                fileType = fileName.substring(dotIndex + 1).toLowerCase();
+                            }
+
                             return new PhotoDTO(
                                     path.getFileName().toString(),
                                     "/files/images/" + year + "/" + month + "/" + path.getFileName(),
-                                    uploadedAt
+                                    uploadedAt, fileType, mimeType
                             );
                         } catch (IOException e) {
                             throw new RuntimeException(e);
