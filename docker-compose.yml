@@ -1,0 +1,16 @@
+services:
+  construction-finance:
+    image: postgres:latest
+    container_name: construction-finance
+    networks:
+      - construction
+    environment:
+      - POSTGRES_DB=construction-finance
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+
+networks:
+  construction:
+    driver: bridge
