@@ -1,10 +1,10 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
 import { Observable } from 'rxjs';
 import { PhotoDTO } from './Photos';
-import { ApiResponse, ApiResponseTest } from 'app/utils/response';
+import { ApiResponseTest } from 'app/utils/response';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +14,17 @@ export class ImagesService {
   private readonly API = `${environment.API}photos`;
 
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
-private getAuthHeaders(): HttpHeaders {
+
+  private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
   }
 
+  /**
+   * Upload simples (sem progresso, só retorna quando concluir)
+   */
   upload(file: File): Observable<ApiResponseTest<PhotoDTO>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -29,6 +33,22 @@ private getAuthHeaders(): HttpHeaders {
       headers: this.getAuthHeaders()
     });
   }
+
+  /**
+   * Upload com progresso (emite eventos HttpEvent)
+   */
+  uploadWithProgress(file: File): Observable<HttpEvent<ApiResponseTest<PhotoDTO>>> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const req = new HttpRequest('POST', this.API, formData, {
+    headers: this.getAuthHeaders(),
+    reportProgress: true
+  });
+
+  return this.httpClient.request<ApiResponseTest<PhotoDTO>>(req);
+}
+
 
   listYears(): Observable<ApiResponseTest<number[]>> {
     return this.httpClient.get<ApiResponseTest<number[]>>(`${this.API}`, {

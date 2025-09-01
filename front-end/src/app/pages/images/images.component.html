@@ -10,6 +10,12 @@
     <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
   </div>
 
+  <!-- Barra de progresso -->
+  <div *ngIf="uploading" class="upload-progress">
+    <p-progressBar [value]="progress"></p-progressBar>
+    <span>{{ progress }}%</span>
+  </div>
+
   <!-- Navegação (breadcrumb) -->
   <div class="breadcrumb" *ngIf="selectedYear || selectedMonth">
     <span class="breadcrumb-link" (click)="backToYears()">Anos</span>
