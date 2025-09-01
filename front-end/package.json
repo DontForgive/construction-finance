@@ -29,6 +29,7 @@
     "@ng-bootstrap/ng-bootstrap": "^13.1.1",
     "@ngui/map": "0.30.3",
     "@popperjs/core": "^2.11.4",
+    "@primeuix/themes": "^1.2.3",
     "@types/googlemaps": "3.39.14",
     "arrive": "2.4.1",
     "bootstrap": "^5.3.7",

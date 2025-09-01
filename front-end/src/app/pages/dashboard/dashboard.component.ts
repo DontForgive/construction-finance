@@ -65,10 +65,10 @@ export class DashboardComponent implements OnInit {
   }
 
   onClear(): void {
-    this.filterForm.reset();  
+    this.filterForm.reset();
     this.loadAllCharts();
 
-}
+  }
 
 
   /** Aplica os filtros e recarrega gráficos */
@@ -99,13 +99,18 @@ export class DashboardComponent implements OnInit {
 
   /** 🔹 KPI mockado (pode puxar de API depois) */
   private loadKpis() {
-  this.reportService.getKpis(this.getFilters()).subscribe(data => {
-    this.kpis[0].value = `R$ ${data.totalExpenses.toFixed(2)}`;
-    this.kpis[1].value = data.totalPayers;
-    this.kpis[2].value = data.totalSuppliers;
-    this.kpis[3].value = data.totalCategories;
-  });
-}
+    this.reportService.getKpis(this.getFilters()).subscribe(data => {
+      const formatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+
+      this.kpis[0].value = formatter.format(data.totalExpenses);
+      this.kpis[1].value = data.totalPayers;
+      this.kpis[2].value = data.totalSuppliers;
+      this.kpis[3].value = data.totalCategories;
+    });
+  }
 
 
   /** 🔹 Gráfico por Categoria */
@@ -236,7 +241,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-    loadSuppliers() {
+  loadSuppliers() {
     this.supplierService.getSuppliers(0, 100).subscribe({
       next: (res) => (this.suppliers = res.data.content),
       error: (err) => console.error("Erro ao carregar fornecedores:", err),

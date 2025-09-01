@@ -31,7 +31,6 @@ import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 import { GalleriaModule } from 'primeng/galleria';
 
 
-
 @NgModule({
   imports: [
     CommonModule,
@@ -57,9 +56,10 @@ import { GalleriaModule } from 'primeng/galleria';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
+    GalleriaModule,
+  ],
+  exports: [
     GalleriaModule
-    
-
   ],
   declarations: [
     DashboardComponent,
@@ -81,7 +81,6 @@ import { GalleriaModule } from 'primeng/galleria';
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-   
   ],
 })
 
