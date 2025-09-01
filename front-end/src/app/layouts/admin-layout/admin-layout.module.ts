@@ -29,6 +29,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ImagesComponent } from 'app/pages/images/images.component';
 import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 import { GalleriaModule } from 'primeng/galleria';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import { GalleriaModule } from 'primeng/galleria';
     MatNativeDateModule,
     MatCardModule,
     GalleriaModule,
+    MatProgressBarModule
   ],
   exports: [
     GalleriaModule

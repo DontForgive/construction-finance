@@ -11,10 +11,10 @@
   </div>
 
   <!-- Barra de progresso -->
-  <div *ngIf="uploading" class="upload-progress">
-    <p-progressBar [value]="progress"></p-progressBar>
-    <span>{{ progress }}%</span>
-  </div>
+ <div *ngIf="uploading" class="upload-progress">
+  <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+  <span class="progress-label">{{ progress }}%</span>
+</div>
 
   <!-- Navegação (breadcrumb) -->
   <div class="breadcrumb" *ngIf="selectedYear || selectedMonth">
