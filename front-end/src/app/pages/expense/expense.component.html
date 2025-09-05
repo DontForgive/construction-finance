@@ -138,11 +138,11 @@
               <tr *ngFor="let expense of list_expenses">
                 <td>{{ expense.id }}</td>
                 <td>{{ expense.date | date:'dd/MM/yyyy' }}</td>
-                <td>{{ expense.description }}</td>
-                <td>{{ expense.amount | currency:'BRL' }}</td>
-                <td>{{ expense.supplierName || '-' }}</td>
-                <td>{{ expense.payerName || '-' }}</td>
-                <td>{{ expense.categoryName || '-' }}</td>
+                <td>{{ expense.description | uppercase }}</td>
+                <td>{{ expense.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                <td>{{ expense.supplierName || '-' | uppercase }}</td>
+                <td>{{ expense.payerName || '-' | uppercase }}</td>
+                <td>{{ expense.categoryName || '-' | uppercase }}</td>
 
                 <td>{{ expense.paymentMethod }}</td>
                 <td class="text-center">

@@ -1,12 +1,13 @@
 package br.com.galsystem.construction.finance.models;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "supplier")
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Data
 @Builder
 public class Supplier {
     @Id
@@ -14,5 +15,7 @@ public class Supplier {
     private Long id;
 
     @Column(nullable = false)
+    @NonNull
     private String name;
+
 }

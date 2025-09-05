@@ -111,6 +111,15 @@ public class ExpenseController {
         return ResponseEntity.ok(new Response<>(200, "Anexo adicionado/atualizado", updated, null));
     }
 
+    @PostMapping(value = "/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<ExpenseCreateDTO>> createByUploadFile(
+            @RequestPart("file") final MultipartFile file
+    ) {
+        final ExpenseCreateDTO updated = service.ExpenseCreateByFileDTO(file);
+        return ResponseEntity.ok(new Response<>(200, "Cadastros realizados com sucesso!", updated, null));
+    }
+
+
     @DeleteMapping("/{id}/attachment")
     public ResponseEntity<Response<Void>> removeAttachment(@PathVariable final Long id) {
         service.removeAttachment(id);

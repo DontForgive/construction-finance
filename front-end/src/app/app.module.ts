@@ -14,7 +14,10 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './pages/login/auth.interceptor';
 import { MatIconModule } from '@angular/material/icon';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 
+registerLocaleData(localePt);
 @NgModule({
   declarations: [
     AppComponent,

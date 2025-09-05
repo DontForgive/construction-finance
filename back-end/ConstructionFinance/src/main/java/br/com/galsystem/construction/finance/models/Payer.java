@@ -1,6 +1,10 @@
 package br.com.galsystem.construction.finance.models;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "payer", uniqueConstraints = {
@@ -17,4 +21,5 @@ public class Payer {
 
     @Column(nullable = false)
     private String name;
+
 }

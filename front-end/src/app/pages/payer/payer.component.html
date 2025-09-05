@@ -54,7 +54,7 @@
             <tbody>
               <tr *ngFor="let payer of list_payers">
                 <td>{{ payer.id }}</td>
-                <td>{{ payer.name }}</td>
+                <td>{{ payer.name|uppercase }}</td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(payer)" title="Editar">
                     <i class="nc-icon nc-ruler-pencil"></i>

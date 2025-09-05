@@ -10,6 +10,10 @@ public interface FileStorageService {
      */
     String store(UploadArea area, MultipartFile file);
 
-    /** Remove um arquivo a partir da URL pública (ignora se não existir). */
+    String createByFile(UploadArea area, MultipartFile file);
+
+    /**
+     * Remove um arquivo a partir da URL pública (ignora se não existir).
+     */
     void deleteByPublicUrl(String publicUrl);
 }

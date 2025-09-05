@@ -63,8 +63,8 @@
             <tbody>
               <tr *ngFor="let category of list_categories">
                 <td>{{ category.id }}</td>
-                <td>{{ category.name }}</td>
-                <td>{{ category.description }}</td>
+                <td>{{ category.name|uppercase }}</td>
+                <td>{{ category.description|uppercase }}</td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(category)" title="Editar">
                     <i class="nc-icon nc-ruler-pencil"></i>

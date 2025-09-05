@@ -1,5 +1,8 @@
 package br.com.galsystem.construction.finance.service.expense;
-import br.com.galsystem.construction.finance.dto.expense.*;
+
+import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +20,18 @@ public interface ExpenseService {
             LocalDate endDate,
             Pageable pageable
     );
+
     ExpenseDTO findById(Long id);
+
     ExpenseDTO create(ExpenseCreateDTO dto);
+
     ExpenseDTO update(Long id, ExpenseUpdateDTO dto);
+
     void delete(Long id);
+
     ExpenseDTO attachFile(Long id, MultipartFile file);
+
     void removeAttachment(Long id);
 
+//    List<ExpenseCreateDTO> ExpenseCreateByFileDTO(MultipartFile file);
 }

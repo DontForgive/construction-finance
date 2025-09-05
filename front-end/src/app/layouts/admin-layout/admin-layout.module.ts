@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from '../../pages/dashboard/dashboard.component';
@@ -83,6 +83,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+    { provide: LOCALE_ID, useValue: 'pt-BR' }
+    
   ],
 })
 

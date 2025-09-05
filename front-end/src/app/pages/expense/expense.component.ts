@@ -3,7 +3,6 @@ import { ExpenseService } from "./expense.service";
 import { MatDialog } from "@angular/material/dialog";
 import { ToastService } from "app/utils/toastr";
 import { Expense } from "./expense";
-import { ApiResponse } from "app/utils/response";
 import { ExpenseAddDialogComponent } from "./expense-add-dialog.component";
 import { Supplier } from "../supplier/supplier";
 import { Payer } from "../payer/Payer";
@@ -57,7 +56,6 @@ export class ExpenseComponent implements OnInit {
     this.loadCategories();
   }
 
-  /** Lista com filtros e paginação */
   listExpenses(page: number = 0) {
   this.currentPage = page;
 
@@ -85,11 +83,10 @@ export class ExpenseComponent implements OnInit {
 }
 
 
-  /** Abre o dialog para criar uma nova despesa */
   openAddDialog() {
     const dialogRef = this.dialog.open(ExpenseAddDialogComponent, {
       width: "600px",
-      data: {}, // pode passar suppliers/payers se quiser popular selects
+      data: {},
     });
 
     dialogRef.afterClosed().subscribe((result: Expense) => {
@@ -100,7 +97,6 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
-  /** Abre o dialog para editar uma despesa */
   openEditDialog(expense: Expense) {
     const dialogRef = this.dialog.open(ExpenseAddDialogComponent, {
       width: "600px",
@@ -115,7 +111,6 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
-  /** Exclui uma despesa */
 
   deleteExpense(expense: Expense) {
     Swal.fire({
@@ -153,7 +148,6 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
-  /** Limpa os filtros e recarrega */
   clearFilters() {
     this.filterDescription = "";
     this.filterSupplierId = null;
@@ -165,7 +159,6 @@ export class ExpenseComponent implements OnInit {
     this.listExpenses(0);
   }
 
-  /** Evento de paginação do MatPaginator */
   onPageChange(event: any) {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
