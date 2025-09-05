@@ -3,7 +3,6 @@ import { SupplierService } from './supplier.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Supplier } from './supplier';
 import { SupplierAddDialogComponent } from './supplier-add-dialog.component';
-import { error } from 'console';
 import Swal from 'sweetalert2';
 import { ToastService } from 'app/utils/toastr';
 

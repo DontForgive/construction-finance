@@ -1,4 +1,5 @@
 package br.com.galsystem.construction.finance.controller.payer;
+
 import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerUpdateDTO;
@@ -25,20 +26,20 @@ public class PayerController {
 
     @GetMapping
     public ResponseEntity<Response<Page<PayerDTO>>> list(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "ASC") String dir,
-            @RequestParam(required = false) String name
-            ) {
-        int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 100);
-        Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(defaultValue = "id") final String sort,
+            @RequestParam(defaultValue = "ASC") final String dir,
+            @RequestParam(required = false) final String name
+    ) {
+        final int safePage = Math.max(page, 0);
+        final int safeSize = Math.min(Math.max(size, 1), 100);
+        final Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        final Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<PayerDTO> result = service.listar(name, pageable);
+        final Page<PayerDTO> result = service.listar(name, pageable);
 
-        Response<Page<PayerDTO>> resp = new Response<>();
+        final Response<Page<PayerDTO>> resp = new Response<>();
         resp.setStatus(200);
         resp.setMessage("Lista de pagadores");
         resp.setData(result);
@@ -46,30 +47,30 @@ public class PayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<PayerDTO>> findById(@PathVariable Long id) {
-        PayerDTO dto = service.findById(id);
-        return ResponseEntity.ok(new Response<>(200, "Pagador encontrado", dto));
+    public ResponseEntity<Response<PayerDTO>> findById(@PathVariable final Long id) {
+        final PayerDTO dto = service.findById(id);
+        return ResponseEntity.ok(new Response<>(200, "Pagador encontrado", dto, null));
     }
 
     @PostMapping
-    public ResponseEntity<Response<PayerDTO>> save(@RequestBody @Valid PayerCreateDTO dto) {
-        PayerDTO created = service.create(dto);
+    public ResponseEntity<Response<PayerDTO>> save(@RequestBody @Valid final PayerCreateDTO dto) {
+        final PayerDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Response<>(201, "Pagador cadastrado com sucesso", created));
+                .body(new Response<>(201, "Pagador cadastrado com sucesso", created, null));
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<PayerDTO>> update(@PathVariable Long id, @Valid @RequestBody PayerUpdateDTO dto) {
-        PayerDTO updated = service.update(id, dto);
+    public ResponseEntity<Response<PayerDTO>> update(@PathVariable final Long id, @Valid @RequestBody final PayerUpdateDTO dto) {
+        final PayerDTO updated = service.update(id, dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Response<>(200, "Pagador atualizado com sucesso", updated));
+                .body(new Response<>(200, "Pagador atualizado com sucesso", updated, null));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<Void>> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Response<Void>> delete(@PathVariable("id") final Long id) {
         service.delete(id);
-        return ResponseEntity.ok(new Response<>(200, "Pagador removido com sucesso", null));
+        return ResponseEntity.ok(new Response<>(200, "Pagador removido com sucesso", null, null));
     }
 
 }

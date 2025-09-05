@@ -1,6 +1,8 @@
 package br.com.galsystem.construction.finance.controller.expense;
 
-import br.com.galsystem.construction.finance.dto.expense.*;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.expense.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,31 +32,31 @@ public class ExpenseController {
 
     @GetMapping
     public ResponseEntity<Response<Page<ExpenseDTO>>> list(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "DESC") String dir,
-            @RequestParam(required = false) String description,
-            @RequestParam(required = false) Long supplierId,
-            @RequestParam(required = false) Long payerId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String paymentMethod,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(defaultValue = "id") final String sort,
+            @RequestParam(defaultValue = "DESC") final String dir,
+            @RequestParam(required = false) final String description,
+            @RequestParam(required = false) final Long supplierId,
+            @RequestParam(required = false) final Long payerId,
+            @RequestParam(required = false) final Long categoryId,
+            @RequestParam(required = false) final String paymentMethod,
+            @RequestParam(required = false) final LocalDate startDate,
+            @RequestParam(required = false) final LocalDate endDate
     ) {
-        int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 100);
+        final int safePage = Math.max(page, 0);
+        final int safeSize = Math.min(Math.max(size, 1), 100);
 
-        Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
+        final Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        final Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
 
-        Page<ExpenseDTO> result = service.list(
+        final Page<ExpenseDTO> result = service.list(
                 description, supplierId, payerId, categoryId,
                 paymentMethod, startDate, endDate, pageable
         );
 
-        Response<Page<ExpenseDTO>> resp = new Response<>();
+        final Response<Page<ExpenseDTO>> resp = new Response<>();
         resp.setStatus(200);
         resp.setMessage("Lista de despesas");
         resp.setData(result);
@@ -66,8 +67,8 @@ public class ExpenseController {
 
     @GetMapping("/data")
     public ResponseEntity<?> list(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate
+            @RequestParam(required = false) final LocalDate startDate,
+            @RequestParam(required = false) final LocalDate endDate
     ) {
         // ✅ Aqui já chega convertido automaticamente
         return ResponseEntity.ok("Start: " + startDate + " | End: " + endDate);
@@ -75,45 +76,45 @@ public class ExpenseController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<ExpenseDTO>> findById(@PathVariable Long id) {
-        ExpenseDTO dto = service.findById(id);
-        return ResponseEntity.ok(new Response<>(200, "Despesa encontrada", dto));
+    public ResponseEntity<Response<ExpenseDTO>> findById(@PathVariable final Long id) {
+        final ExpenseDTO dto = service.findById(id);
+        return ResponseEntity.ok(new Response<>(200, "Despesa encontrada", dto, null));
     }
 
     @Operation(summary = "Criar despesa")
     @PostMapping
-    public ResponseEntity<Response<ExpenseDTO>> create(@Valid @RequestBody ExpenseCreateDTO dto) {
-        ExpenseDTO created = service.create(dto);
+    public ResponseEntity<Response<ExpenseDTO>> create(@Valid @RequestBody final ExpenseCreateDTO dto) {
+        final ExpenseDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Response<>(201, "Despesa criada com sucesso", created));
+                .body(new Response<>(201, "Despesa criada com sucesso", created, null));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<ExpenseDTO>> update(@PathVariable Long id,
-                                                       @Valid @RequestBody ExpenseUpdateDTO dto) {
-        ExpenseDTO updated = service.update(id, dto);
-        return ResponseEntity.ok(new Response<>(200, "Despesa atualizada com sucesso", updated));
+    public ResponseEntity<Response<ExpenseDTO>> update(@PathVariable final Long id,
+                                                       @Valid @RequestBody final ExpenseUpdateDTO dto) {
+        final ExpenseDTO updated = service.update(id, dto);
+        return ResponseEntity.ok(new Response<>(200, "Despesa atualizada com sucesso", updated, null));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<Void>> delete(@PathVariable Long id) {
+    public ResponseEntity<Response<Void>> delete(@PathVariable final Long id) {
         service.delete(id);
-        return ResponseEntity.ok(new Response<>(200, "Despesa removida com sucesso", null));
+        return ResponseEntity.ok(new Response<>(200, "Despesa removida com sucesso", null, null));
     }
 
     @PutMapping(value = "/{id}/attachment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<ExpenseDTO>> attach(
-            @PathVariable Long id,
-            @RequestPart("file") MultipartFile file
+            @PathVariable final Long id,
+            @RequestPart("file") final MultipartFile file
     ) {
-        ExpenseDTO updated = service.attachFile(id, file);
-        return ResponseEntity.ok(new Response<>(200, "Anexo adicionado/atualizado", updated));
+        final ExpenseDTO updated = service.attachFile(id, file);
+        return ResponseEntity.ok(new Response<>(200, "Anexo adicionado/atualizado", updated, null));
     }
 
     @DeleteMapping("/{id}/attachment")
-    public ResponseEntity<Response<Void>> removeAttachment(@PathVariable Long id) {
+    public ResponseEntity<Response<Void>> removeAttachment(@PathVariable final Long id) {
         service.removeAttachment(id);
-        return ResponseEntity.ok(new Response<>(200, "Anexo removido", null));
+        return ResponseEntity.ok(new Response<>(200, "Anexo removido", null, null));
     }
 
 

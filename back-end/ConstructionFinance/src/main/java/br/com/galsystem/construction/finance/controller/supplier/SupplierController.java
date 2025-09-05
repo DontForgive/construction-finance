@@ -1,4 +1,5 @@
 package br.com.galsystem.construction.finance.controller.supplier;
+
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
@@ -26,20 +27,20 @@ public class SupplierController {
 
     @GetMapping
     public ResponseEntity<Response<Page<SupplierDTO>>> list(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "ASC") String dir,
-            @RequestParam(required = false) String name
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(defaultValue = "id") final String sort,
+            @RequestParam(defaultValue = "ASC") final String dir,
+            @RequestParam(required = false) final String name
     ) {
-        int safePage = Math.max(page, 0);
-        int safeSize = Math.min(Math.max(size, 1), 100);
-        Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
+        final int safePage = Math.max(page, 0);
+        final int safeSize = Math.min(Math.max(size, 1), 100);
+        final Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        final Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        Page<SupplierDTO> result = service.listar(name, pageable);
+        final Page<SupplierDTO> result = service.listar(name, pageable);
 
-        Response<Page<SupplierDTO>> resp = new Response<>();
+        final Response<Page<SupplierDTO>> resp = new Response<>();
         resp.setStatus(200);
         resp.setMessage("Lista de Fornecedores");
         resp.setData(result);
@@ -47,28 +48,28 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<SupplierDTO>> findById(@PathVariable Long id) {
-        SupplierDTO dto = service.findById(id);
-        return ResponseEntity.ok(new Response<>(200, "Fornecedor encontrado", dto));
+    public ResponseEntity<Response<SupplierDTO>> findById(@PathVariable final Long id) {
+        final SupplierDTO dto = service.findById(id);
+        return ResponseEntity.ok(new Response<>(200, "Fornecedor encontrado", dto, null));
     }
 
     @PostMapping
-    public ResponseEntity<Response<SupplierDTO>> create(@Valid @RequestBody SupplierCreateDTO dto) {
-        SupplierDTO created = service.create(dto);
+    public ResponseEntity<Response<SupplierDTO>> create(@Valid @RequestBody final SupplierCreateDTO dto) {
+        final SupplierDTO created = service.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new Response<>(201, "Fornecedor criado com sucesso", created));
+                .body(new Response<>(201, "Fornecedor criado com sucesso", created, null));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<SupplierDTO>> update(@PathVariable Long id,
-                                                        @Valid @RequestBody SupplierUpdateDTO dto) {
-        SupplierDTO updated = service.update(id, dto);
-        return ResponseEntity.ok(new Response<>(200, "Fornecedor atualizado com sucesso", updated));
+    public ResponseEntity<Response<SupplierDTO>> update(@PathVariable final Long id,
+                                                        @Valid @RequestBody final SupplierUpdateDTO dto) {
+        final SupplierDTO updated = service.update(id, dto);
+        return ResponseEntity.ok(new Response<>(200, "Fornecedor atualizado com sucesso", updated, null));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response<Void>> delete(@PathVariable Long id) {
+    public ResponseEntity<Response<Void>> delete(@PathVariable final Long id) {
         service.delete(id);
-        return ResponseEntity.ok(new Response<>(200, "Fornecedor removido com sucesso", null));
+        return ResponseEntity.ok(new Response<>(200, "Fornecedor removido com sucesso", null, null));
     }
 }
