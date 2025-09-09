@@ -1,19 +1,28 @@
 package br.com.galsystem.construction.finance.service.expense;
 
+import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
+import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
+import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.files.UploadArea;
+import br.com.galsystem.construction.finance.mapper.CategoryMapper;
 import br.com.galsystem.construction.finance.mapper.ExpenseMapper;
+import br.com.galsystem.construction.finance.mapper.PayerMapper;
 import br.com.galsystem.construction.finance.mapper.SupplierMapper;
 import br.com.galsystem.construction.finance.models.*;
 import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
 import br.com.galsystem.construction.finance.service.file.FileStorageService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +31,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -36,8 +51,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final CategoryRepository categoryRepository;
     private final ExpenseMapper mapper;
     private final SupplierMapper supplierMapper;
+    private final PayerMapper payerMapper;
+    private final CategoryMapper categoryMapper;
     private final CurrentUser currentUser;
     private final FileStorageService storageService;
+    private EntityManager em;
+
+
 
     @Override
     @Transactional(readOnly = true)
@@ -196,72 +216,198 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     public SupplierDTO findOrCreateSupplierByName(final String name) {
-//        return supplierRepository.findByNameIgnoreCase(name)
-//
-//                .orElseGet(() -> {
-//                    final SupplierCreateDTO dto = new SupplierCreateDTO(name);
-//                    final Supplier newSupplier = supplierMapper.toEntity(dto);
-//                    final Supplier saved = supplierRepository.save(newSupplier);
-//                    return supplierMapper.toDTO(saved);
-//                });
-        return null;
+        return supplierRepository.findByNameIgnoreCase(name)
+                .map(supplierMapper::toDTO)
+                .orElseGet(() -> {
+                    final SupplierCreateDTO dto = new SupplierCreateDTO(name);
+                    final Supplier newSupplier = supplierMapper.toEntity(dto);
+                    final Supplier saved = supplierRepository.save(newSupplier);
+                    return supplierMapper.toDTO(saved);
+                });
+
     }
 
-//    public Payer findOrCreatePayerByName(final String name) {
-//        return payerRepository.findByNameIgnoreCase(name)
-//                .orElseGet(() -> payerRepository.save(new Payer(name)));
-//    }
-//
-//    public Category findOrCreateCategoryByName(final String name) {
-//        return categoryRepository.findByNameIgnoreCase(name)
-//                .orElseGet(() -> categoryRepository.save(new Category(name)));
-//    }
+    public PayerDTO findOrCreatePayerByName(final String name) {
+        return payerRepository.findByNameIgnoreCase(name)
+                .map(payerMapper::toDTO)
+                .orElseGet(() -> {
+                   final PayerCreateDTO dto = new PayerCreateDTO(name);
+                   final Payer newPayer = payerMapper.toEntity(dto);
+                   final Payer saved = payerRepository.save(newPayer);
+                   return payerMapper.toDTO(saved);
+                });
+    }
 
-//    @Override
-//    public List<ExpenseCreateDTO> ExpenseCreateByFileDTO(final MultipartFile file) {
-//        final List<ExpenseCreateDTO> expenses = new ArrayList<>();
-//
-//        try (final InputStream inputStream = file.getInputStream();
-//             final Workbook workbook = new XSSFWorkbook(inputStream)) {
-//
-//            final Sheet sheet = workbook.getSheetAt(0);
-//
-//            for (final Row row : sheet) {
-//                if (row.getRowNum() == 0) continue;
-//
-//                final String supplierName = row.getCell(2).getStringCellValue();
-//                final SupplierCreateDTO supplier = findOrCreateSupplierByName(supplierName);
-//
-//                final String payerName = row.getCell(3).getStringCellValue();
-//                final Payer payer = findOrCreatePayerByName(payerName);
-//
-//                final String categoryName = row.getCell(4).getStringCellValue();
-//                final Category category = findOrCreateCategoryByName(categoryName);
-//
-//
-//                final ExpenseCreateDTO expense = new ExpenseCreateDTO(
-//                        row.getCell(0).getLocalDateTimeCellValue().toLocalDate(),
-//                        row.getCell(1).getStringCellValue(),
-//                        supplier.getId(),
-//                        payer.getId(),
-//                        category.getId(),
-//                        row.getCell(5).getStringCellValue(),
-//                        BigDecimal.valueOf(row.getCell(6).getNumericCellValue()),
-//                        row.getCell(7).getStringCellValue()
-//                );
-//
-//                expenses.add(expense);
+    public CategoryDTO findOrCreateCategoryByName(final String name) {
+        return categoryRepository.findByNameIgnoreCase(name)
+                .map(categoryMapper::toDTO)
+                .orElseGet(() -> {
+                    final CategoryCreateDTO dto = new CategoryCreateDTO(name,null);
+                    final Category newCategory = categoryMapper.toEntity(dto);
+                    final Category saved = categoryRepository.save(newCategory);
+                    return categoryMapper.toDTO(saved);
+                });
+    }
 
-    /// /                mapper.toEntity(expense);
-//
-//            }
-//
-//        } catch (final IOException e) {
-//            throw new RuntimeException("Erro ao processar o arquivo Excel", e);
-//        }
-//
-//        return expenses;
-//    }
+
+    @Override
+    @Transactional
+    public List<ExpenseCreateDTO> ExpenseCreateByFileDTO(final MultipartFile file) {
+        final List<ExpenseCreateDTO> expenses = new ArrayList<>();
+
+        final Long uid = currentUser.id();
+        final User user = userRepository.findById(uid)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
+
+        final int BATCH_SIZE = 1000;
+        final List<Expense> buffer = new ArrayList<>(BATCH_SIZE);
+
+        try (final InputStream inputStream = file.getInputStream();
+             final Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            final Sheet sheet = workbook.getSheetAt(0);
+
+            for (final Row row : sheet) {
+                if (row.getRowNum() == 0) continue;
+
+                final String supplierName = row.getCell(2).getStringCellValue();
+                final SupplierDTO supplier = findOrCreateSupplierByName(supplierName);
+
+                final String payerName = row.getCell(3).getStringCellValue();
+                final PayerDTO payer = findOrCreatePayerByName(payerName);
+
+                final String categoryName = row.getCell(4).getStringCellValue();
+                final CategoryDTO category = findOrCreateCategoryByName(categoryName);
+
+                final ExpenseCreateDTO dto = new ExpenseCreateDTO(
+                        row.getCell(0).getLocalDateTimeCellValue().toLocalDate(),
+                        row.getCell(1).getStringCellValue(),
+                        supplier.id(),
+                        payer.id(),
+                        category.id(),
+                        row.getCell(5).getStringCellValue(),
+                        BigDecimal.valueOf(row.getCell(6).getNumericCellValue()),
+                        row.getCell(7).getStringCellValue()
+                );
+                expenses.add(dto);
+
+                final Expense entity = mapper.toEntity(dto);
+                entity.setUser(user);
+
+                if (dto.supplierId() != null) {
+                    entity.setSupplier(supplierRepository.getReferenceById(dto.supplierId()));
+                }
+                if (dto.payerId() != null) {
+                    entity.setPayer(payerRepository.getReferenceById(dto.payerId()));
+                }
+                if (dto.categoryId() != null) {
+                    entity.setCategory(categoryRepository.getReferenceById(dto.categoryId()));
+                }
+
+                buffer.add(entity);
+
+                if (buffer.size() >= BATCH_SIZE) {
+                    repository.saveAll(buffer);
+                    repository.flush();
+                    buffer.clear();
+                }
+            }
+
+            if (!buffer.isEmpty()) {
+                repository.saveAll(buffer);
+                repository.flush();
+                buffer.clear();
+            }
+
+        } catch (final IOException e) {
+            throw new RuntimeException("Erro ao processar o arquivo Excel", e);
+        }
+
+        return expenses;
+    }
+
+
+    @Override
+    public byte[] generateExpensesTemplate() {
+
+        try(Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()){
+            Sheet sheet = wb.createSheet("Despesas");
+
+            CreationHelper helper = wb.getCreationHelper();
+            CellStyle headerStyle = wb.createCellStyle();
+            Font headerFont = wb.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+
+            CellStyle dateStyle = wb.createCellStyle();
+            short dateFormat = helper.createDataFormat().getFormat("yyyy-mm-dd");
+            dateStyle.setDataFormat(dateFormat);
+
+            CellStyle moneyStyle = wb.createCellStyle();
+            short moneyFormat = helper.createDataFormat().getFormat("#,##0.00");
+            moneyStyle.setDataFormat(moneyFormat);
+
+            // Cabeçalho
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Data (yyyy-MM-dd)");
+            header.createCell(1).setCellValue("Descrição");
+            header.createCell(2).setCellValue("Fornecedor (nome)");
+            header.createCell(3).setCellValue("Pagador (nome)");
+            header.createCell(4).setCellValue("Categoria (nome)");
+            header.createCell(5).setCellValue("Método de Pagamento");
+            header.createCell(6).setCellValue("Valor (numérico)");
+            header.createCell(7).setCellValue("URL do Anexo (opcional)");
+            for (int i = 0; i <= 7; i++) header.getCell(i).setCellStyle(headerStyle);
+
+            //DADOS DE EXEMPLO - 2 LINHAS
+            // LINHA 1
+            for (int i = 1; i <= 100000; i += 2) {
+                Row r1 = sheet.createRow(i);
+                Cell cDate1 = r1.createCell(0);
+                cDate1.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 15)));
+                cDate1.setCellStyle(dateStyle);
+
+                r1.createCell(1).setCellValue("Compra de material");
+                r1.createCell(2).setCellValue("ConstruMais");
+                r1.createCell(3).setCellValue("João Silva");
+                r1.createCell(4).setCellValue("Construção");
+                r1.createCell(5).setCellValue("Cartão");
+
+                Cell cVal1 = r1.createCell(6);
+                cVal1.setCellValue(new java.math.BigDecimal("1234.56").doubleValue());
+                cVal1.setCellStyle(moneyStyle);
+
+                r1.createCell(7).setCellValue("https://exemplo.com/nota1.pdf");
+
+                // LINHA 2
+                Row r2 = sheet.createRow(i + 1);
+                Cell cDate2 = r2.createCell(0);
+                cDate2.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 20)));
+                cDate2.setCellStyle(dateStyle);
+
+                r2.createCell(1).setCellValue("Serviço de transporte");
+                r2.createCell(2).setCellValue("TransRápido");
+                r2.createCell(3).setCellValue("Maria Souza");
+                r2.createCell(4).setCellValue("Logística");
+                r2.createCell(5).setCellValue("Pix");
+
+                Cell cVal2 = r2.createCell(6);
+                cVal2.setCellValue(new java.math.BigDecimal("350.00").doubleValue());
+                cVal2.setCellStyle(moneyStyle);
+
+                r2.createCell(7).setCellValue("");
+            }
+
+            for (int i = 0; i <= 7; i++) sheet.autoSizeColumn(i);
+
+            wb.write(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar template de despesas", e);
+        }
+    }
+
+
     private Long getLongValue(final Cell cell) {
         if (cell == null) return null;
         return switch (cell.getCellType()) {

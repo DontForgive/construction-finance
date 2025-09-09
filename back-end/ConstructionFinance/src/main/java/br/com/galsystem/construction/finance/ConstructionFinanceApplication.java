@@ -2,7 +2,10 @@ package br.com.galsystem.construction.finance;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
+
+@EnableCaching
 @SpringBootApplication(scanBasePackages = "br.com.galsystem.construction.finance")
 public class ConstructionFinanceApplication {
 

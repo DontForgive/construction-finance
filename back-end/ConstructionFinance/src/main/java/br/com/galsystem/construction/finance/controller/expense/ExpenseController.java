@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Tag(name = "Expenses", description = "Operações de despesas")
 @RestController
@@ -112,10 +113,12 @@ public class ExpenseController {
     }
 
     @PostMapping(value = "/upload/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Response<ExpenseCreateDTO>> createByUploadFile(
+    public ResponseEntity<Response<List<ExpenseCreateDTO>>> createByUploadFile(
             @RequestPart("file") final MultipartFile file
     ) {
-        final ExpenseCreateDTO updated = service.ExpenseCreateByFileDTO(file);
+        final List<ExpenseCreateDTO > updated = service.ExpenseCreateByFileDTO(file);
+
+
         return ResponseEntity.ok(new Response<>(200, "Cadastros realizados com sucesso!", updated, null));
     }
 
@@ -126,5 +129,14 @@ public class ExpenseController {
         return ResponseEntity.ok(new Response<>(200, "Anexo removido", null, null));
     }
 
+    @GetMapping("/template")
+    public ResponseEntity<byte[]> downloadTemplate() {
+        byte[] bytes = service.generateExpensesTemplate();
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=template-despesas.xlsx")
+                .contentType(org.springframework.http.MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
+    }
 
 }

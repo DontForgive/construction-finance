@@ -9,6 +9,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @Data
 @Builder
+@NoArgsConstructor
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

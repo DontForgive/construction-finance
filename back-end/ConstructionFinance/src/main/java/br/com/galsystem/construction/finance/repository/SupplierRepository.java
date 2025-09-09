@@ -17,12 +17,12 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
-    Optional<SupplierCreateDTO> findByNameIgnoreCase(String name);
+    Optional<Supplier> findByNameIgnoreCase(String name);
 
     @Query("""
-                SELECT s FROM Supplier s
-                WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%')))
-            """)
+        SELECT s FROM Supplier s
+        WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
+    """)
     Page<Supplier> findByFilters(@Param("name") String name, Pageable pageable);
 
 }

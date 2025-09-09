@@ -1,5 +1,4 @@
 package br.com.galsystem.construction.finance.service.supplier;
-
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
@@ -14,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,24 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    public SupplierDTO findOrCreateByName(String name) {
+        return supplierRepository.findByNameIgnoreCase(name)
+                .map(supplierMapper::toDTO)
+                .orElseGet(() -> createAndCache(name));
+    }
+
+    @Override
+    @Cacheable(value = "supplierByName", key = "#name")
+    public SupplierDTO createAndCache(String name) {
+        Supplier entity = new Supplier();
+        entity.setName(name);
+        entity = supplierRepository.save(entity);
+        return supplierMapper.toDTO(entity);
+    }
+
+    @Override
     @Transactional
+    @CachePut(value = "supplierByName", key = "#name.toLowerCase()")
     public SupplierDTO create(SupplierCreateDTO dto) {
         String name = dto.name().trim();
         if (supplierRepository.existsByNameIgnoreCase(name)) {
@@ -75,4 +93,5 @@ public class SupplierServiceImpl implements SupplierService {
         }
         supplierRepository.deleteById(id);
     }
+
 }

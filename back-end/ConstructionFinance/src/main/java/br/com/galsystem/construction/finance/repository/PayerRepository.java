@@ -1,6 +1,7 @@
 package br.com.galsystem.construction.finance.repository;
 
 import br.com.galsystem.construction.finance.models.Payer;
+import br.com.galsystem.construction.finance.models.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -10,6 +10,7 @@ import br.com.galsystem.construction.finance.mapper.PayerMapper;
 import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.repository.PayerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "payerList", key = "{#name, #pageable.pageNumber, #pageable.pageSize}")
     public Page<PayerDTO> listar(String name, Pageable pageable) {
         return repository.findByFilters(name, pageable).map(mapper::toDTO);
     }
