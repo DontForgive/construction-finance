@@ -58,10 +58,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     private EntityManager em;
 
 
-
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("ExpenseList")
     public Page<ExpenseDTO> list(
             final String description,
             final Long supplierId,
@@ -231,10 +229,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         return payerRepository.findByNameIgnoreCase(name)
                 .map(payerMapper::toDTO)
                 .orElseGet(() -> {
-                   final PayerCreateDTO dto = new PayerCreateDTO(name);
-                   final Payer newPayer = payerMapper.toEntity(dto);
-                   final Payer saved = payerRepository.save(newPayer);
-                   return payerMapper.toDTO(saved);
+                    final PayerCreateDTO dto = new PayerCreateDTO(name);
+                    final Payer newPayer = payerMapper.toEntity(dto);
+                    final Payer saved = payerRepository.save(newPayer);
+                    return payerMapper.toDTO(saved);
                 });
     }
 
@@ -242,7 +240,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         return categoryRepository.findByNameIgnoreCase(name)
                 .map(categoryMapper::toDTO)
                 .orElseGet(() -> {
-                    final CategoryCreateDTO dto = new CategoryCreateDTO(name,null);
+                    final CategoryCreateDTO dto = new CategoryCreateDTO(name, null);
                     final Category newCategory = categoryMapper.toEntity(dto);
                     final Category saved = categoryRepository.save(newCategory);
                     return categoryMapper.toDTO(saved);
@@ -330,25 +328,25 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public byte[] generateExpensesTemplate() {
 
-        try(Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()){
-            Sheet sheet = wb.createSheet("Despesas");
+        try (final Workbook wb = new XSSFWorkbook(); final ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            final Sheet sheet = wb.createSheet("Despesas");
 
-            CreationHelper helper = wb.getCreationHelper();
-            CellStyle headerStyle = wb.createCellStyle();
-            Font headerFont = wb.createFont();
+            final CreationHelper helper = wb.getCreationHelper();
+            final CellStyle headerStyle = wb.createCellStyle();
+            final Font headerFont = wb.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            CellStyle dateStyle = wb.createCellStyle();
-            short dateFormat = helper.createDataFormat().getFormat("yyyy-mm-dd");
+            final CellStyle dateStyle = wb.createCellStyle();
+            final short dateFormat = helper.createDataFormat().getFormat("yyyy-mm-dd");
             dateStyle.setDataFormat(dateFormat);
 
-            CellStyle moneyStyle = wb.createCellStyle();
-            short moneyFormat = helper.createDataFormat().getFormat("#,##0.00");
+            final CellStyle moneyStyle = wb.createCellStyle();
+            final short moneyFormat = helper.createDataFormat().getFormat("#,##0.00");
             moneyStyle.setDataFormat(moneyFormat);
 
             // Cabeçalho
-            Row header = sheet.createRow(0);
+            final Row header = sheet.createRow(0);
             header.createCell(0).setCellValue("Data (yyyy-MM-dd)");
             header.createCell(1).setCellValue("Descrição");
             header.createCell(2).setCellValue("Fornecedor (nome)");
@@ -361,37 +359,37 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             //DADOS DE EXEMPLO - 2 LINHAS
             // LINHA 1
-            for (int i = 1; i <= 100000; i += 2) {
-                Row r1 = sheet.createRow(i);
-                Cell cDate1 = r1.createCell(0);
+            for (int i = 1; i <= 10000; i += 2) {
+                final Row r1 = sheet.createRow(i);
+                final Cell cDate1 = r1.createCell(0);
                 cDate1.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 15)));
                 cDate1.setCellStyle(dateStyle);
 
-                r1.createCell(1).setCellValue("Compra de material");
+                r1.createCell(1).setCellValue("Compra de material - " + String.valueOf(i));
                 r1.createCell(2).setCellValue("ConstruMais");
                 r1.createCell(3).setCellValue("João Silva");
                 r1.createCell(4).setCellValue("Construção");
                 r1.createCell(5).setCellValue("Cartão");
 
-                Cell cVal1 = r1.createCell(6);
+                final Cell cVal1 = r1.createCell(6);
                 cVal1.setCellValue(new java.math.BigDecimal("1234.56").doubleValue());
                 cVal1.setCellStyle(moneyStyle);
 
                 r1.createCell(7).setCellValue("https://exemplo.com/nota1.pdf");
 
                 // LINHA 2
-                Row r2 = sheet.createRow(i + 1);
-                Cell cDate2 = r2.createCell(0);
+                final Row r2 = sheet.createRow(i + 1);
+                final Cell cDate2 = r2.createCell(i + 1);
                 cDate2.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 20)));
                 cDate2.setCellStyle(dateStyle);
 
-                r2.createCell(1).setCellValue("Serviço de transporte");
+                r2.createCell(1).setCellValue("Serviço de transporte - " + String.valueOf(i + 1));
                 r2.createCell(2).setCellValue("TransRápido");
                 r2.createCell(3).setCellValue("Maria Souza");
                 r2.createCell(4).setCellValue("Logística");
                 r2.createCell(5).setCellValue("Pix");
 
-                Cell cVal2 = r2.createCell(6);
+                final Cell cVal2 = r2.createCell(6);
                 cVal2.setCellValue(new java.math.BigDecimal("350.00").doubleValue());
                 cVal2.setCellStyle(moneyStyle);
 
@@ -402,7 +400,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             wb.write(out);
             return out.toByteArray();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Erro ao gerar template de despesas", e);
         }
     }
