@@ -359,41 +359,24 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             //DADOS DE EXEMPLO - 2 LINHAS
             // LINHA 1
-            for (int i = 1; i <= 10000; i += 2) {
+            for (int i = 1; i <= 20000; i++) {
                 final Row r1 = sheet.createRow(i);
                 final Cell cDate1 = r1.createCell(0);
-                cDate1.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 15)));
+                cDate1.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, (int) (Math.random() * 12) + 1, (int) (Math.random() * 28) + 1)));
                 cDate1.setCellStyle(dateStyle);
 
                 r1.createCell(1).setCellValue("Compra de material - " + String.valueOf(i));
-                r1.createCell(2).setCellValue("ConstruMais");
-                r1.createCell(3).setCellValue("João Silva");
-                r1.createCell(4).setCellValue("Construção");
-                r1.createCell(5).setCellValue("Cartão");
+                r1.createCell(2).setCellValue(Math.random() > 0.5 ? "ConstruMais" : "MaisConstru");
+                r1.createCell(3).setCellValue(Math.random() > 0.5 ? "João Silva" : "Pedro Santos");
+                r1.createCell(4).setCellValue(Math.random() > 0.5 ? "Construção" : "Reforma");
+                r1.createCell(5).setCellValue(Math.random() > 0.5 ? "Cartão" : "Dinheiro");
 
                 final Cell cVal1 = r1.createCell(6);
-                cVal1.setCellValue(new java.math.BigDecimal("1234.56").doubleValue());
+                cVal1.setCellValue(new java.math.BigDecimal(String.format("%.2f", Math.random() * 5000)).doubleValue());
                 cVal1.setCellStyle(moneyStyle);
 
-                r1.createCell(7).setCellValue("https://exemplo.com/nota1.pdf");
+                r1.createCell(7).setCellValue(Math.random() > 0.7 ? "https://exemplo.com/nota" + i + ".pdf" : "");
 
-                // LINHA 2
-                final Row r2 = sheet.createRow(i + 1);
-                final Cell cDate2 = r2.createCell(i + 1);
-                cDate2.setCellValue(java.sql.Date.valueOf(java.time.LocalDate.of(2025, 1, 20)));
-                cDate2.setCellStyle(dateStyle);
-
-                r2.createCell(1).setCellValue("Serviço de transporte - " + String.valueOf(i + 1));
-                r2.createCell(2).setCellValue("TransRápido");
-                r2.createCell(3).setCellValue("Maria Souza");
-                r2.createCell(4).setCellValue("Logística");
-                r2.createCell(5).setCellValue("Pix");
-
-                final Cell cVal2 = r2.createCell(6);
-                cVal2.setCellValue(new java.math.BigDecimal("350.00").doubleValue());
-                cVal2.setCellStyle(moneyStyle);
-
-                r2.createCell(7).setCellValue("");
             }
 
             for (int i = 0; i <= 7; i++) sheet.autoSizeColumn(i);
