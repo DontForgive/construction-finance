@@ -53,7 +53,7 @@
       <img *ngIf="photo.type === 'photo'" [src]="apiUrl + photo.url" [alt]="photo.filename" (click)="openPhoto(i)" />
       <video *ngIf="photo.type === 'video'" [src]="apiUrl + photo.url" muted (click)="openPhoto(i)"></video>
       <button class="delete-btn pull-right" mat-icon-button color="warn" aria-label="Excluir"
-              (click)="$event.stopPropagation(); onDeletePhoto(photo, i)">
+              (click)="$event.stopPropagation(); onDeletePhoto(i)">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
@@ -69,14 +69,14 @@
   [showThumbnails]="false"
   (onHide)="displayFullscreen = false">
 
-  <ng-template pTemplate="header">
-    <div style="display:flex;justify-content:flex-end;gap:8px;padding:8px;">
-      <button mat-raised-button color="warn" (click)="onDeleteActivePhoto()">
-        <mat-icon>delete</mat-icon>
-        Excluir
-      </button>
-    </div>
-  </ng-template>
+<!--  <ng-template pTemplate="header">-->
+<!--    <div style="display:flex;justify-content:flex-end;gap:8px;padding:8px;">-->
+<!--      <button mat-raised-button color="warn" (click)="onDeletePhoto(activeIndex)">-->
+<!--        <mat-icon>delete</mat-icon>-->
+<!--        Excluir-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </ng-template>-->
 
   <!-- Item -->
   <ng-template pTemplate="item" let-item>
