@@ -10,7 +10,11 @@ import br.com.galsystem.construction.finance.mapper.PayerMapper;
 import br.com.galsystem.construction.finance.models.Payer;
 import br.com.galsystem.construction.finance.repository.PayerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,10 +44,12 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payerList", allEntries = true)
+    })
     public PayerDTO create(PayerCreateDTO dto) {
         String name = dto.name().trim();
-
-        if(repository.existsByNameIgnoreCase(name)){
+        if (repository.existsByNameIgnoreCase(name)) {
             throw new ConflictException("Já existe um pagador com nome '%s'".formatted(name));
         }
         Payer entity = mapper.toEntity(dto);
@@ -54,14 +60,17 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payerList", allEntries = true),
+            @CacheEvict(value = "payerByName", key = "#dto.name().toLowerCase()", condition = "#dto.name() != null")
+    })
     public PayerDTO update(Long id, PayerUpdateDTO dto) {
         Payer entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pagador com ID %d não encontrado".formatted(id)));
 
         String name = dto.name().trim();
-        if (!entity.getName().equalsIgnoreCase(name)
-                && repository.existsByNameIgnoreCase(name)) {
-            throw new ConflictException("Já existe uma categoria com nome '%s'".formatted(name));
+        if (!entity.getName().equalsIgnoreCase(name) && repository.existsByNameIgnoreCase(name)) {
+            throw new ConflictException("Já existe um pagador com nome '%s'".formatted(name));
         }
         mapper.updateEntity(entity, dto);
         entity.setName(name);
@@ -71,13 +80,48 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "payerList", allEntries = true)
+    })
     public void delete(Long id) {
-
-        if(!repository.existsById(id)){
+        if (!repository.existsById(id)) {
             throw new NotFoundException("Pagador com o ID %d não encontrado".formatted(id));
         }
-
         repository.deleteById(id);
+    }
 
+    @Override
+    @Transactional
+    public PayerDTO findOrCreateByName(String name) {
+        final String normalized = name.trim();
+        // Primeiro tenta buscar do repositório (rápido + evita poluir cache com misses)
+        return repository.findByNameIgnoreCase(normalized)
+                .map(mapper::toDTO)
+                .orElseGet(() -> createAndCache(normalized));
+    }
+
+    @Override
+    @Transactional
+    @Caching(
+            put = {
+                    @CachePut(value = "payerByName", key = "#name.toLowerCase()")
+            },
+            evict = {
+                    @CacheEvict(value = "payerList", allEntries = true)
+            }
+    )
+    public PayerDTO createAndCache(String name) {
+        final String normalized = name.trim();
+        try {
+            Payer entity = new Payer();
+            entity.setName(normalized);
+            entity = repository.save(entity);
+            return mapper.toDTO(entity);
+        } catch (DataIntegrityViolationException ex) {
+            // Concorrência: outro request criou simultaneamente. Recarrega.
+            Payer existing = repository.findByNameIgnoreCase(normalized)
+                    .orElseThrow(() -> ex);
+            return mapper.toDTO(existing);
+        }
     }
 }

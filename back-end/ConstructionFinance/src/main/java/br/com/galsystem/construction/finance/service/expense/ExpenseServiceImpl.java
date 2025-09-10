@@ -1,13 +1,9 @@
 package br.com.galsystem.construction.finance.service.expense;
-
-import br.com.galsystem.construction.finance.dto.category.CategoryCreateDTO;
 import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
-import br.com.galsystem.construction.finance.dto.payer.PayerCreateDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
-import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.files.UploadArea;
@@ -18,7 +14,10 @@ import br.com.galsystem.construction.finance.mapper.SupplierMapper;
 import br.com.galsystem.construction.finance.models.*;
 import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
+import br.com.galsystem.construction.finance.service.category.CategoryService;
 import br.com.galsystem.construction.finance.service.file.FileStorageService;
+import br.com.galsystem.construction.finance.service.payer.PayerService;
+import br.com.galsystem.construction.finance.service.supplier.SupplierService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
@@ -30,10 +29,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -56,6 +55,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final CurrentUser currentUser;
     private final FileStorageService storageService;
     private EntityManager em;
+    private final SupplierService supplierService;
+    private final PayerService payerService;
+    private final CategoryService categoryService;
+
 
 
 
@@ -216,115 +219,66 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     public SupplierDTO findOrCreateSupplierByName(final String name) {
-        return supplierRepository.findByNameIgnoreCase(name)
-                .map(supplierMapper::toDTO)
-                .orElseGet(() -> {
-                    final SupplierCreateDTO dto = new SupplierCreateDTO(name);
-                    final Supplier newSupplier = supplierMapper.toEntity(dto);
-                    final Supplier saved = supplierRepository.save(newSupplier);
-                    return supplierMapper.toDTO(saved);
-                });
-
+        return supplierService.findOrCreateByName(name);
     }
 
     public PayerDTO findOrCreatePayerByName(final String name) {
-        return payerRepository.findByNameIgnoreCase(name)
-                .map(payerMapper::toDTO)
-                .orElseGet(() -> {
-                   final PayerCreateDTO dto = new PayerCreateDTO(name);
-                   final Payer newPayer = payerMapper.toEntity(dto);
-                   final Payer saved = payerRepository.save(newPayer);
-                   return payerMapper.toDTO(saved);
-                });
+        return payerService.findOrCreateByName(name);
     }
 
     public CategoryDTO findOrCreateCategoryByName(final String name) {
-        return categoryRepository.findByNameIgnoreCase(name)
-                .map(categoryMapper::toDTO)
-                .orElseGet(() -> {
-                    final CategoryCreateDTO dto = new CategoryCreateDTO(name,null);
-                    final Category newCategory = categoryMapper.toEntity(dto);
-                    final Category saved = categoryRepository.save(newCategory);
-                    return categoryMapper.toDTO(saved);
-                });
+        return categoryService.findOrCreateByName(name);
     }
+
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ExpenseCreateDTO> ExpenseCreateByFileDTO(final MultipartFile file) {
-        final List<ExpenseCreateDTO> expenses = new ArrayList<>();
-
-        final Long uid = currentUser.id();
-        final User user = userRepository.findById(uid)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
-
-        final int BATCH_SIZE = 1000;
-        final List<Expense> buffer = new ArrayList<>(BATCH_SIZE);
-
-        try (final InputStream inputStream = file.getInputStream();
-             final Workbook workbook = new XSSFWorkbook(inputStream)) {
-
-            final Sheet sheet = workbook.getSheetAt(0);
-
-            for (final Row row : sheet) {
-                if (row.getRowNum() == 0) continue;
-
-                final String supplierName = row.getCell(2).getStringCellValue();
-                final SupplierDTO supplier = findOrCreateSupplierByName(supplierName);
-
-                final String payerName = row.getCell(3).getStringCellValue();
-                final PayerDTO payer = findOrCreatePayerByName(payerName);
-
-                final String categoryName = row.getCell(4).getStringCellValue();
-                final CategoryDTO category = findOrCreateCategoryByName(categoryName);
-
-                final ExpenseCreateDTO dto = new ExpenseCreateDTO(
-                        row.getCell(0).getLocalDateTimeCellValue().toLocalDate(),
-                        row.getCell(1).getStringCellValue(),
-                        supplier.id(),
-                        payer.id(),
-                        category.id(),
-                        row.getCell(5).getStringCellValue(),
-                        BigDecimal.valueOf(row.getCell(6).getNumericCellValue()),
-                        row.getCell(7).getStringCellValue()
-                );
-                expenses.add(dto);
-
-                final Expense entity = mapper.toEntity(dto);
-                entity.setUser(user);
-
-                if (dto.supplierId() != null) {
-                    entity.setSupplier(supplierRepository.getReferenceById(dto.supplierId()));
-                }
-                if (dto.payerId() != null) {
-                    entity.setPayer(payerRepository.getReferenceById(dto.payerId()));
-                }
-                if (dto.categoryId() != null) {
-                    entity.setCategory(categoryRepository.getReferenceById(dto.categoryId()));
-                }
-
-                buffer.add(entity);
-
-                if (buffer.size() >= BATCH_SIZE) {
-                    repository.saveAll(buffer);
-                    repository.flush();
-                    buffer.clear();
-                }
+        // Parsing CSV simples (UTF-8, delimitador ";") para gerar DTOs.
+        // Caso use XLSX/ODS, mover parsing para um componente dedicado com Apache POI.
+        final List<ExpenseCreateDTO> items = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            String header = reader.readLine(); // cabeçalho
+            if (header == null) {
+                return items;
             }
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.isBlank()) continue;
+                String[] cols = line.split(";");
+                // Esperado: data;descricao;fornecedor;pagador;categoria;forma;valor;anexoUrl
+                LocalDate date = LocalDate.parse(cols[0].trim());
+                String description = cols[1].trim();
+                String supplierName = cols[2].trim();
+                String payerName = cols[3].trim();
+                String categoryName = cols[4].trim();
+                String paymentMethod = cols[5].trim();
+                BigDecimal amount = new BigDecimal(cols[6].trim());
+                String attachmentUrl = cols.length > 7 ? cols[7].trim() : null;
 
-            if (!buffer.isEmpty()) {
-                repository.saveAll(buffer);
-                repository.flush();
-                buffer.clear();
+                // Resolve referências via serviços com cache; retorna DTOs contendo IDs resolvidos
+                Long supplierId = supplierName.isEmpty() ? null : findOrCreateSupplierByName(supplierName).id();
+                Long payerId = payerName.isEmpty() ? null : findOrCreatePayerByName(payerName).id();
+                Long categoryId = categoryName.isEmpty() ? null : findOrCreateCategoryByName(categoryName).id();
+
+                items.add(new ExpenseCreateDTO(
+                        date,
+                        description,
+                        supplierId,
+                        payerId,
+                        categoryId,
+                        paymentMethod,
+                        amount,
+                        attachmentUrl
+                ));
             }
-
-        } catch (final IOException e) {
-            throw new RuntimeException("Erro ao processar o arquivo Excel", e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Falha ao ler arquivo de despesas: " + e.getMessage(), e);
         }
-
-        return expenses;
+        return items;
     }
+
 
 
     @Override
