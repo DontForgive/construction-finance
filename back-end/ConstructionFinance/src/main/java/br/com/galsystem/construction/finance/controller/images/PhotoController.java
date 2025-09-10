@@ -5,6 +5,7 @@ import br.com.galsystem.construction.finance.dto.images.PhotoDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.images.PhotoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,4 +45,10 @@ public class PhotoController {
     public ResponseEntity<Response<List<PhotoDTO>>> listAll() {
         return ResponseEntity.ok(new Response<>(200, "Todas as fotos", photoService.getAll(), null));
     }
+ //int year, int month, String filename
+    @DeleteMapping("/{year}/{month}/{name}")
+    public ResponseEntity<Response<PhotoDTO>> removeFile(@PathVariable final int year, @PathVariable final int month, @PathVariable final String name) {
+        return ResponseEntity.ok(new Response<>(200, "Arquivo Removido com Sucesso", photoService.delete(year,month,name), null));
+    }
+
 }

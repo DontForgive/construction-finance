@@ -1,5 +1,6 @@
 package br.com.galsystem.construction.finance.service.images;
 import br.com.galsystem.construction.finance.dto.images.PhotoDTO;
+import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -164,4 +165,48 @@ public class PhotoServiceImpl implements PhotoService {
             throw new RuntimeException("Erro ao listar todas as fotos", e);
         }
     }
+
+    @Override
+    public PhotoDTO delete(int year, int month, String filename) {
+        String y = String.valueOf(year);
+        String m = String.format("%02d", month);
+
+        Path baseDir = Paths.get(storageRoot, "images", y, m);
+        Path target = baseDir.resolve(filename).normalize();
+
+        if (!target.startsWith(baseDir)) {
+            throw new SecurityException("Caminho de arquivo inválido");
+        }
+
+        if (!Files.exists(target) || !Files.isRegularFile(target)) {
+            throw new ResourceNotFoundException("Arquivo não encontrado: " + filename);
+        }
+
+        try {
+            // Coleta metadados antes de apagar
+            FileTime fileTime = Files.getLastModifiedTime(target);
+            LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+            String fileName = target.getFileName().toString();
+            String fileType = "";
+            String mimeType = Files.probeContentType(target);
+
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                fileType = fileName.substring(dotIndex + 1).toLowerCase();
+            }
+
+            Files.delete(target);
+
+            return new PhotoDTO(
+                    fileName,
+                    "/files/images/" + y + "/" + m + "/" + fileName,
+                    uploadedAt,
+                    fileType,
+                    mimeType
+            );
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao excluir foto: " + filename, e);
+        }
+    }
+
 }

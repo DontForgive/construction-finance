@@ -235,8 +235,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional(readOnly = true)
     public List<ExpenseCreateDTO> ExpenseCreateByFileDTO(final MultipartFile file) {
-        // Parsing CSV simples (UTF-8, delimitador ";") para gerar DTOs.
-        // Caso use XLSX/ODS, mover parsing para um componente dedicado com Apache POI.
         final List<ExpenseCreateDTO> items = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             String header = reader.readLine(); // cabeçalho
@@ -247,7 +245,6 @@ public class ExpenseServiceImpl implements ExpenseService {
             while ((line = reader.readLine()) != null) {
                 if (line.isBlank()) continue;
                 String[] cols = line.split(";");
-                // Esperado: data;descricao;fornecedor;pagador;categoria;forma;valor;anexoUrl
                 LocalDate date = LocalDate.parse(cols[0].trim());
                 String description = cols[1].trim();
                 String supplierName = cols[2].trim();
@@ -257,7 +254,6 @@ public class ExpenseServiceImpl implements ExpenseService {
                 BigDecimal amount = new BigDecimal(cols[6].trim());
                 String attachmentUrl = cols.length > 7 ? cols[7].trim() : null;
 
-                // Resolve referências via serviços com cache; retorna DTOs contendo IDs resolvidos
                 Long supplierId = supplierName.isEmpty() ? null : findOrCreateSupplierByName(supplierName).id();
                 Long payerId = payerName.isEmpty() ? null : findOrCreatePayerByName(payerName).id();
                 Long categoryId = categoryName.isEmpty() ? null : findOrCreateCategoryByName(categoryName).id();

@@ -73,4 +73,10 @@ export class ImagesService {
       headers: this.getAuthHeaders()
     });
   }
+
+  deletePhoto(year: number, month: number, name: string): Observable<ApiResponseTest<PhotoDTO>> {
+    return this.httpClient.delete<ApiResponseTest<PhotoDTO>>(`${this.API}/${year}/${month}/${name}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }

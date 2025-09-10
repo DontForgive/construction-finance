@@ -19,7 +19,7 @@
   <!-- Navegação (breadcrumb) -->
   <div class="breadcrumb" *ngIf="selectedYear || selectedMonth">
     <span class="breadcrumb-link" (click)="backToYears()">Anos</span>
-    <span *ngIf="selectedYear"> / 
+    <span *ngIf="selectedYear"> /
       <span class="breadcrumb-link" (click)="backToMonths()">{{ selectedYear }}</span>
     </span>
     <span *ngIf="selectedMonth"> / {{ monthNames[selectedMonth - 1] }}</span>
@@ -46,15 +46,18 @@
     <mat-icon>photo_library</mat-icon>
     <p>Nenhuma foto encontrada</p>
   </div>
-  
-<!-- Grid de miniaturas -->
-<div class="gallery-grid" *ngIf="selectedYear && selectedMonth && photos.length > 0">
-  <div class="gallery-item" *ngFor="let photo of photos; let i = index" (click)="openPhoto(i)">
-    <img *ngIf="photo.type === 'photo'" [src]="apiUrl + photo.url" [alt]="photo.filename" />
-    <video *ngIf="photo.type === 'video'" [src]="apiUrl + photo.url" muted></video>
-  </div>
-</div>
 
+  <!-- Grid de miniaturas -->
+  <div class="gallery-grid" *ngIf="selectedYear && selectedMonth && photos.length > 0">
+    <div class="gallery-item" *ngFor="let photo of photos; let i = index">
+      <img *ngIf="photo.type === 'photo'" [src]="apiUrl + photo.url" [alt]="photo.filename" (click)="openPhoto(i)" />
+      <video *ngIf="photo.type === 'video'" [src]="apiUrl + photo.url" muted (click)="openPhoto(i)"></video>
+      <button class="delete-btn pull-right" mat-icon-button color="warn" aria-label="Excluir"
+              (click)="$event.stopPropagation(); onDeletePhoto(photo, i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
 <!-- Fullscreen sem thumbnails -->
 <p-galleria
   [value]="photos"
@@ -65,6 +68,15 @@
   [showItemNavigators]="true"
   [showThumbnails]="false"
   (onHide)="displayFullscreen = false">
+
+  <ng-template pTemplate="header">
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding:8px;">
+      <button mat-raised-button color="warn" (click)="onDeleteActivePhoto()">
+        <mat-icon>delete</mat-icon>
+        Excluir
+      </button>
+    </div>
+  </ng-template>
 
   <!-- Item -->
   <ng-template pTemplate="item" let-item>

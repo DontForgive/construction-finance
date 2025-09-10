@@ -17,4 +17,6 @@ public interface PhotoService {
 
     List<PhotoDTO> getAll();
 
+    PhotoDTO delete(int year, int month, String filename);
+
 }
