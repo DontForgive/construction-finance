@@ -45,7 +45,8 @@ public class PayerServiceImpl implements PayerService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "payerList", allEntries = true)
+            @CacheEvict(value = "payerList", allEntries = true),
+            @CacheEvict(value = "payerByName", key = "#dto.name().toLowerCase()", condition = "#dto.name() != null")
     })
     public PayerDTO create(PayerCreateDTO dto) {
         String name = dto.name().trim();
@@ -69,7 +70,7 @@ public class PayerServiceImpl implements PayerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Pagador com ID %d não encontrado".formatted(id)));
 
         String name = dto.name().trim();
-        if (!entity.getName().equalsIgnoreCase(name) && repository.existsByNameIgnoreCase(name)) {
+        if (repository.existsByNameIgnoreCaseAndIdNot(name, id)) {
             throw new ConflictException("Já existe um pagador com nome '%s'".formatted(name));
         }
         mapper.updateEntity(entity, dto);
@@ -80,9 +81,7 @@ public class PayerServiceImpl implements PayerService {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "payerList", allEntries = true)
-    })
+    @CacheEvict(value = "payerList", allEntries = true)
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new NotFoundException("Pagador com o ID %d não encontrado".formatted(id));
@@ -94,7 +93,6 @@ public class PayerServiceImpl implements PayerService {
     @Transactional
     public PayerDTO findOrCreateByName(String name) {
         final String normalized = name.trim();
-        // Primeiro tenta buscar do repositório (rápido + evita poluir cache com misses)
         return repository.findByNameIgnoreCase(normalized)
                 .map(mapper::toDTO)
                 .orElseGet(() -> createAndCache(normalized));
@@ -118,7 +116,6 @@ public class PayerServiceImpl implements PayerService {
             entity = repository.save(entity);
             return mapper.toDTO(entity);
         } catch (DataIntegrityViolationException ex) {
-            // Concorrência: outro request criou simultaneamente. Recarrega.
             Payer existing = repository.findByNameIgnoreCase(normalized)
                     .orElseThrow(() -> ex);
             return mapper.toDTO(existing);
