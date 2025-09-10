@@ -19,6 +19,5 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'images',         component: ImagesComponent,    canActivate: [AuthGuard]  },
     { path: 'user',           component: UserComponent,      canActivate: [AuthGuard]  },
     { path: 'profile',        component: ProfileComponent,   canActivate: [AuthGuard]  },
-
-    { path: '**', redirectTo: 'dashboard' } 
+    { path: '**', redirectTo: 'dashboard' },
 ];
