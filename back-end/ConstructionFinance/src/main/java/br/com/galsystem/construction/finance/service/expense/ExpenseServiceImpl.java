@@ -64,7 +64,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("ExpenseList")
     public Page<ExpenseDTO> list(
             final String description,
             final Long supplierId,
