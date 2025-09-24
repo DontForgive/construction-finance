@@ -159,7 +159,6 @@ export class ImagesComponent implements OnInit {
       if (!result.isConfirmed) return;
 
       this.imagesService.deletePhoto(year, month, name).subscribe((result) => {
-        console.log("Status: ", result.status);
         if (result.status != 200) {
           Swal.fire({
             icon: "error",
@@ -176,7 +175,6 @@ export class ImagesComponent implements OnInit {
             timer: 1000,
           });
         }
-        console.log("result: ", result);
       });
 
       this.photos.splice(index, 1);

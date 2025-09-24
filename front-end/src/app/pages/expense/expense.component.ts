@@ -37,7 +37,8 @@ export class ExpenseComponent implements OnInit {
   suppliers: Supplier[] = [];
   payers: Payer[] = [];
   categories: Category[] = [];
-
+  somaTotal: number = 0;
+  somaTotalResult: string = '';
   private readonly API = `${environment.API_NO_BAR}`;
 
   constructor(
@@ -54,6 +55,7 @@ export class ExpenseComponent implements OnInit {
     this.loadPayers();
     this.loadSuppliers();
     this.loadCategories();
+
   }
 
   listExpenses(page: number = 0) {
@@ -71,17 +73,22 @@ export class ExpenseComponent implements OnInit {
     })
     .subscribe({
       next: (res) => {
+
         this.list_expenses = res.data.content;
         this.totalElements = res.data.totalElements;
         this.totalPages = res.data.totalPages;
+        this.somaTotalDespesas(this.list_expenses);
+
+
       },
       error: (err) => {
         this.toast.error("Erro ao buscar despesas", "Erro");
         console.error("Erro ao buscar despesas:", err);
       },
     });
-}
 
+
+  }
 
   openAddDialog() {
     const dialogRef = this.dialog.open(ExpenseAddDialogComponent, {
@@ -190,4 +197,18 @@ export class ExpenseComponent implements OnInit {
       },
     });
   }
+
+    somaTotalDespesas(list_expenses: Expense[]){ {
+      this.somaTotal = 0;
+      list_expenses.map(expense => {
+        console.log('EXPENSE AMOUNT: ', expense.amount)
+        this.somaTotal += expense.amount
+        const formatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+        this.somaTotalResult = formatter.format(this.somaTotal);
+    }); 
+    }
+}
 }
