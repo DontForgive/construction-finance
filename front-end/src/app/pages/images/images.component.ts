@@ -45,7 +45,7 @@ export class ImagesComponent implements OnInit {
   constructor(
     private imagesService: ImagesService,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadYears();
@@ -101,11 +101,11 @@ export class ImagesComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    const file = input.files[0];
+    const files = Array.from(input.files); // 👈 vários arquivos
     this.uploading = true;
     this.progress = 0;
 
-    this.imagesService.uploadWithProgress(file).subscribe({
+    this.imagesService.uploadManyWithProgress(files).subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
           this.progress = Math.round((100 * event.loaded) / event.total);
@@ -113,7 +113,6 @@ export class ImagesComponent implements OnInit {
           this.uploading = false;
           console.log("Upload concluído:", event.body);
 
-          // recarrega as fotos de acordo com a seleção
           if (this.selectedYear && this.selectedMonth) {
             this.openMonth(this.selectedMonth);
           } else if (this.selectedYear) {
@@ -125,23 +124,25 @@ export class ImagesComponent implements OnInit {
       },
       error: (err) => {
         this.uploading = false;
-        console.error("Erro ao enviar foto", err);
+        console.error("Erro ao enviar fotos", err);
       },
     });
   }
+
+
 
   openPhoto(index: number): void {
     this.activeIndex = index;
     this.displayFullscreen = true;
   }
 
-  onDeleteActivePhoto(photo){
+  onDeleteActivePhoto(photo) {
     console.log("Photo: ", photo);
   }
 
   onDeletePhoto(index: number): void {
     const photo = this.photos[index];
-    console.log("Nome da foto:" , photo?.filename);
+    console.log("Nome da foto:", photo?.filename);
     const name = photo?.filename || photo?.url || "esta mídia";
     const year = this.selectedYear || 0;
     const month = this.selectedMonth || 0;

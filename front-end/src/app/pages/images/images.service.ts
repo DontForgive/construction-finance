@@ -32,22 +32,40 @@ export class ImagesService {
     return this.httpClient.post<ApiResponseTest<PhotoDTO>>(`${this.API}`, formData, {
       headers: this.getAuthHeaders()
     });
+
+
   }
+
+  uploadManyWithProgress(files: File[]): Observable<HttpEvent<ApiResponseTest<PhotoDTO[]>>> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file)); // 👈 chave "files"
+
+    return this.httpClient.post<ApiResponseTest<PhotoDTO[]>>(
+      `${this.API}`,
+      formData,
+      {
+        headers: this.getAuthHeaders(),
+        reportProgress: true,
+        observe: 'events'
+      }
+    );
+  }
+
 
   /**
    * Upload com progresso (emite eventos HttpEvent)
    */
   uploadWithProgress(file: File): Observable<HttpEvent<ApiResponseTest<PhotoDTO>>> {
-  const formData = new FormData();
-  formData.append('file', file);
+    const formData = new FormData();
+    formData.append('file', file);
 
-  const req = new HttpRequest('POST', this.API, formData, {
-    headers: this.getAuthHeaders(),
-    reportProgress: true
-  });
+    const req = new HttpRequest('POST', this.API, formData, {
+      headers: this.getAuthHeaders(),
+      reportProgress: true
+    });
 
-  return this.httpClient.request<ApiResponseTest<PhotoDTO>>(req);
-}
+    return this.httpClient.request<ApiResponseTest<PhotoDTO>>(req);
+  }
 
 
   listYears(): Observable<ApiResponseTest<number[]>> {

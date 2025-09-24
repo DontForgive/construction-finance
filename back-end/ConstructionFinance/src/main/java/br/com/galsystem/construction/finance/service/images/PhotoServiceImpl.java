@@ -14,6 +14,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -28,36 +29,48 @@ public class PhotoServiceImpl implements PhotoService {
     private String storageRoot;
 
     @Override
-    public PhotoDTO store(MultipartFile file) {
+    public List<PhotoDTO> store(List<MultipartFile> files) {
         LocalDate now = LocalDate.now();
         String year = String.valueOf(now.getYear());
         String month = String.format("%02d", now.getMonthValue());
 
         Path dir = Paths.get(storageRoot, "images", year, month);
+
+        List<PhotoDTO> photos = new ArrayList<>();
+
         try {
             Files.createDirectories(dir);
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path path = dir.resolve(filename);
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-            FileTime fileTime = Files.getLastModifiedTime(path);
-            LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+            for (MultipartFile file : files) {
+                String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                Path path = dir.resolve(filename);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-            String fileName = path.getFileName().toString();
-            String fileType = "";
-            String mimeType = Files.probeContentType(path);
+                FileTime fileTime = Files.getLastModifiedTime(path);
+                LocalDateTime uploadedAt = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
 
+                String fileName = path.getFileName().toString();
+                String fileType = "";
+                String mimeType = Files.probeContentType(path);
 
-            int dotIndex = fileName.lastIndexOf('.');
-            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-                fileType = fileName.substring(dotIndex + 1).toLowerCase();
+                int dotIndex = fileName.lastIndexOf('.');
+                if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                    fileType = fileName.substring(dotIndex + 1).toLowerCase();
+                }
+
+                photos.add(new PhotoDTO(
+                        filename,
+                        "/files/images/" + year + "/" + month + "/" + filename,
+                        uploadedAt,
+                        fileType,
+                        mimeType
+                ));
             }
 
-            return new PhotoDTO(filename,
-                    "/files/images/" + year + "/" + month + "/" + filename,
-                    uploadedAt, fileType, mimeType);
+            return photos;
+
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar foto", e);
+            throw new RuntimeException("Erro ao salvar fotos", e);
         }
     }
 

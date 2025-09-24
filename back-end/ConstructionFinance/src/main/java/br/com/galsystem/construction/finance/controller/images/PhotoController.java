@@ -22,8 +22,8 @@ public class PhotoController {
     private final PhotoService photoService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Response<PhotoDTO>> upload(@RequestPart("file") final MultipartFile file) {
-        return ResponseEntity.ok(new Response<>(200, "Foto enviada com sucesso", photoService.store(file), null));
+    public ResponseEntity<Response<List<PhotoDTO>>> upload(@RequestPart("files") final List<MultipartFile> files) {
+        return ResponseEntity.ok(new Response<>(200, "Foto enviada com sucesso", photoService.store(files), null));
     }
 
     @GetMapping

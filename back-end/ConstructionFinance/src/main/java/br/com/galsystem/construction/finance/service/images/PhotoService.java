@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PhotoService {
 
-    PhotoDTO store(MultipartFile file);
+    List<PhotoDTO> store(List<MultipartFile> file);
 
     List<Integer> listYears();
 
