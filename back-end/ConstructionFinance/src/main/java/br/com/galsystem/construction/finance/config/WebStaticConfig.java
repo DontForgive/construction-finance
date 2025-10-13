@@ -15,7 +15,7 @@ public class WebStaticConfig implements WebMvcConfigurer {
     private String storageRoot;
 
     @Value("${app.files.public-base-url}")
-    private String publicBaseUrl; // ex.: /files
+    private String publicBaseUrl;
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {

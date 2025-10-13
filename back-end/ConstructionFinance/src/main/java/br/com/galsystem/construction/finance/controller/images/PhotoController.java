@@ -3,9 +3,8 @@ package br.com.galsystem.construction.finance.controller.images;
 
 import br.com.galsystem.construction.finance.dto.images.PhotoDTO;
 import br.com.galsystem.construction.finance.response.Response;
-import br.com.galsystem.construction.finance.service.images.PhotoService;
+import br.com.galsystem.construction.finance.service.images.PhotoServiceV1;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PhotoController {
 
-    private final PhotoService photoService;
+    private final PhotoServiceV1 photoService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<List<PhotoDTO>>> upload(@RequestPart("files") final List<MultipartFile> files) {

@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface PhotoService {
+public interface PhotoServiceV1 {
 
     List<PhotoDTO> store(List<MultipartFile> file);
 

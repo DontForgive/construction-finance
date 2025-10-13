@@ -61,6 +61,13 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+//    implementation platform("software.amazon.awssdk:bom:2.20.66")
+//    implementation "software.amazon.awssdk:s3"
+//    implementation 'software.amazon.awssdk:s3:2.20.66'
+//    implementation 'software.amazon.awssdk:s3-presigner:2.20.66'
+
+
+
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

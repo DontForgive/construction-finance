@@ -2,14 +2,19 @@ package br.com.galsystem.construction.finance.service.user;
 
 import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
+import br.com.galsystem.construction.finance.exception.NotFoundException;
 import br.com.galsystem.construction.finance.mapper.UserMapper;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;
+import br.com.galsystem.construction.finance.response.PasswordUpdateResponse;
 import br.com.galsystem.construction.finance.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,4 +94,53 @@ public class UserService {
     public void deleteById(final Long id) {
         userRepository.deleteById(id);
     }
+
+    @Transactional
+    public PasswordUpdateResponse updatePassword(Long userId, String password, String newPassword, String confirmPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return new PasswordUpdateResponse(404, "Usuário não encontrado");
+        }
+
+        User user = userOpt.get();
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            return new PasswordUpdateResponse(401, "Senha atual incorreta");
+        }
+
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            return new PasswordUpdateResponse(400, "A nova senha não pode ser igual à senha atual");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            return new PasswordUpdateResponse(400, "As novas senhas não coincidem");
+        }
+
+        if (newPassword.length() < 6) {
+            return new PasswordUpdateResponse(422, "A nova senha deve ter pelo menos 6 caracteres");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return new PasswordUpdateResponse(200, "Senha alterada com sucesso");
+    }
+    public Long getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UsernameNotFoundException("Usuário não autenticado");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User userDetails) {
+            return userDetails.getId();
+        } else if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
+            return userRepository.findByUsername(springUser.getUsername())
+                    .map(User::getId)
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        }
+        throw new UsernameNotFoundException("Tipo de autenticação desconhecido");
+    }
+
 }

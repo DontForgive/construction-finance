@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Builder
@@ -18,3 +19,5 @@ public class Response<T> {
     private T data;
     private List<String> erros = new ArrayList<>();
 }
+
+

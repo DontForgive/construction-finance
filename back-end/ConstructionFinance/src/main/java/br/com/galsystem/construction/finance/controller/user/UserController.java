@@ -1,7 +1,10 @@
 package br.com.galsystem.construction.finance.controller.user;
-
+import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
+import br.com.galsystem.construction.finance.dto.user.UpdatePasswordRequest;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
+import br.com.galsystem.construction.finance.mapper.UserMapper;
 import br.com.galsystem.construction.finance.models.User;
+import br.com.galsystem.construction.finance.response.PasswordUpdateResponse;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,9 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Optional;
+
 
 @Tag(name = "Users", description = "Usuários")
 @RestController
@@ -23,7 +27,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-
+    private final UserMapper userMapper;
     // GET /users -> lista todos (paginar depois)
 //    @GetMapping
 //    public ResponseEntity<Response<List<UserDTO>>> listAll() {
@@ -98,5 +102,38 @@ public class UserController {
         // opcional: verificar existência antes e retornar 404 se não existir
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/update/password")
+    public ResponseEntity<PasswordUpdateResponse> updatePassword(@RequestBody UpdatePasswordRequest request) {
+        Long userId = userService.getAuthenticatedUserId();
+        PasswordUpdateResponse response = userService.updatePassword(
+                userId,
+                request.getPassword(),
+                request.getNewPassword(),
+                request.getConfirmNewPassword()
+        );
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Response<UserDTO>> profile() {
+        Long userId = userService.getAuthenticatedUserId();
+        Optional<User> opt = userService.findById(userId);
+
+        Response<UserDTO> resp = new Response<>();
+
+        if (opt.isEmpty()) {
+            resp.setStatus(404);
+            resp.setMessage("Usuário não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resp);
+        }
+
+        UserDTO dto = userMapper.toDTO(opt.get());
+        resp.setStatus(200);
+        resp.setMessage("Usuário encontrado");
+        resp.setData(dto);
+
+        return ResponseEntity.ok(resp);
     }
 }

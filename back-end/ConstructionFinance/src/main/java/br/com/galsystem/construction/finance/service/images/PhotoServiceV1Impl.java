@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class PhotoServiceImpl implements PhotoService {
+public class PhotoServiceV1Impl implements PhotoServiceV1 {
 
     @Value("${app.files.storage-root}")
     private String storageRoot;
