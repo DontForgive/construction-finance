@@ -10,9 +10,9 @@ import { environment } from 'environments/environment';
 })
 export class UserService {
 
-private readonly API = `${environment.API}`
-  
-constructor(private httpClient: HttpClient, private authService: AuthService) { }
+  private readonly API = `${environment.API}`
+
+  constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -20,7 +20,6 @@ constructor(private httpClient: HttpClient, private authService: AuthService) { 
       Authorization: `Bearer ${token}`
     });
   }
-
   getUsers(
     page: number = 0,
     size: number = 10,

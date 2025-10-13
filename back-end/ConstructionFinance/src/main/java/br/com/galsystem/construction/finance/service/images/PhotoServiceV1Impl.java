@@ -106,6 +106,7 @@ public class PhotoServiceImpl implements PhotoService {
     public List<PhotoDTO> listPhotos(int year, int month) {
         Path dir = Paths.get(storageRoot, "images", String.valueOf(year), String.format("%02d", month));
         if (!Files.exists(dir)) return List.of();
+
         try (Stream<Path> stream = Files.list(dir)) {
             return stream.filter(Files::isRegularFile)
                     .map(path -> {
@@ -134,6 +135,7 @@ public class PhotoServiceImpl implements PhotoService {
                     })
                     .sorted(Comparator.comparing(PhotoDTO::getUploadedAt).reversed())
                     .toList();
+
         } catch (IOException e) {
             throw new RuntimeException("Erro ao listar fotos", e);
         }

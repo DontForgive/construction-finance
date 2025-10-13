@@ -30,6 +30,7 @@ import { ImagesComponent } from 'app/pages/images/images.component';
 import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 import { GalleriaModule } from 'primeng/galleria';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ProfileComponent } from 'app/pages/profile/profile.component';
 
 
 @NgModule({
@@ -77,7 +78,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     ExpenseComponent,
     ExpenseAddDialogComponent,
     ImagesComponent,
-    PhotoDialogComponent
+    PhotoDialogComponent,
+    ProfileComponent
     
 
   ],
