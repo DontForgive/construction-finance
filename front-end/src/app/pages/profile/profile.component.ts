@@ -22,14 +22,45 @@ export class ProfileComponent implements OnInit {
       id: [''],
       username: [''],
       fullName: [''],
-      email: ['']
+      email: [''],
+      phoneNumber: ['']
     });
 
     this.getProfile();
   }
 
   onSubmit(){
-    
+    this.updateProfile();
+  }
+
+  updateProfile(): void {
+    if (this.profileForm.invalid) {
+      this.toast.error('Formulário inválido. Verifique os campos e tente novamente.');
+      return;
+    } 
+    const profileData = this.profileForm.value;
+
+    Swal.fire({
+      title: 'Atualizando perfil...',
+      text: 'Por favor, aguarde.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+    this.service.updateProfile(profileData)
+      .subscribe({
+        next: (res) => {
+          Swal.close();
+          if (res.status === 200) {
+            this.toast.success(res.message || 'Perfil atualizado com sucesso!');
+          } else {
+            this.toast.warning(res.message || 'Não foi possível atualizar o perfil.');
+          } 
+        },
+        error: (err) => {
+          Swal.close();
+          this.toast.error(err.error?.message || 'Ocorreu um erro ao atualizar o perfil.');
+        } 
+      });
   }
 
   getProfile(): void {
@@ -39,7 +70,8 @@ export class ProfileComponent implements OnInit {
         id: data.id,
         username: data.username,
         fullName: data.fullName,
-        email: data.email
+        email: data.email,
+        phoneNumber: data.phoneNumber
       });
     });
   }

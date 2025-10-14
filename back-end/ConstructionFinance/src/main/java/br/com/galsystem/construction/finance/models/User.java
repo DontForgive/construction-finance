@@ -27,6 +27,9 @@ public class User {
     @Column(name = "full_name")
     private String fullName;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

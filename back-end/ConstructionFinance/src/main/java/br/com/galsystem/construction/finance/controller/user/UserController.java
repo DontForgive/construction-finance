@@ -1,6 +1,7 @@
 package br.com.galsystem.construction.finance.controller.user;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.user.UpdatePasswordRequest;
+import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.mapper.UserMapper;
 import br.com.galsystem.construction.finance.models.User;
@@ -28,25 +29,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
-    // GET /users -> lista todos (paginar depois)
-//    @GetMapping
-//    public ResponseEntity<Response<List<UserDTO>>> listAll() {
-//        final List<User> users = userService.findAll();
-//        final List<UserDTO> dtos = new ArrayList<>(users.size());
-//        for (final User u : users) {
-//            final UserDTO dto = new UserDTO();
-//            dto.setId(u.getId());
-//            dto.setUsername(u.getUsername());
-//            dto.setEmail(u.getEmail());
-//            // dto.setFullName(...); // se/quando existir na entidade
-//            dtos.add(dto);
-//        }
-//        final Response<List<UserDTO>> resp = new Response<>();
-//        resp.setStatus(200);
-//        resp.setMessage("Lista de usuários");
-//        resp.setData(dtos);
-//        return ResponseEntity.ok(resp);
-//    }
 
     @GetMapping
     public ResponseEntity<Response<Page<UserDTO>>> list(
@@ -96,10 +78,8 @@ public class UserController {
         return ResponseEntity.ok(resp);
     }
 
-    // DELETE /users/{id} -> remove por id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable final Long id) {
-        // opcional: verificar existência antes e retornar 404 se não existir
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -133,6 +113,36 @@ public class UserController {
         resp.setStatus(200);
         resp.setMessage("Usuário encontrado");
         resp.setData(dto);
+
+        return ResponseEntity.ok(resp);
+    }
+    
+    @PutMapping("/profile")
+    public ResponseEntity<Response<UserDTO>> updateProfile(@RequestBody UserDTO dto) {
+        Long userId = userService.getAuthenticatedUserId();
+        Optional<User> opt = userService.findById(userId);
+
+        Response<UserDTO> resp = new Response<>();
+
+        if (opt.isEmpty()) {
+            resp.setStatus(404);
+            resp.setMessage("Usuário não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resp);
+        }
+
+        User user = opt.get();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setFullName(dto.getFullName());
+        user.setPhoneNumber(dto.getPhoneNumber());
+
+        UserCreateDTO userDTO = userMapper.toUserCreateDTO(user);
+        Response<UserDTO> updatedUser = userService.save(userDTO);
+        UserDTO updatedDto = updatedUser.getData();
+
+        resp.setStatus(200);
+        resp.setMessage("Perfil atualizado com sucesso");
+        resp.setData(updatedDto);
 
         return ResponseEntity.ok(resp);
     }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
 import { ApiResponse } from 'app/utils/response';
+import { User } from '../user/user';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,14 @@ export class ProfileService {
           newPassword: newPassword,
           confirmNewPassword: confirmNewPassword
         },
+        { headers: this.getAuthHeaders() }
+      );
+    }
+
+    updateProfile(data: User) {
+      return this.httpClient.put<ApiResponse<any>>(
+        `${this.API}users/profile`,
+        data,
         { headers: this.getAuthHeaders() }
       );
     }

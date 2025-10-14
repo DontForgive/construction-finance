@@ -15,6 +15,7 @@ public record UserUpdateDTO(
 
         @NotBlank(message = "E-mail é obrigatório")
         @Email(message = "E-mail deve ser válido")
-        String email
+        String email,
+        String phoneNumber
 ) {
 }

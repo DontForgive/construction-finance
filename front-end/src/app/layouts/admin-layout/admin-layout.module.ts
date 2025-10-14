@@ -59,7 +59,7 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     MatNativeDateModule,
     MatCardModule,
     GalleriaModule,
-    MatProgressBarModule
+    MatProgressBarModule,
   ],
   exports: [
     GalleriaModule

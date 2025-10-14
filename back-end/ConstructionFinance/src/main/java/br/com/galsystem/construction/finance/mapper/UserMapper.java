@@ -14,4 +14,6 @@ public interface UserMapper {
     User toEntity(UserCreateDTO dto);
 
     void updateEntity(@MappingTarget User entity, UserUpdateDTO dto);
+
+    UserCreateDTO toUserCreateDTO(User entity);
 }

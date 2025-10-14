@@ -77,7 +77,7 @@ public class UserService {
 
             final User saved = userRepository.save(user);
             // DTO de saída
-            final UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername(), saved.getFullName());
+            final UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername(), saved.getFullName(), saved.getPhoneNumber());
             resp.setStatus(201);
             resp.setMessage("Usuário cadastrado com sucesso!");
             resp.setData(dto);
