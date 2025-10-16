@@ -9,6 +9,7 @@ import { ExpenseComponent } from 'app/pages/expense/expense.component';
 import { ImagesComponent } from 'app/pages/images/images.component';
 import { UserComponent } from 'app/pages/user/user.component';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
+import { WorkdayComponent } from 'app/pages/workday/workday.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuard]  },
@@ -19,5 +20,6 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'images',         component: ImagesComponent,    canActivate: [AuthGuard]  },
     { path: 'user',           component: UserComponent,      canActivate: [AuthGuard]  },
     { path: 'profile',        component: ProfileComponent,   canActivate: [AuthGuard]  },
+    { path: 'workday',        component: WorkdayComponent,   canActivate: [AuthGuard]  },
     { path: '**', redirectTo: 'dashboard' },
 ];

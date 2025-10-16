@@ -31,6 +31,8 @@ import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 import { GalleriaModule } from 'primeng/galleria';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
+import { WorkdayComponent } from 'app/pages/workday/workday.component';
+import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogComponent';
 
 
 @NgModule({
@@ -40,13 +42,13 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     NgbModule,
     MatPaginatorModule,
     MatDialogModule,
-    MatFormFieldModule, // <-- Adicione aqui!
+    MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
     ToastrModule.forRoot({
-      positionClass: 'toast-top-right', // canto superior direito
+      positionClass: 'toast-top-right', 
       timeOut: 1500,
       closeButton: true,
       progressBar: true,
@@ -60,6 +62,7 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     MatCardModule,
     GalleriaModule,
     MatProgressBarModule,
+    
   ],
   exports: [
     GalleriaModule
@@ -67,7 +70,6 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
   declarations: [
     DashboardComponent,
     UserComponent,
-
     /*  MY PAGES E COMPONENTS  */
     CategoryComponent,
     SupplierComponent,
@@ -79,9 +81,10 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     ExpenseAddDialogComponent,
     ImagesComponent,
     PhotoDialogComponent,
-    ProfileComponent
+    ProfileComponent,
+    WorkdayComponent,
+    WorkdayAddDialogComponent,
     
-
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },

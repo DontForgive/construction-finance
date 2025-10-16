@@ -5,30 +5,23 @@
       <h1>Entrar</h1>
       <span>Use sua conta para acessar</span>
 
-      <input
-        type="text"
-        formControlName="username"
-        placeholder="Usuário"
-      />
+      <input type="text" formControlName="username" placeholder="Usuário" />
       <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched" class="error">
         O usuário é obrigatório.
       </div>
 
-      <input
-        type="password"
-        formControlName="password"
-        placeholder="Senha"
-      />
+      <input type="password" formControlName="password" placeholder="Senha" />
       <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="error">
         A senha é obrigatória.
       </div>
 
-      <a href="#">Esqueceu sua senha?</a>
 
       <button type="submit" [disabled]="loading">
         {{ loading ? 'Entrando...' : 'Entrar' }}
       </button>
+      <a href="#" (click)="resetPassword()">Esqueceu sua senha?</a>
     </form>
+
   </div>
 
   <!-- Painel lateral -->

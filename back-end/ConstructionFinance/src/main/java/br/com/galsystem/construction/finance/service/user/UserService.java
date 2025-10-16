@@ -4,6 +4,7 @@ import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
 import br.com.galsystem.construction.finance.mapper.UserMapper;
+import br.com.galsystem.construction.finance.models.PasswordResetToken;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import br.com.galsystem.construction.finance.response.PasswordUpdateResponse;

@@ -73,21 +73,44 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                // usar o bean acima (em vez de cors -> {})
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login", "/error").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/files/**").permitAll()
+                        // 🔓 Rotas públicas (sem autenticação)
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/auth/forgot-password",
+                                "/auth/reset-password",
+                                "/reset-password",           // caso a view HTML esteja fora do /auth
+                                "/error"
+                        ).permitAll()
+
+                        // 🔓 Swagger e documentação
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // 🔓 Recursos públicos (arquivos)
+                        .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
                         .requestMatchers(HttpMethod.HEAD, "/files/**").permitAll()
+
+                        // 🔐 Necessitam autenticação
                         .requestMatchers(HttpMethod.POST, "/uploads/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/expenses/*/attachment").authenticated()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                        // ❌ Remova ou ajuste esta linha antiga (ela bloqueava o fluxo)
+                        // .requestMatchers(HttpMethod.PUT, "/reset-password**").authenticated()
+
+                        // 🔓 Página inicial
                         .requestMatchers("/", "/index.html", "/index").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+
+                        // 🔒 Qualquer outra rota: autenticada
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -99,10 +122,10 @@ public class SecurityConfig {
                             res.setStatus(HttpStatus.FORBIDDEN.value());
                             res.setContentType("application/json");
                             res.getWriter().write("""
-                        {"status":403,"message":"Acesso negado","data":null,"erros":[]}
-                    """);
+                    {"status":403,"message":"Acesso negado","data":null,"erros":[]}
+                """);
                         })
                 );
+
         return http.build();
-    }
-}
+    }}

@@ -1,0 +1,152 @@
+<!-- 🔹 Filtro -->
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form class="g-2 align-items-end">
+          <div class="row">
+            <!-- Mês -->
+            <div class="col-md-3">
+              <label for="month" class="form-label fw-semibold">Mês</label>
+              <input type="month"
+                     id="month"
+                     class="form-control"
+                     [value]="year + '-' + ('0' + month).slice(-2)"
+                     (change)="onMonthChange($event)">
+            </div>
+
+            <!-- Fornecedor -->
+            <div class="col-md-5">
+              <label for="supplierId" class="form-label fw-semibold">Fornecedor (Serviço)</label>
+              <select id="supplierId"
+                      class="form-select"
+                      [(ngModel)]="supplierId"
+                      name="supplierId"
+                      (change)="onSupplierChange()">
+                <option [ngValue]="undefined">Todos</option>
+                <option *ngFor="let s of suppliers" [ngValue]="s.id">{{ s.name }}</option>
+              </select>
+            </div>
+
+            <!-- Botão Buscar -->
+            <div class="col-md-2 d-flex">
+              <button type="button"
+                      class="btn btn-lg btn-primary flex-fill"
+                      (click)="loadWorkDays()">
+                <i class="nc-icon nc-zoom-split me-1"></i> Buscar
+              </button>
+            </div>
+
+            <!-- Botão Limpar -->
+            <div class="col-md-2 d-flex">
+              <button type="button"
+                      class="btn btn-lg btn-secondary flex-fill"
+                      (click)="clearFilters()">
+                <i class="nc-icon nc-refresh-69 me-1"></i> Limpar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Listagem -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Dias Trabalhados</h4>
+        <button class="btn btn-primary" (click)="openDialog()">
+          <i class="nc-icon nc-simple-add me-1"></i> Novo Registro
+        </button>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Loader -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Carregando registros...</p>
+        </div>
+
+        <!-- Tabela -->
+        <div *ngIf="!loading" class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="text-primary">
+              <tr>
+                <th>Data</th>
+                <th>Fornecedor</th>
+                <th>Valor (R$)</th>
+                <th>Horas</th>
+                <th>Status</th>
+                <th>Observação</th>
+                <th class="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let w of workDays">
+                <td>{{ w.date | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ w.supplierName }}</td>
+                <td>{{ w.dailyValue | currency:'BRL' }}</td>
+                <td>{{ w.hoursWorked || '-' }}</td>
+                <td>
+                  <span class="badge"
+                        [ngClass]="{
+                          'bg-success': w.status === 'PAGO',
+                          'bg-warning text-dark': w.status === 'PENDENTE'
+                        }">
+                    {{ w.status }}
+                  </span>
+                </td>
+                <td>{{ w.note || '-' }}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-danger"
+                          (click)="delete(w.id!)"
+                          title="Excluir">
+                    <i class="nc-icon nc-simple-remove"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="workDays.length === 0">
+                <td colspan="7" class="text-center text-muted py-3">
+                  Nenhum registro encontrado para este período.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totais -->
+        <div *ngIf="workDays.length > 0" class="mt-4 border-top pt-3">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <h6 class="text-muted mb-1">Total de Dias</h6>
+              <h5 class="fw-semibold">{{ workDays.length }}</h5>
+            </div>
+            <div class="col-md-3">
+              <h6 class="text-muted mb-1">Pendente</h6>
+              <h5 class="text-warning fw-semibold">
+                {{ getTotal('PENDENTE') | currency:'BRL' }}
+              </h5>
+            </div>
+            <div class="col-md-3">
+              <h6 class="text-muted mb-1">Pago</h6>
+              <h5 class="text-success fw-semibold">
+                {{ getTotal('PAGO') | currency:'BRL' }}
+              </h5>
+            </div>
+            <div class="col-md-3">
+              <h6 class="text-muted mb-1">Total Geral</h6>
+              <h5 class="fw-bold">
+                {{ getTotal() | currency:'BRL' }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

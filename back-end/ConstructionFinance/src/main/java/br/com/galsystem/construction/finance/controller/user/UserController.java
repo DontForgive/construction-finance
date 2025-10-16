@@ -1,5 +1,4 @@
 package br.com.galsystem.construction.finance.controller.user;
-import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.user.UpdatePasswordRequest;
 import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 

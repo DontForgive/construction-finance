@@ -29,6 +29,10 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  resetPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${environment.API}auth/forgot-password`, { email });
+  }
+
   /**
    * Retorna o payload decodificado do usuário (claims do JWT).
    */

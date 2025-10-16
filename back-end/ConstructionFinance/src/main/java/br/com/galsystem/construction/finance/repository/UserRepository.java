@@ -30,4 +30,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     Page<User> findByFilters(@Param("username") String username, @Param("email") String email, Pageable pageable);
 
+
 }
