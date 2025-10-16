@@ -109,8 +109,16 @@ export class WorkdayComponent implements OnInit {
       if (result.isConfirmed && result.value) {
         this.workdayService.create(result.value).subscribe({
           next: () => {
-            Swal.fire('Sucesso', 'Registro criado com sucesso!', 'success');
-            this.loadWorkDays();
+            Swal.fire({
+              icon: 'success',
+              title: 'Sucesso',
+              text: 'Registro criado com sucesso!',
+              showConfirmButton: false,
+              timer: 1000,
+              timerProgressBar: true
+            }).then(() => {
+              this.loadWorkDays();
+            });
           },
           error: () => Swal.fire('Erro', 'Falha ao criar registro', 'error')
         });
@@ -129,8 +137,16 @@ export class WorkdayComponent implements OnInit {
       if (result.isConfirmed) {
         this.workdayService.delete(id).subscribe({
           next: () => {
-            Swal.fire('Removido', 'Registro excluído com sucesso', 'success');
-            this.loadWorkDays();
+            Swal.fire({
+              icon: 'success',
+              title: 'Removido',
+              text: 'Registro excluído com sucesso!',
+              showConfirmButton: false,
+              timer: 1000,
+              timerProgressBar: true
+            }).then(() => {
+              this.loadWorkDays();
+            });
           },
           error: () => Swal.fire('Erro', 'Falha ao excluir registro', 'error')
         });
