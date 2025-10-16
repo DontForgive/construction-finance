@@ -20,8 +20,7 @@ public class Supplier {
     @NonNull
     private String name;
 
-    @Column(nullable = false)
-    @NonNull
+    @Column(nullable = true)
     @Builder.Default
     private boolean worker = false;
 
