@@ -3,7 +3,12 @@ package br.com.galsystem.construction.finance.controller.workday;
 
 import br.com.galsystem.construction.finance.dto.workday.WorkDayCreateDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayDTO;
+import br.com.galsystem.construction.finance.dto.workday.WorkDayPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayUpdateDTO;
+import br.com.galsystem.construction.finance.repository.CategoryRepository;
+import br.com.galsystem.construction.finance.repository.ExpenseRepository;
+import br.com.galsystem.construction.finance.repository.SupplierRepository;
+import br.com.galsystem.construction.finance.repository.WorkDayRepository;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.workday.WorkDayService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ public class WorkDayController {
 
     private final WorkDayService workDayService;
 
+
     @PostMapping
     public ResponseEntity<Response<WorkDayDTO>> create(@RequestBody WorkDayCreateDTO dto) {
         WorkDayDTO created = workDayService.create(dto);
@@ -28,6 +34,12 @@ public class WorkDayController {
         response.setMessage("Dia de trabalho registrado com sucesso");
         response.setData(created);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/pay")
+    public ResponseEntity<Response<Void>> pay(@RequestBody WorkDayPaymentDTO dto) {
+        workDayService.registerPayment(dto);
+        return ResponseEntity.ok(new Response<>(200, "Pagamento registrado com sucesso", null, null));
     }
 
     @PutMapping("/{id}")
