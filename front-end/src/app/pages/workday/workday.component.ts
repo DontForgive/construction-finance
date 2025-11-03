@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkDay } from './workday';
+import { WorkDay, WorkDayPaymentDTO } from './workday';
 import { Supplier } from '../supplier/supplier';
 import { WorkdayService } from './workday.service';
 import { SupplierService } from '../supplier/supplier.service';
@@ -125,6 +125,74 @@ export class WorkdayComponent implements OnInit {
       }
     });
   }
+
+  pay(id: number): void {
+    const supplierOptions = this.suppliers
+      .map(s => `<option value="${s.id}">${s.name}</option>`)
+      .join('');
+
+    Swal.fire({
+      title: 'Registrar pagamento',
+      html: `
+      <div class="text-start">
+        <label class="form-label mt-2">Fornecedor:</label>
+        <select id="swal-fornecedor" class="form-select">
+          <option value="">Selecione</option>
+          ${supplierOptions}
+        </select>
+
+        <label class="form-label mt-2">Descrição:</label>
+        <textarea id="swal-descricao" class="form-control" rows="2" placeholder="Descreva o pagamento"></textarea>
+
+        <label class="form-label mt-2">Data do pagamento:</label>
+        <input id="swal-data" type="date" class="form-control">
+      </div>
+    `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar pagamento',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const supplierId = (document.getElementById('swal-fornecedor') as HTMLSelectElement).value;
+        const description = (document.getElementById('swal-descricao') as HTMLTextAreaElement).value.trim();
+        const paymentDate = (document.getElementById('swal-data') as HTMLInputElement).value;
+
+        if (!supplierId || !description || !paymentDate) {
+          Swal.showValidationMessage('Preencha todos os campos antes de confirmar');
+          return false;
+        }
+
+        return { supplierId: Number(supplierId), description, paymentDate };
+      }
+    }).then(result => {
+      if (result.isConfirmed && result.value) {
+        const { supplierId, description, paymentDate } = result.value;
+
+        const dto: WorkDayPaymentDTO = {
+          workdayIds: [id], // ou this.selectedWorkdays para múltiplos
+          supplierId,
+          description,
+          paymentDate
+        };
+
+        this.workdayService.pay(dto).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago',
+              text: 'Registro marcado como pago!',
+              showConfirmButton: false,
+              timer: 1000,
+              timerProgressBar: true
+            }).then(() => this.loadWorkDays());
+          },
+          error: () =>
+            Swal.fire('Erro', 'Falha ao registrar o pagamento', 'error')
+        });
+      }
+    });
+  }
+
 
   delete(id: number): void {
     Swal.fire({

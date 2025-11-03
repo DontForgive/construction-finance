@@ -1,4 +1,5 @@
 package br.com.galsystem.construction.finance.service.expense;
+
 import br.com.galsystem.construction.finance.dto.category.CategoryDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseCreateDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
@@ -7,10 +8,7 @@ import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.files.UploadArea;
-import br.com.galsystem.construction.finance.mapper.CategoryMapper;
 import br.com.galsystem.construction.finance.mapper.ExpenseMapper;
-import br.com.galsystem.construction.finance.mapper.PayerMapper;
-import br.com.galsystem.construction.finance.mapper.SupplierMapper;
 import br.com.galsystem.construction.finance.models.*;
 import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
@@ -29,11 +27,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,18 +48,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseMapper mapper;
-    private final SupplierMapper supplierMapper;
-    private final PayerMapper payerMapper;
-    private final CategoryMapper categoryMapper;
     private final CurrentUser currentUser;
     private final FileStorageService storageService;
-    private EntityManager em;
     private final SupplierService supplierService;
     private final PayerService payerService;
     private final CategoryService categoryService;
-
-
-
+    private EntityManager em;
 
     @Override
     @Transactional(readOnly = true)
@@ -230,7 +223,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public List<ExpenseCreateDTO> ExpenseCreateByFileDTO(final MultipartFile file) {
@@ -275,11 +267,10 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
 
-
     @Override
     public byte[] generateExpensesTemplate() {
 
-        try(Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()){
+        try (Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = wb.createSheet("Despesas");
 
             CreationHelper helper = wb.getCreationHelper();

@@ -4,11 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record WorkDayPaymentDTO(
-        List<Long> workDayIds,
+        List<Long> workdayIds,
         String description,
         LocalDate paymentDate,
-        Long payToSupplierId,
-        Long categoryId // opcional
-
+        Long supplierId,
+        Long categoryId
 ) {
 }

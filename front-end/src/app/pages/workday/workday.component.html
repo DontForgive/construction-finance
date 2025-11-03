@@ -8,21 +8,15 @@
             <!-- Mês -->
             <div class="col-md-3">
               <label for="month" class="form-label fw-semibold">Mês</label>
-              <input type="month"
-                     id="month"
-                     class="form-control"
-                     [value]="year + '-' + ('0' + month).slice(-2)"
-                     (change)="onMonthChange($event)">
+              <input type="month" id="month" class="form-control" [value]="year + '-' + ('0' + month).slice(-2)"
+                (change)="onMonthChange($event)">
             </div>
 
             <!-- Fornecedor -->
             <div class="col-md-5">
               <label for="supplierId" class="form-label fw-semibold">Fornecedor (Serviço)</label>
-              <select id="supplierId"
-                      class="form-select"
-                      [(ngModel)]="supplierId"
-                      name="supplierId"
-                      (change)="onSupplierChange()">
+              <select id="supplierId" class="form-select" [(ngModel)]="supplierId" name="supplierId"
+                (change)="onSupplierChange()">
                 <option [ngValue]="undefined">Todos</option>
                 <option *ngFor="let s of suppliers" [ngValue]="s.id">{{ s.name }}</option>
               </select>
@@ -30,18 +24,14 @@
 
             <!-- Botão Buscar -->
             <div class="col-md-2 d-flex">
-              <button type="button"
-                      class="btn btn-lg btn-primary flex-fill"
-                      (click)="loadWorkDays()">
+              <button type="button" class="btn btn-lg btn-primary flex-fill" (click)="loadWorkDays()">
                 <i class="nc-icon nc-zoom-split me-1"></i> Buscar
               </button>
             </div>
 
             <!-- Botão Limpar -->
             <div class="col-md-2 d-flex">
-              <button type="button"
-                      class="btn btn-lg btn-secondary flex-fill"
-                      (click)="clearFilters()">
+              <button type="button" class="btn btn-lg btn-secondary flex-fill" (click)="clearFilters()">
                 <i class="nc-icon nc-refresh-69 me-1"></i> Limpar
               </button>
             </div>
@@ -92,8 +82,7 @@
                 <td>{{ w.dailyValue | currency:'BRL' }}</td>
                 <td>{{ w.hoursWorked || '-' }}</td>
                 <td>
-                  <span class="badge"
-                        [ngClass]="{
+                  <span class="badge" [ngClass]="{
                           'bg-success': w.status === 'PAGO',
                           'bg-warning text-dark': w.status === 'PENDENTE'
                         }">
@@ -101,12 +90,15 @@
                   </span>
                 </td>
                 <td>{{ w.note || '-' }}</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger"
-                          (click)="delete(w.id!)"
-                          title="Excluir">
+                <td class="text-center" >
+                  <button class="btn btn-sm btn-success me-2" (click)="pay(w.id!)" title="Pagar dia" *ngIf="w.status === 'PENDENTE'">
+                    <i class="nc-icon nc-credit-card"></i>
+                  </button>
+
+                  <button class="btn btn-sm btn-danger" (click)="delete(w.id!)" title="Excluir" *ngIf="w.status === 'PENDENTE'">
                     <i class="nc-icon nc-simple-remove"></i>
                   </button>
+                  <span *ngIf="w.status === 'PAGO'" style="color: gray;">Sem ações </span>
                 </td>
               </tr>
 

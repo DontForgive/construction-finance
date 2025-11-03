@@ -7,23 +7,23 @@ import br.com.galsystem.construction.finance.dto.workday.WorkDayPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayUpdateDTO;
 import br.com.galsystem.construction.finance.enums.WorkDayStatus;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
+import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.mapper.WorkDayMapper;
 import br.com.galsystem.construction.finance.models.Expense;
 import br.com.galsystem.construction.finance.models.Supplier;
+import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.models.WorkDay;
-import br.com.galsystem.construction.finance.repository.CategoryRepository;
-import br.com.galsystem.construction.finance.repository.ExpenseRepository;
-import br.com.galsystem.construction.finance.repository.SupplierRepository;
-import br.com.galsystem.construction.finance.repository.WorkDayRepository;
+import br.com.galsystem.construction.finance.repository.*;
+import br.com.galsystem.construction.finance.security.auth.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,8 @@ public class WorkDayService {
     private final WorkDayMapper workDayMapper;
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
+    private final CurrentUser currentUser;
+    private final UserRepository userRepository;
 
     @Transactional
     public WorkDayDTO create(WorkDayCreateDTO dto) {
@@ -83,32 +85,43 @@ public class WorkDayService {
 
     @Transactional
     public void registerPayment(WorkDayPaymentDTO dto) {
-        var workDays = workDayRepository.findAllById(dto.workDayIds());
-        if (workDays.isEmpty()) throw new NotFoundException("Nenhum registro encontrado para pagamento.");
+        if (dto.workdayIds() == null || dto.workdayIds().isEmpty()) {
+            throw new NotFoundException("Nenhum registro de WorkDay informado para pagamento.");
+        }
 
-        var total = workDays.stream()
-                .map(WorkDay::getDailyValue)
-                .filter(Objects::nonNull)
+        List<WorkDay> workdays = workDayRepository.findAllById(dto.workdayIds());
+        if (workdays.isEmpty()) {
+            throw new NotFoundException("Nenhum WorkDay encontrado para os IDs informados.");
+        }
+
+        BigDecimal total = workdays.stream()
+                .map(WorkDay::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        workDays.forEach(w -> w.setStatus(WorkDayStatus.PAGO));
-        workDayRepository.saveAll(workDays);
+        final Long uid = currentUser.id();
 
-        var supplier = supplierRepository.findById(dto.payToSupplierId())
-                .orElseThrow(() -> new NotFoundException("Fornecedor não encontrado"));
+        final User user = userRepository.findById(uid)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
 
-        var category = categoryRepository.findById(dto.categoryId())
-                .orElse(null);
-
-        var expense = Expense.builder()
-                .description(dto.description())
-                .amount(total)
+        Expense expense = Expense.builder()
+                .user(user)
                 .date(dto.paymentDate())
-                .supplier(supplier)
-                .category(category)
+                .description(dto.description())
+                .supplier(dto.supplierId() != null ? supplierRepository.getReferenceById(dto.supplierId()) : null)
+                .category(dto.categoryId() != null ? categoryRepository.getReferenceById(dto.categoryId()) : null)
+                .amount(total)
                 .build();
 
         expenseRepository.save(expense);
+
+        for (WorkDay workday : workdays) {
+            workday.setStatus(WorkDayStatus.PAGO);
+            workday.setPaymentDate(dto.paymentDate());
+            workday.setExpense(expense);
+            workday.setUpdatedAt(LocalDateTime.now());
+            workDayRepository.save(workday);
+        }
     }
+
 
 }

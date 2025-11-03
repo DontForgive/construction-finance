@@ -8,3 +8,11 @@ export interface WorkDay {
   note?: string;
   status?: string;
 }
+
+export interface WorkDayPaymentDTO {
+  workdayIds: number[];
+  description: string;
+  paymentDate: string;  // formato ISO (yyyy-MM-dd)
+  supplierId: number;
+  categoryId?: number;  // opcional
+}

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
 import { Observable } from 'rxjs';
-import { WorkDay } from './workday';
+import { WorkDay, WorkDayPaymentDTO } from './workday';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +21,13 @@ export class WorkdayService {
       Authorization: `Bearer ${token}`
     });
   }
+
+  pay(dto: WorkDayPaymentDTO): Observable<any> {
+    return this.httpClient.post<any>(`${this.API}/pay`, dto, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
 
   list(year: number, month: number, supplierId?: number): Observable<any> {
     let params = new HttpParams().set('year', year).set('month', month);

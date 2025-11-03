@@ -50,4 +50,16 @@ public class WorkDay {
 
     @Column
     private LocalDateTime updatedAt;
+
+    private LocalDate paymentDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "expense_id")
+    private Expense expense;
+
+    public BigDecimal getValue() {
+        if (dailyValue == null || hoursWorked == null) return BigDecimal.ZERO;
+        return dailyValue;
+//        return dailyValue.multiply(hoursWorked); // TODO - Podemos multiplicar o valor pelas horas trabalhadas
+    }
 }
