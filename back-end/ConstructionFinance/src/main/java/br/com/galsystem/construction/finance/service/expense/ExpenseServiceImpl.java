@@ -429,15 +429,15 @@ public class ExpenseServiceImpl implements ExpenseService {
             table.setSpacingBefore(5f);
             table.setWidths(new float[]{40f, 60f});
 
-            addRow(table, "Recibo nº:", String.valueOf(expense.getId()), boldFont, normalFont);
-            addRow(table, "Data:", expense.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), boldFont, normalFont);
-            addRow(table, "Fornecedor:", safeObjOrEmpty(expense.getSupplier() != null ? expense.getSupplier().getName().toUpperCase() : null), boldFont, normalFont);
-            addRow(table, "Descrição:", expense.getDescription(), boldFont, normalFont);
-            addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName().toUpperCase() : null), boldFont, normalFont);
-            addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName().toUpperCase() : null), boldFont, normalFont);
-            addRow(table, "Método de Pagamento:", expense.getPaymentMethod().toUpperCase(), boldFont, normalFont);
+            addRow(table, "RECIBO Nº:", String.valueOf(expense.getId()), boldFont, normalFont);
+            addRow(table, "DATA:", expense.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), boldFont, normalFont);
+            addRow(table, "FORNECEDOR:", safeObjOrEmpty(expense.getSupplier() != null ? expense.getSupplier().getName().toUpperCase() : null), boldFont, normalFont);
+            addRow(table, "DESCRIÇÃO:", expense.getDescription(), boldFont, normalFont);
+            addRow(table, "CATEGORIA:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName().toUpperCase() : null), boldFont, normalFont);
+            addRow(table, "PAGADOR:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName().toUpperCase() : null), boldFont, normalFont);
+            addRow(table, "MÉTODO DE PAGAMENTO:", expense.getPaymentMethod().toUpperCase(), boldFont, normalFont);
             NumberFormat brFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-            addRow(table, "Valor:", brFormat.format(expense.getAmount()), boldFont, normalFont);
+            addRow(table, "VALOR:", brFormat.format(expense.getAmount()), boldFont, normalFont);
 
             document.add(table);
             document.add(Chunk.NEWLINE);
