@@ -46,10 +46,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static br.com.galsystem.construction.finance.utils.ResultSetUtils.safeObjOrEmpty;
 
@@ -432,7 +434,8 @@ public class ExpenseServiceImpl implements ExpenseService {
             addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName().toUpperCase() : null), boldFont, normalFont);
             addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName().toUpperCase() : null), boldFont, normalFont);
             addRow(table, "Método de Pagamento:", expense.getPaymentMethod(), boldFont, normalFont);
-            addRow(table, "Valor:", String.format("R$ %,.2f", expense.getAmount()), boldFont, normalFont);
+            NumberFormat brFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+            addRow(table, "Valor:", brFormat.format(expense.getAmount()), boldFont, normalFont);
 
             document.add(table);
             document.add(Chunk.NEWLINE);

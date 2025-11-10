@@ -187,13 +187,28 @@ export class ExpenseComponent implements OnInit {
   }
 
   generateReceipt(expenseId: number): void {
+    Swal.fire({
+      title: 'Gerando recibo...',
+      text: 'Aguarde alguns segundos',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     this.service.generateReceipt(expenseId).subscribe({
       next: (response: any) => {
+        Swal.close();
         const file = new Blob([response], { type: 'application/pdf' });
         const fileURL = URL.createObjectURL(file);
         window.open(fileURL, '_blank'); // abre nova aba
       },
       error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Falha ao gerar o recibo.'
+        });
         console.error('Erro ao gerar recibo:', err);
       }
     });
