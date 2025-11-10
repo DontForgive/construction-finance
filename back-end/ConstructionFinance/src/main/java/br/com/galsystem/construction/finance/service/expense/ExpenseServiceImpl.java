@@ -369,8 +369,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         PdfPCell cell1 = new PdfPCell(new Phrase(label, labelFont));
         PdfPCell cell2 = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
 
-        cell1.setBorder(Rectangle.BOTTOM);
-        cell2.setBorder(Rectangle.BOTTOM);
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2.setBorder(Rectangle.NO_BORDER);
         cell1.setPadding(8);
         cell2.setPadding(8);
 
