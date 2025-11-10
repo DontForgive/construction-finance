@@ -38,6 +38,8 @@ public interface ExpenseService {
 
     byte[] generateExpensesTemplate();
 
+    byte[] generateReceipt(Long id);
+
 
 }
 

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -116,7 +117,7 @@ public class ExpenseController {
     public ResponseEntity<Response<List<ExpenseCreateDTO>>> createByUploadFile(
             @RequestPart("file") final MultipartFile file
     ) {
-        final List<ExpenseCreateDTO > updated = service.ExpenseCreateByFileDTO(file);
+        final List<ExpenseCreateDTO> updated = service.ExpenseCreateByFileDTO(file);
 
 
         return ResponseEntity.ok(new Response<>(200, "Cadastros realizados com sucesso!", updated, null));
@@ -137,6 +138,17 @@ public class ExpenseController {
                 .contentType(org.springframework.http.MediaType.parseMediaType(
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(bytes);
+    }
+
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<byte[]> generateReceipt(@PathVariable Long id) {
+        byte[] pdf = service.generateReceipt(id);
+        LocalDate date = LocalDate.now();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=recibo_" + date + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
 

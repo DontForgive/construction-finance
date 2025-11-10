@@ -63,9 +63,17 @@
 
         <!-- Tabela -->
         <div *ngIf="!loading" class="table-responsive">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Dias de Trabalho</h5>
+            <button class="btn btn-primary btn-sm" [disabled]="selectedWorkdays.length === 0" (click)="payMultiple()">
+              <i class="nc-icon nc-money-coins me-1"></i> Pagamento em massa
+            </button>
+          </div>
+
           <table class="table table-hover align-middle">
             <thead class="text-primary">
               <tr>
+                <th style="width: 40px;"></th>
                 <th>Data</th>
                 <th>Fornecedor</th>
                 <th>Valor (R$)</th>
@@ -77,38 +85,47 @@
             </thead>
             <tbody>
               <tr *ngFor="let w of workDays">
+                <td>
+                  <input type="checkbox" class="form-check-input" [disabled]="w.status !== 'PENDENTE'"
+                    [checked]="selectedWorkdays.includes(w.id)" (change)="toggleSelection(w.id, $event)" />
+                </td>
+
                 <td>{{ w.date | date: 'dd/MM/yyyy' }}</td>
                 <td>{{ w.supplierName }}</td>
                 <td>{{ w.dailyValue | currency:'BRL' }}</td>
                 <td>{{ w.hoursWorked || '-' }}</td>
                 <td>
                   <span class="badge" [ngClass]="{
-                          'bg-success': w.status === 'PAGO',
-                          'bg-warning text-dark': w.status === 'PENDENTE'
-                        }">
+                'bg-success': w.status === 'PAGO',
+                'bg-warning text-dark': w.status === 'PENDENTE'
+              }">
                     {{ w.status }}
                   </span>
                 </td>
                 <td>{{ w.note || '-' }}</td>
-                <td class="text-center" >
-                  <button class="btn btn-sm btn-success me-2" (click)="pay(w.id!)" title="Pagar dia" *ngIf="w.status === 'PENDENTE'">
+                <td class="text-center">
+                  <button class="btn btn-sm btn-success me-2" (click)="pay(w.id!)" title="Pagar dia"
+                    *ngIf="w.status === 'PENDENTE'">
                     <i class="nc-icon nc-credit-card"></i>
                   </button>
 
-                  <button class="btn btn-sm btn-danger" (click)="delete(w.id!)" title="Excluir" *ngIf="w.status === 'PENDENTE'">
+                  <button class="btn btn-sm btn-danger" (click)="delete(w.id!)" title="Excluir"
+                    *ngIf="w.status === 'PENDENTE'">
                     <i class="nc-icon nc-simple-remove"></i>
                   </button>
-                  <span *ngIf="w.status === 'PAGO'" style="color: gray;">Sem ações </span>
+
+                  <span *ngIf="w.status === 'PAGO'" style="color: gray;">Sem ações</span>
                 </td>
               </tr>
 
               <tr *ngIf="workDays.length === 0">
-                <td colspan="7" class="text-center text-muted py-3">
+                <td colspan="8" class="text-center text-muted py-3">
                   Nenhum registro encontrado para este período.
                 </td>
               </tr>
             </tbody>
           </table>
+
         </div>
 
         <!-- Totais -->

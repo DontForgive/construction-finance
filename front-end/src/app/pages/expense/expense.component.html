@@ -72,8 +72,7 @@
             <div class="col-md-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Período</mat-label>
-                <mat-date-range-input [rangePicker]="picker" 
-                  name="dateRange">
+                <mat-date-range-input [rangePicker]="picker" name="dateRange">
                   <input matStartDate placeholder="Data Inicial" [(ngModel)]="filterStartDate" name="filterStartDate">
                   <input matEndDate placeholder="Data Final" [(ngModel)]="filterEndDate" name="filterEndDate">
                 </mat-date-range-input>
@@ -117,7 +116,7 @@
         </button>
       </div>
       <div class="card-body">
-        <div class="table-responsive" >
+        <div class="table-responsive">
           <table class="table table-hover" style="font-size: 10px;">
             <thead class="text-primary">
               <tr>
@@ -144,30 +143,42 @@
 
                 <td>{{ expense.paymentMethod }}</td>
                 <td class="text-center">
+
+                  <!-- Novo botão gerar recibo -->
+                  <button class="btn btn-sm btn-success me-2" (click)="generateReceipt(expense.id)"
+                    title="Gerar Recibo">
+                    <i class="nc-icon nc-paper"></i>
+                  </button>
+
+                  <!-- Botão visualizar anexo -->
                   <a *ngIf="expense.attachmentUrl" class="btn btn-sm btn-info me-2"
-                    href="{{API}}{{ expense.attachmentUrl}}" target="_blank">
+                    href="{{API}}{{ expense.attachmentUrl}}" target="_blank" title="Abrir anexo">
                     <i class="nc-icon nc-single-copy-04"></i>
                   </a>
+
+                  <!-- Editar -->
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(expense)" title="Editar">
                     <i class="nc-icon nc-ruler-pencil"></i>
                   </button>
 
+                  <!-- Excluir -->
                   <button class="btn btn-sm btn-danger" (click)="deleteExpense(expense)" title="Excluir">
                     <i class="nc-icon nc-simple-remove"></i>
                   </button>
                 </td>
+
               </tr>
             </tbody>
             <tfoot>
               <tr>
                 <th></th>
-                 <th></th>
-                 <th></th>
+                <th></th>
+                <th></th>
                 <th scope="row">{{somaTotalResult}}</th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
               </tr>
             </tfoot>
           </table>

@@ -14,7 +14,7 @@ export class ExpenseService {
   constructor(
     private httpClient: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -123,4 +123,15 @@ export class ExpenseService {
       }
     );
   }
+
+  generateReceipt(expenseId: number) {
+    return this.httpClient.get(
+      `${this.API}expenses/${expenseId}/receipt`,
+      {
+        headers: this.getAuthHeaders(),
+        responseType: 'blob' as 'json' // importante: trata retorno binário (PDF)
+      }
+    );
+  }
+
 }

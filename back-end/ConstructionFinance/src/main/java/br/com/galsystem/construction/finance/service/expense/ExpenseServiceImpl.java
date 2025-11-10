@@ -6,6 +6,7 @@ import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
 import br.com.galsystem.construction.finance.dto.expense.ExpenseUpdateDTO;
 import br.com.galsystem.construction.finance.dto.payer.PayerDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
+import br.com.galsystem.construction.finance.exception.NotFoundException;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.files.UploadArea;
 import br.com.galsystem.construction.finance.mapper.ExpenseMapper;
@@ -16,9 +17,20 @@ import br.com.galsystem.construction.finance.service.category.CategoryService;
 import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import br.com.galsystem.construction.finance.service.payer.PayerService;
 import br.com.galsystem.construction.finance.service.supplier.SupplierService;
+import com.lowagie.text.*;
+import com.lowagie.text.Font;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.draw.LineSeparator;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -28,18 +40,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.galsystem.construction.finance.utils.ResultSetUtils.safeObjOrEmpty;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExpenseServiceImpl implements ExpenseService {
 
     private final ExpenseRepository repository;
@@ -275,9 +291,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             CreationHelper helper = wb.getCreationHelper();
             CellStyle headerStyle = wb.createCellStyle();
-            Font headerFont = wb.createFont();
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
+//            Font headerFont = wb.createFont();
+//            headerFont.set(true);
+//            headerStyle.setFont(headerFont);
 
             CellStyle dateStyle = wb.createCellStyle();
             short dateFormat = helper.createDataFormat().getFormat("yyyy-mm-dd");
@@ -347,6 +363,112 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
     }
 
+    private void addRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
+        PdfPCell cell1 = new PdfPCell(new Phrase(label, labelFont));
+        PdfPCell cell2 = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
+
+        cell1.setBorder(Rectangle.NO_BORDER);
+        cell2.setBorder(Rectangle.NO_BORDER);
+
+        table.addCell(cell1);
+        table.addCell(cell2);
+    }
+
+    private PdfPCell createSignatureCell(String name, String role, Font font) {
+        PdfPCell cell = new PdfPCell();
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.addElement(new Paragraph("__________________________________"));
+        cell.addElement(new Paragraph(name.toUpperCase(), font));
+        cell.addElement(new Paragraph(role, font));
+        return cell;
+    }
+
+
+    @Override
+    public byte[] generateReceipt(Long id) {
+        Expense expense = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Despesa não encontrada: " + id));
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            Document document = new Document(PageSize.A4, 50, 50, 60, 40);
+            PdfWriter.getInstance(document, baos);
+            document.open();
+
+            Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
+            Font boldFont = new Font(Font.HELVETICA, 12, Font.BOLD);
+            Font normalFont = new Font(Font.HELVETICA, 12, Font.NORMAL);
+            Font smallFont = new Font(Font.HELVETICA, 10, Font.NORMAL);
+
+            // --- LOGO (se quiser adicionar imagem, descomente) ---
+            Image logo = Image.getInstance("https://galsystems.com.br/wp-content/uploads/2024/07/cropped-Design-sem-nome-9.png");
+            logo.scaleToFit(100, 60);
+            logo.setAlignment(Element.ALIGN_CENTER);
+            document.add(logo);
+            document.add(Chunk.NEWLINE);
+
+            // --- TÍTULO ---
+            Paragraph title = new Paragraph("RECIBO DE PAGAMENTO", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            // --- LINHA DIVISÓRIA ---
+            LineSeparator separator = new LineSeparator();
+            separator.setLineColor(Color.GRAY);
+            document.add(Chunk.NEWLINE);
+            document.add(separator);
+            document.add(Chunk.NEWLINE);
+
+            // --- TABELA DE DADOS ---
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100);
+            table.setSpacingBefore(5f);
+            table.setWidths(new float[]{40f, 60f});
+
+            addRow(table, "Recibo nº:", String.valueOf(expense.getId()), boldFont, normalFont);
+            addRow(table, "Data:", expense.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), boldFont, normalFont);
+            addRow(table, "Fornecedor:", safeObjOrEmpty(expense.getSupplier() != null ? expense.getSupplier().getName() : null), boldFont, normalFont);
+            addRow(table, "Descrição:", expense.getDescription(), boldFont, normalFont);
+            addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName() : null), boldFont, normalFont);
+            addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName() : null), boldFont, normalFont);
+            addRow(table, "Método de Pagamento:", expense.getPaymentMethod(), boldFont, normalFont);
+            addRow(table, "Valor:", String.format("R$ %,.2f", expense.getAmount()), boldFont, normalFont);
+
+            document.add(table);
+            document.add(Chunk.NEWLINE);
+
+            // --- TEXTO PRINCIPAL ---
+            Paragraph text = new Paragraph(
+                    String.format("Declaro que recebi o valor acima referente a %s.", expense.getDescription()),
+                    normalFont);
+            text.setAlignment(Element.ALIGN_CENTER);
+            document.add(Chunk.NEWLINE);
+            document.add(text);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            // --- ASSINATURAS ---
+            PdfPTable signatures = new PdfPTable(2);
+            signatures.setWidthPercentage(100);
+            signatures.setWidths(new float[]{50f, 50f});
+
+            PdfPCell payerSign = createSignatureCell("Gabriel Arruda de Lima", "Pagador", smallFont);
+            PdfPCell supplierSign = createSignatureCell(expense.getSupplier().getName(), "Fornecedor", smallFont);
+
+            signatures.addCell(payerSign);
+            signatures.addCell(supplierSign);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(signatures);
+
+            document.close();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            log.error("Erro ao gerar recibo: {}", e.getMessage());
+            throw new NotFoundException("Erro ao gerar recibo: " + e.getMessage());
+        }
+    }
+
 
     private Long getLongValue(final Cell cell) {
         if (cell == null) return null;
@@ -362,6 +484,5 @@ public class ExpenseServiceImpl implements ExpenseService {
             default -> null;
         };
     }
-
 
 }

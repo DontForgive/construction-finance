@@ -48,7 +48,7 @@ export class ExpenseComponent implements OnInit {
     private categoryService: CategoryService,
     private dialog: MatDialog,
     private toast: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.listExpenses();
@@ -59,33 +59,33 @@ export class ExpenseComponent implements OnInit {
   }
 
   listExpenses(page: number = 0) {
-  this.currentPage = page;
+    this.currentPage = page;
 
-  this.service
-    .getExpenses(this.currentPage, this.pageSize, "id", "DESC", {
-      description: this.filterDescription,
-      supplierId: this.filterSupplierId,
-      payerId: this.filterPayerId,
-      categoryId: this.filterCategoryId,
-      paymentMethod: this.filterPaymentMethod,
-      startDate: this.filterStartDate, // 🔹 início do período
-      endDate: this.filterEndDate,     // 🔹 fim do período
-    })
-    .subscribe({
-      next: (res) => {
+    this.service
+      .getExpenses(this.currentPage, this.pageSize, "id", "DESC", {
+        description: this.filterDescription,
+        supplierId: this.filterSupplierId,
+        payerId: this.filterPayerId,
+        categoryId: this.filterCategoryId,
+        paymentMethod: this.filterPaymentMethod,
+        startDate: this.filterStartDate, // 🔹 início do período
+        endDate: this.filterEndDate,     // 🔹 fim do período
+      })
+      .subscribe({
+        next: (res) => {
 
-        this.list_expenses = res.data.content;
-        this.totalElements = res.data.totalElements;
-        this.totalPages = res.data.totalPages;
-        this.somaTotalDespesas(this.list_expenses);
+          this.list_expenses = res.data.content;
+          this.totalElements = res.data.totalElements;
+          this.totalPages = res.data.totalPages;
+          this.somaTotalDespesas(this.list_expenses);
 
 
-      },
-      error: (err) => {
-        this.toast.error("Erro ao buscar despesas", "Erro");
-        console.error("Erro ao buscar despesas:", err);
-      },
-    });
+        },
+        error: (err) => {
+          this.toast.error("Erro ao buscar despesas", "Erro");
+          console.error("Erro ao buscar despesas:", err);
+        },
+      });
 
 
   }
@@ -186,6 +186,20 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
+  generateReceipt(expenseId: number): void {
+    this.service.generateReceipt(expenseId).subscribe({
+      next: (response: any) => {
+        const file = new Blob([response], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(file);
+        window.open(fileURL, '_blank'); // abre nova aba
+      },
+      error: (err) => {
+        console.error('Erro ao gerar recibo:', err);
+      }
+    });
+  }
+
+
   loadCategories() {
     this.categoryService.getCategories(0, 100, "id", "ASC").subscribe({
       next: (res) => {
@@ -198,17 +212,18 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
-    somaTotalDespesas(list_expenses: Expense[]){ {
+  somaTotalDespesas(list_expenses: Expense[]) {
+    {
       this.somaTotal = 0;
       list_expenses.map(expense => {
         console.log('EXPENSE AMOUNT: ', expense.amount)
         this.somaTotal += expense.amount
         const formatter = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
+          style: 'currency',
+          currency: 'BRL'
+        });
         this.somaTotalResult = formatter.format(this.somaTotal);
-    }); 
+      });
     }
-}
+  }
 }
