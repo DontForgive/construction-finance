@@ -369,8 +369,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         PdfPCell cell1 = new PdfPCell(new Phrase(label, labelFont));
         PdfPCell cell2 = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
 
-        cell1.setBorder(Rectangle.NO_BORDER);
-        cell2.setBorder(Rectangle.NO_BORDER);
+        cell1.setBorder(Rectangle.BOTTOM);
+        cell2.setBorder(Rectangle.BOTTOM);
+        cell1.setPadding(8);
+        cell2.setPadding(8);
 
         table.addCell(cell1);
         table.addCell(cell2);
@@ -433,7 +435,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             addRow(table, "Descrição:", expense.getDescription(), boldFont, normalFont);
             addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName().toUpperCase() : null), boldFont, normalFont);
             addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName().toUpperCase() : null), boldFont, normalFont);
-            addRow(table, "Método de Pagamento:", expense.getPaymentMethod(), boldFont, normalFont);
+            addRow(table, "Método de Pagamento:", expense.getPaymentMethod().toUpperCase(), boldFont, normalFont);
             NumberFormat brFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
             addRow(table, "Valor:", brFormat.format(expense.getAmount()), boldFont, normalFont);
 
