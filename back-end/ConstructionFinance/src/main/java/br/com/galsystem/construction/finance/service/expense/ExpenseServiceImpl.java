@@ -427,10 +427,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             addRow(table, "Recibo nº:", String.valueOf(expense.getId()), boldFont, normalFont);
             addRow(table, "Data:", expense.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), boldFont, normalFont);
-            addRow(table, "Fornecedor:", safeObjOrEmpty(expense.getSupplier() != null ? expense.getSupplier().getName() : null), boldFont, normalFont);
+            addRow(table, "Fornecedor:", safeObjOrEmpty(expense.getSupplier() != null ? expense.getSupplier().getName().toUpperCase() : null), boldFont, normalFont);
             addRow(table, "Descrição:", expense.getDescription(), boldFont, normalFont);
-            addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName() : null), boldFont, normalFont);
-            addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName() : null), boldFont, normalFont);
+            addRow(table, "Categoria:", safeObjOrEmpty(expense.getCategory() != null ? expense.getCategory().getName().toUpperCase() : null), boldFont, normalFont);
+            addRow(table, "Pagador:", safeObjOrEmpty(expense.getPayer() != null ? expense.getPayer().getName().toUpperCase() : null), boldFont, normalFont);
             addRow(table, "Método de Pagamento:", expense.getPaymentMethod(), boldFont, normalFont);
             addRow(table, "Valor:", String.format("R$ %,.2f", expense.getAmount()), boldFont, normalFont);
 
