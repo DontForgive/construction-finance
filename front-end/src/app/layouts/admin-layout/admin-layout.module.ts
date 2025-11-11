@@ -39,7 +39,7 @@ import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogCom
   imports: [
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
-    NgbModule,
+    // NgbModule,
     MatPaginatorModule,
     MatDialogModule,
     MatFormFieldModule,

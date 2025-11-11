@@ -23,6 +23,8 @@ export class WorkdayComponent implements OnInit {
 
   loading = false;
 
+  selectedWorkdays: number[] = [];
+
   constructor(
     private workdayService: WorkdayService,
     private supplierService: SupplierService,
@@ -41,7 +43,6 @@ export class WorkdayComponent implements OnInit {
       error: (err) => console.error("Erro ao carregar fornecedores:", err),
     });
   }
-
 
 
   loadWorkDays(): void {
