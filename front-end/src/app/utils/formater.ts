@@ -2,3 +2,4 @@
         style: 'currency',
         currency: 'BRL'
 });
+

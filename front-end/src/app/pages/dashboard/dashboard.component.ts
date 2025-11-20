@@ -67,13 +67,13 @@ export class DashboardComponent implements OnInit {
   onClear(): void {
     this.filterForm.reset();
     this.loadAllCharts();
-
+    this.loadKpis(); 
   }
-
 
   /** Aplica os filtros e recarrega gráficos */
   applyFilters() {
     this.loadAllCharts();
+    this.loadKpis(); 
   }
 
   /** 🔹 Carrega todos os gráficos */

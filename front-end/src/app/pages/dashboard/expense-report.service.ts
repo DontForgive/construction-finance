@@ -35,30 +35,38 @@ export class ExpenseReportService {
   getByPayer(filters: any): Observable<ChartDataDTO[]> {
     return this.http.get<ChartDataDTO[]>(`${this.API}/by-payer`, { params: this.buildParams(filters) });
   }
-  
 
-   // --- KPIs ---
+
+  private formatDate(date: any): string | null {
+    if (!date) return null;
+    return new Date(date).toISOString().split('T')[0]; // yyyy-MM-dd
+  }
+
+
+  // --- KPIs ---
   getKpis(filters: any): Observable<any> {
     return this.http.get(`${this.API}/kpis`, { params: this.buildParams(filters) });
   }
 
   // --- Utilitário para montar parâmetros ---
-  private buildParams(filters: any): HttpParams {
-    let params = new HttpParams();
+  private buildParams(filters: any): any {
+    const params: any = {};
 
-    if (!filters) {
-      return params;
+    if (filters.start) {
+      params.start = this.formatDate(filters.start);
     }
 
-    Object.keys(filters).forEach(key => {
-      const value = filters[key];
-      if (value !== null && value !== undefined && value !== '') {
-        params = params.set(key, value);
-      }
-    });
+    if (filters.end) {
+      params.end = this.formatDate(filters.end);
+    }
+
+    if (filters.categoryId) params.categoryId = filters.categoryId;
+    if (filters.supplierId) params.supplierId = filters.supplierId;
+    if (filters.payerId) params.payerId = filters.payerId;
 
     return params;
   }
 
-  
+
+
 }

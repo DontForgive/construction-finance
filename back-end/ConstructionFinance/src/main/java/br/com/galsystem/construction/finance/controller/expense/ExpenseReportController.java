@@ -1,4 +1,5 @@
 package br.com.galsystem.construction.finance.controller.expense;
+
 import br.com.galsystem.construction.finance.dto.charts.ExpenseKpiDTO;
 import br.com.galsystem.construction.finance.dto.expense.ChartDataDTO;
 import br.com.galsystem.construction.finance.service.expense.ExpenseReportService;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -86,8 +88,11 @@ public class ExpenseReportController {
     @GetMapping("/kpis")
     public ResponseEntity<ExpenseKpiDTO> getKpis(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Long payerId
     ) {
-        return ResponseEntity.ok(service.getKpis(start, end));
+        return ResponseEntity.ok(service.getKpis(start, end, categoryId, supplierId, payerId));
     }
 }
