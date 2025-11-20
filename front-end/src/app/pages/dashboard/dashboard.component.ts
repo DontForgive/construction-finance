@@ -163,35 +163,63 @@ export class DashboardComponent implements OnInit {
 
   /** 🔹 Gráfico por Mês */
   private loadMonthChart() {
-    this.reportService.getByMonth(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
-      const labels = data.map(d => d.label);
-      const values = data.map(d => d.value);
+  this.reportService.getByMonth(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+    const labels = data.map(d => d.label);
+    const values = data.map(d => d.value);
 
-      this.ctx = document.getElementById('chartMonth');
-      if (this.chartMonth) this.chartMonth.destroy();
+    const canvas = document.getElementById('chartMonth') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d')!;
 
-      this.chartMonth = new Chart(this.ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Despesas por mês',
-            borderColor: '#6bd098',
-            backgroundColor: 'transparent',
-            borderWidth: 3,
-            data: values
-          }]
+    if (this.chartMonth) this.chartMonth.destroy();
+
+    // ★ Gradiente bonito
+    const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+    gradient.addColorStop(0, 'rgba(107, 208, 152, 0.35)');
+    gradient.addColorStop(1, 'rgba(107, 208, 152, 0.02)');
+
+    this.chartMonth = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Despesas por mês',
+          data: values,
+          borderColor: '#41c983',
+          borderWidth: 3,
+          backgroundColor: gradient,     
+          pointBackgroundColor: '#41c983',
+          pointBorderColor: '#fff',
+          pointRadius: 6,                
+          pointHoverRadius: 10,
+          tension: 0.35                   
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true
+          },
+          tooltip: {
+            usePointStyle: true,
+            padding: 12
+          }
         },
-        options: {
-          legend: { display: true },
-          scales: {
-            yAxes: [{ ticks: { beginAtZero: true } }],
-            xAxes: [{ ticks: { autoSkip: true, maxTicksLimit: 12 } }]
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { autoSkip: true, maxTicksLimit: 12 }
           }
         }
-      });
+      }
     });
-  }
+  });
+}
+
 
   /** 🔹 Gráfico por Fornecedor */
   private loadSupplierChart() {
