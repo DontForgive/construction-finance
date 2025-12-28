@@ -29,6 +29,10 @@ import { ToastService } from 'app/utils/toastr';
           </mat-error>
         </mat-form-field>
 
+        <mat-checkbox formControlName="worker">
+          É prestador de Serviço?
+        </mat-checkbox>
+
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
@@ -56,7 +60,8 @@ export class SupplierAddDialogComponent {
 
   ) {
     this.form = this.fb.group({
-      name: [data?.name || '', [Validators.required, Validators.maxLength(120)]]
+      name: [data?.name || '', [Validators.required, Validators.maxLength(120)]],
+      worker: [data?.worker || false]
     });
   }
 
@@ -77,6 +82,7 @@ export class SupplierAddDialogComponent {
           this.dialogRef.close(res.data); // agora o TS sabe que existe res.data
         },
         error: (err) => {
+          console.log(err);
           Swal.fire({
             icon: 'error',
             title: 'Erro ao atualizar o Fornecedor',
@@ -91,7 +97,7 @@ export class SupplierAddDialogComponent {
           this.toast.success(
             'Fornecedor criado com sucesso!',
           );
-          
+
 
           this.dialogRef.close(res.data);
         },

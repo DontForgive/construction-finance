@@ -47,6 +47,7 @@
               <tr>
                 <th>#</th>
                 <th>Nome</th>
+                <th>Prestador de Serviço</th>
                 <th class="text-center">Ações</th>
               </tr>
             </thead>
@@ -54,6 +55,16 @@
               <tr *ngFor="let supplier of list_suppliers">
                 <td>{{ supplier.id }}</td>
                 <td>{{ supplier.name|uppercase }}</td>
+                <td class="text-center">
+                  <mat-icon color="primary" *ngIf="supplier.worker" matTooltip="Prestador de serviço">
+                    check_circle
+                  </mat-icon>
+
+                  <mat-icon color="warn" *ngIf="!supplier.worker" matTooltip="Não é prestador de serviço">
+                    cancel
+                  </mat-icon>
+                </td>
+
                 <td class="text-center">
                   <button class="btn btn-sm btn-info me-2" (click)="openEditDialog(supplier)" title="Editar">
                     <i class="nc-icon nc-ruler-pencil"></i>

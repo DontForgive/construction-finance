@@ -35,6 +35,7 @@ import { WorkdayComponent } from 'app/pages/workday/workday.component';
 import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogComponent';
 import { ServiceContractComponent } from 'app/pages/serviceContract/serviceContract.component';
 import { ServiceContractDialogComponent } from 'app/pages/serviceContract/serviceContract-dialog-components';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { ServiceContractDialogComponent } from 'app/pages/serviceContract/servic
     MatCardModule,
     GalleriaModule,
     MatProgressBarModule,
+    MatCheckboxModule
     
   ],
   exports: [
