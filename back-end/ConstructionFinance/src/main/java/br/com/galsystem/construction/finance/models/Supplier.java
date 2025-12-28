@@ -2,7 +2,6 @@ package br.com.galsystem.construction.finance.models;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Table(name = "supplier")
@@ -20,7 +19,6 @@ public class Supplier {
     @NonNull
     private String name;
 
-    @Column(nullable = true)
     @Builder.Default
     private boolean worker = false;
 
