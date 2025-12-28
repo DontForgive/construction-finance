@@ -1,6 +1,11 @@
 package br.com.galsystem.construction.finance.models;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -43,4 +48,8 @@ public class Expense {
     private BigDecimal amount;
 
     private String attachmentUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "service_contract_id")
+    private ServiceContract serviceContract;
 }

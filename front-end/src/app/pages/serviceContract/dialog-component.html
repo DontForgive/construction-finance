@@ -1,0 +1,100 @@
+<h2 mat-dialog-title class="mat-headline-6 d-flex align-items-center">
+    <mat-icon color="primary" class="me-2">receipt_long</mat-icon>
+    <span class="text-muted">Adicionar Contrato de Serviço</span>
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+
+        <!-- Nome -->
+
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Nome</mat-label>
+            <input matInput formControlName="name" maxlength="255" required>
+            <mat-error *ngIf="form.get('name')?.hasError('required')">
+                Nome é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Descrição -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Descrição</mat-label>
+
+            <textarea matInput formControlName="description" rows="4" maxlength="255" required>
+            </textarea>
+            <mat-hint align="end">
+                {{ form.get('description')?.value?.length || 0 }}/255
+            </mat-hint>
+
+            <mat-error *ngIf="form.get('description')?.hasError('required')">
+                Descrição é obrigatória
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Fornecedor -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Fornecedor</mat-label>
+            <mat-select formControlName="supplierId" required>
+                <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                    {{ supplier.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('supplierId')?.hasError('required')">
+                Fornecedor é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+         <!-- Categoria -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Categoria</mat-label>
+            <mat-select formControlName="categoryId" required>
+                <mat-option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('categoryId')?.hasError('required')">
+                Categoria é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Valor -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Valor</mat-label>
+            <input matInput formControlName="contractedValue" type="text" mask="separator.2" thousandSeparator="."
+                decimalMarker="," prefix="R$ " required>
+            <mat-error *ngIf="form.get('contractedValue')?.hasError('required')">
+                Valor é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Data de Início -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Data de Início</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate" required>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="form.get('startDate')?.hasError('required')">
+                Data de Início é obrigatória
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Data de Término -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Data de Término</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-stroked-button color="warn" mat-dialog-close type="button">
+            <mat-icon class="me-1">close</mat-icon>
+            Cancelar
+        </button> <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Salvar</button>
+    </mat-dialog-actions>
+
+
+
+</form>

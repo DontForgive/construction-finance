@@ -1,0 +1,220 @@
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="g-2 align-items-end">
+                    <div class="row">
+                        <!-- Filtro Descrição -->
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Nome do Contrato</mat-label>
+                                <input matInput id="filterName" placeholder="Pesquisar por nome do Contrato"
+                                    [(ngModel)]="filterName" name="filterName">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Descrição do Contrato</mat-label>
+                                <input matInput id="filterDescription" placeholder="Pesquisar por descrição"
+                                    [(ngModel)]="filterDescription" name="filterDescription">
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Filtro Fornecedor -->
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-select [(ngModel)]="filterSupplierId" name="filterSupplierId"
+                                    placeholder="Selecione o fornecedor">
+                                    <mat-option [value]="null">Todos</mat-option>
+                                    <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                                        {{ supplier.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Filtro Categoria -->
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Categoria</mat-label>
+                                <mat-select [(ngModel)]="filterCategoryId" name="filterCategoryId">
+                                    <mat-option [value]="null">Todas</mat-option>
+                                    <mat-option *ngFor="let category of categories" [value]="category.id">
+                                        {{ category.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Filtro Data -->
+                        <div class="col-md-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Período</mat-label>
+                                <mat-date-range-input [rangePicker]="picker" name="dateRange">
+                                    <input matStartDate placeholder="Data Inicial" [(ngModel)]="filterStartDate"
+                                        name="filterStartDate">
+                                    <input matEndDate placeholder="Data Final" [(ngModel)]="filterEndDate"
+                                        name="filterEndDate">
+                                </mat-date-range-input>
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-date-range-picker #picker></mat-date-range-picker>
+                            </mat-form-field>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <!-- Botão Filtrar -->
+                        <div class="col-md-6 d-flex">
+                            <button type="button" class="btn btn-lg btn-primary flex-fill" (click)="getContracts(0)">
+                                <i class="nc-icon nc-zoom-split"></i> Filtrar
+                            </button>
+                        </div>
+
+                        <!-- Botão Limpar -->
+                        <div class="col-md-6 d-flex">
+                            <button type="button" class="btn btn-lg btn-secondary flex-fill" (click)="clearFilters()">
+                                <i class="nc-icon nc-refresh-69"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Despesas</h4>
+                <button class="btn btn btn-primary" (click)="openAddDialog()">
+                    <i class="nc-icon nc-simple-add me-1"></i> Novo Contrato de Serviço
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" style="font-size: 10px;">
+                        <thead class="text-primary">
+                            <tr>
+                                <th class="text-center"></th>
+                                <th>#</th>
+                                <th>Nome do Contrato</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Total Pago</th>
+                                <th>Saldo Restante</th>
+                                <th>Fornecedor</th>
+                                <th>Categoria</th>
+                                <th>Data de Início <small>Previsão</small></th>
+                                <th>Data de Fim <small>Previsão</small></th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <ng-container *ngFor="let serviceContract of list_serviceContracts">
+
+                                <!-- LINHA PRINCIPAL -->
+                                <tr>
+                                    <!-- Setinha -->
+                                    <td class="text-center align-middle">
+                                        <button class="btn btn-link p-0" (click)="togglePayments(serviceContract)"
+                                            title="Detalhes de pagamento">
+                                            <i class="nc-icon"
+                                                [ngClass]="serviceContract.expanded ? 'nc-minimal-up' : 'nc-minimal-down'">
+                                            </i>
+                                        </button>
+                                    </td>
+
+                                    <td>{{ serviceContract.id }}</td>
+                                    <td>{{ serviceContract.name }}</td>
+                                    <td>{{ serviceContract.description | uppercase }}</td>
+                                    <td>
+                                        {{ serviceContract.contractedValue | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+                                    </td>
+                                    <td> {{ serviceContract.totalPaid | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                                    <td>{{ serviceContract.balance | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                                    <td>{{ serviceContract.supplierName || '-' | uppercase }}</td>
+                                    <td>{{ serviceContract.categoryName || '-' | uppercase }}</td>
+                                    <td>{{ serviceContract.startDate | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ serviceContract.endDate | date:'dd/MM/yyyy' }}</td>
+
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-info me-2"
+                                            (click)="openEditDialog(serviceContract)" title="Editar">
+                                            <i class="nc-icon nc-ruler-pencil"></i>
+                                        </button>
+
+                                        <button class="btn btn-sm btn-danger"
+                                            (click)="deleteServiceContract(serviceContract.id)" title="Excluir">
+                                            <i class="nc-icon nc-simple-remove"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr *ngIf="serviceContract.expanded" class="table-active">
+                                    <td colspan="13" class="p-2">
+
+                                        <table class="table table-hover mb-0" style="font-size: 10px;">
+                                            <thead class="text-primary">
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Descrição</th>
+                                                    <th>Pagador</th>
+                                                    <th>Método de Pagamento</th>
+                                                    <th>Valor</th>
+                                                    <th>Ações</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let payment of serviceContract.payments">
+                                                    <td>{{ payment.date | date:'dd/MM/yyyy' }}</td>
+                                                    <td>{{ payment.description | uppercase }}</td>
+                                                    <td>{{ payment.payerName | uppercase }}</td>
+                                                    <td>{{ payment.paymentMethod | uppercase}}</td>
+                                                    <td>{{ payment.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-success me-2"
+                                                            (click)="generateReceipt(payment.id)" title="Gerar Recibo">
+                                                            <i class="nc-icon nc-paper"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                                <tr *ngIf="!serviceContract.payments?.length">
+                                                    <td colspan="6" class="text-muted text-center">
+                                                        Nenhum pagamento cadastrado
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="5" class="text-end">Total de Pagamentos:</th>
+                                                    <th>
+                                                        {{serviceContract.totalPaid |
+                                                        currency:'BRL':'symbol':'1.2-2':'pt-BR'}}
+                                                    </th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginação Material -->
+                <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="pageSizes"
+                    (page)="onPageChange($event)">
+                </mat-paginator>
+            </div>
+        </div>
+    </div>
+</div>

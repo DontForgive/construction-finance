@@ -9,14 +9,15 @@ export interface RouteInfo {
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard',     title: 'Dashboard',           icon:'nc-chart-bar-32',   class: '' },
-    { path: '/workday',       title: 'Dias Trabalhados',    icon: 'nc-calendar-60',   class: '' },
-    { path: '/expense',       title: 'Lançamentos',         icon:'nc-money-coins',    class: '' },
-    { path: '/images',        title: 'Galeria',             icon: 'nc-image',         class: '' },
-    { path: '/category',      title: 'Categorias',          icon:'nc-bullet-list-67', class: '' },
-    { path: '/supplier',      title: 'Fornecedores',        icon:'nc-briefcase-24',   class: '' },
-    { path: '/payer',         title: 'Pagadores',           icon:'nc-credit-card',    class: '' },
-    { path: '/user',          title: 'Usuários',            icon:'nc-circle-10',      class: '' },    
+    { path: '/dashboard',       title: 'Dashboard',            icon:'nc-chart-bar-32',   class: '' },
+    { path: '/workday',         title: 'Dias Trabalhados',     icon: 'nc-calendar-60',   class: '' },
+    { path: '/expense',         title: 'Lançamentos',          icon:'nc-money-coins',    class: '' },
+    { path: '/contractService', title: 'Contratos de Serviço', icon:'nc-money-coins',    class: '' },
+    { path: '/images',          title: 'Galeria',              icon:'nc-image',          class: '' },
+    { path: '/category',        title: 'Categorias',           icon:'nc-bullet-list-67', class: '' },
+    { path: '/supplier',        title: 'Fornecedores',         icon:'nc-briefcase-24',   class: '' },
+    { path: '/payer',           title: 'Pagadores',            icon:'nc-credit-card',    class: '' },
+    { path: '/user',            title: 'Usuários',             icon:'nc-circle-10',      class: '' },    
 ];
 
 @Component({

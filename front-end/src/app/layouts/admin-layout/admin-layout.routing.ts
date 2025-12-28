@@ -10,16 +10,18 @@ import { ImagesComponent } from 'app/pages/images/images.component';
 import { UserComponent } from 'app/pages/user/user.component';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
 import { WorkdayComponent } from 'app/pages/workday/workday.component';
+import { ServiceContractComponent } from 'app/pages/serviceContract/serviceContract.component';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'dashboard',      component: DashboardComponent, canActivate: [AuthGuard]  },
-    { path: 'category',       component: CategoryComponent,  canActivate: [AuthGuard]  },
-    { path: 'supplier',       component: SupplierComponent,  canActivate: [AuthGuard]  },
-    { path: 'payer',          component: PayerComponent,     canActivate: [AuthGuard]  },
-    { path: 'expense',        component: ExpenseComponent,   canActivate: [AuthGuard]  },
-    { path: 'images',         component: ImagesComponent,    canActivate: [AuthGuard]  },
-    { path: 'user',           component: UserComponent,      canActivate: [AuthGuard]  },
-    { path: 'profile',        component: ProfileComponent,   canActivate: [AuthGuard]  },
-    { path: 'workday',        component: WorkdayComponent,   canActivate: [AuthGuard]  },
+    { path: 'dashboard',        component: DashboardComponent,         canActivate: [AuthGuard]  },
+    { path: 'category',         component: CategoryComponent,          canActivate: [AuthGuard]  },
+    { path: 'supplier',         component: SupplierComponent,          canActivate: [AuthGuard]  },
+    { path: 'payer',            component: PayerComponent,             canActivate: [AuthGuard]  },
+    { path: 'expense',          component: ExpenseComponent,           canActivate: [AuthGuard]  },
+    { path: 'contractService',  component: ServiceContractComponent,   canActivate: [AuthGuard]  },
+    { path: 'images',           component: ImagesComponent,            canActivate: [AuthGuard]  },
+    { path: 'user',             component: UserComponent,              canActivate: [AuthGuard]  },
+    { path: 'profile',          component: ProfileComponent,           canActivate: [AuthGuard]  },
+    { path: 'workday',          component: WorkdayComponent,           canActivate: [AuthGuard]  },
     { path: '**', redirectTo: 'dashboard' },
 ];

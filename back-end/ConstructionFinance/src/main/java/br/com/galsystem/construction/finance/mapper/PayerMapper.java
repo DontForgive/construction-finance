@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 public interface PayerMapper {
 
     PayerDTO toDTO(Payer entity);
+
     Payer toEntity(PayerCreateDTO dto);
+
     void updateEntity(@MappingTarget Payer entity, PayerUpdateDTO dto);
 }

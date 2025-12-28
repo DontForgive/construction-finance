@@ -33,6 +33,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
 import { WorkdayComponent } from 'app/pages/workday/workday.component';
 import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogComponent';
+import { ServiceContractComponent } from 'app/pages/serviceContract/serviceContract.component';
+import { ServiceContractDialogComponent } from 'app/pages/serviceContract/serviceContract-dialog-components';
 
 
 @NgModule({
@@ -84,6 +86,8 @@ import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogCom
     ProfileComponent,
     WorkdayComponent,
     WorkdayAddDialogComponent,
+    ServiceContractComponent,
+    ServiceContractDialogComponent,
     
   ],
   providers: [

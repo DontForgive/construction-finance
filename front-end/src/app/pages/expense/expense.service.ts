@@ -4,6 +4,7 @@ import { environment } from "environments/environment";
 import { AuthService } from "../login/auth.service";
 import { ApiResponse, ApiResponseTest } from "app/utils/response";
 import { Expense } from "./expense";
+import Swal from "sweetalert2";
 
 @Injectable({
   providedIn: "root",
@@ -132,6 +133,35 @@ export class ExpenseService {
         responseType: 'blob' as 'json' // importante: trata retorno binário (PDF)
       }
     );
+  }
+
+  generateAndOpenReceipt(expenseId: number): void {
+    Swal.fire({
+      title: 'Gerando recibo...',
+      text: 'Aguarde alguns segundos',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    this.generateReceipt(expenseId).subscribe({
+      next: (blob: Blob) => {
+        Swal.close();
+
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+
+        // opcional (boa prática)
+        setTimeout(() => URL.revokeObjectURL(fileURL), 10000);
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro',
+          text: 'Falha ao gerar o recibo.'
+        });
+        console.error('Erro ao gerar recibo:', err);
+      }
+    });
   }
 
 }

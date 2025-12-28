@@ -33,7 +33,7 @@ export class ExpenseAddDialogComponent implements OnInit {
     private payerService: PayerService,
     private toast: ToastService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadSuppliers();
@@ -74,7 +74,7 @@ export class ExpenseAddDialogComponent implements OnInit {
     }
 
     const rawAmount = this.form.value.amount; // Ex: "50,50"
-    
+
     const parsedAmount =
       typeof rawAmount === "string"
         ? parseFloat(rawAmount.replace(",", "."))

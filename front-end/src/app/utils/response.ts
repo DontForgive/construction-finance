@@ -14,8 +14,8 @@ export interface ApiResponse<T> {
   erros: any[];
 }
 
-export interface ApiResponseTest<T>{
-    status: number;
+export interface ApiResponseTest<T> {
+  status: number;
   message: string;
   data: T;
   erros: any[];
