@@ -65,6 +65,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final PayerRepository payerRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ServiceContractRepository serviceContractRepository;
     private final ExpenseMapper mapper;
     private final CurrentUser currentUser;
     private final FileStorageService storageService;
@@ -170,6 +171,13 @@ public class ExpenseServiceImpl implements ExpenseService {
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Categoria com ID %d não encontrada".formatted(dto.categoryId())));
             entity.setCategory(category);
+        }
+
+        if (dto.serviceContractId() != null) {
+            final ServiceContract serviceContract = serviceContractRepository.findById(dto.serviceContractId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Contrato de Serviço com ID %d não encontrado".formatted(dto.serviceContractId())));
+            entity.setServiceContract(serviceContract);
         }
 
         final Expense saved = repository.save(entity);

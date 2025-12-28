@@ -12,8 +12,11 @@ public record ExpenseDTO(
         Long payerId,
         String payerName,
         Long categoryId,
+        Long serviceContractId,
+        String serviceContractName,
         String categoryName,
         String paymentMethod,
         BigDecimal amount,
         String attachmentUrl
-) {}
+) {
+}

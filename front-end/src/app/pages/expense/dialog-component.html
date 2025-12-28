@@ -75,6 +75,16 @@
             </mat-error>
         </mat-form-field>
 
+        <!-- Contrato de Serviço -->
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Contrato de Serviço</mat-label>
+            <mat-select formControlName="serviceContractId">
+                <mat-option *ngFor="let contract of serviceContract" [value]="contract.id">
+                    {{ contract.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
         <!-- Método de Pagamento -->
         <mat-form-field appearance="outline" class="w-100 mb-3">
             <mat-label>Método de Pagamento</mat-label>

@@ -128,6 +128,7 @@
                 <th>Pagador</th>
                 <th>Categoria</th>
                 <th>Método</th>
+                <th>Contrato</th>
                 <th class="text-center">Ações</th>
               </tr>
             </thead>
@@ -142,6 +143,7 @@
                 <td>{{ expense.categoryName || '-' | uppercase }}</td>
 
                 <td>{{ expense.paymentMethod }}</td>
+                <td>{{ expense.serviceContractName || '-' | uppercase }}</td>
                 <td class="text-center">
 
                   <!-- Novo botão gerar recibo -->
@@ -171,19 +173,14 @@
             </tbody>
             <tfoot>
               <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th scope="row">{{somaTotalResult}}</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th class="text-start">Total de Pagamentos:</th>
+                <th class="text-start">
+                  {{somaTotalResult}}
+                </th>
               </tr>
             </tfoot>
           </table>
         </div>
-
         <!-- Paginação Material -->
         <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="pageSizes"
           (page)="onPageChange($event)">

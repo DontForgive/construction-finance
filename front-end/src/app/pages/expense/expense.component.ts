@@ -12,6 +12,8 @@ import { Category } from "../category/category";
 import { CategoryService } from "../category/category.service";
 import Swal from "sweetalert2";
 import { environment } from "environments/environment";
+import { ServiceContractService } from "../serviceContract/serviceContract.service";
+import { ServiceContractDTO } from "../serviceContract/service-contract.dto";
 
 @Component({
   selector: "app-expense",
@@ -29,14 +31,17 @@ export class ExpenseComponent implements OnInit {
   filterSupplierId: number | null = null;
   filterPayerId: number | null = null;
   filterCategoryId: number | null = null;
+  filterContractId: number | null = null;
   filterPaymentMethod: string = "";
   filterStartDate: string = "";
   filterEndDate: string = "";
+
 
   public list_expenses: Expense[] = [];
   suppliers: Supplier[] = [];
   payers: Payer[] = [];
   categories: Category[] = [];
+  serviceContract: ServiceContractDTO[] = [];
   somaTotal: number = 0;
   somaTotalResult: string = '';
   private readonly API = `${environment.API_NO_BAR}`;
@@ -46,6 +51,7 @@ export class ExpenseComponent implements OnInit {
     private supplierService: SupplierService,
     private payerService: PayerService,
     private categoryService: CategoryService,
+    private contractService: ServiceContractService,
     private dialog: MatDialog,
     private toast: ToastService
   ) { }
@@ -55,6 +61,7 @@ export class ExpenseComponent implements OnInit {
     this.loadPayers();
     this.loadSuppliers();
     this.loadCategories();
+    this.loadContractServices();
 
   }
 
@@ -73,7 +80,7 @@ export class ExpenseComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-
+          console.log('RES EXPENSE: ', res.data.content);
           this.list_expenses = res.data.content;
           this.totalElements = res.data.totalElements;
           this.totalPages = res.data.totalPages;
@@ -117,7 +124,6 @@ export class ExpenseComponent implements OnInit {
       }
     });
   }
-
 
   deleteExpense(expense: Expense) {
     Swal.fire({
@@ -183,6 +189,17 @@ export class ExpenseComponent implements OnInit {
     this.payerService.getPayers(0, 100).subscribe({
       next: (res) => (this.payers = res.data.content),
       error: (err) => console.error("Erro ao carregar pagadores:", err),
+    });
+  }
+
+  loadContractServices(){
+    this.contractService.getServiceContracts().subscribe({
+      next: (res) => {
+        this.serviceContract = res.data.content;
+      },
+      error: (err) => {
+        console.error("Erro ao carregar contratos de serviço:", err);
+      }
     });
   }
 

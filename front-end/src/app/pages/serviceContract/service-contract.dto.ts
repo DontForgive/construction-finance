@@ -1,4 +1,4 @@
-import { Expense } from "../expense/expense";
+import { Expense } from '../expense/expense';
 
 export enum ContractStatus {
   ACTIVE = 'ACTIVE',
@@ -17,6 +17,9 @@ export interface ServiceContractDTO {
 
   categoryId: number;
   categoryName: string;
+
+  contractServiceId: number;
+  contractServiceName: string;
 
   totalValue: number;
   paidValue: number;

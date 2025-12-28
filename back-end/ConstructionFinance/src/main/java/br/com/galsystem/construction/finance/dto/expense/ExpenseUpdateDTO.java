@@ -17,6 +17,7 @@ public record ExpenseUpdateDTO(
 
         Long supplierId,
         Long payerId,
+        Long serviceContractId,
 
         Long categoryId,
 
