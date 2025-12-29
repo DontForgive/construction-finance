@@ -12,7 +12,6 @@ import br.com.galsystem.construction.finance.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -29,9 +28,9 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "supplierList", key = "{#name, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<SupplierDTO> listar(String name, Pageable pageable) {
-        return supplierRepository.findByFilters(name, pageable).map(supplierMapper::toDTO);
+//    @Cacheable(value = "supplierList", key = "{#name, #worker, #pageable.pageNumber, #pageable.pageSize}")
+    public Page<SupplierDTO> listar(String name, Boolean worker, Pageable pageable) {
+        return supplierRepository.findByFilters(name, worker, pageable).map(supplierMapper::toDTO);
     }
 
     @Override

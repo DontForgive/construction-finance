@@ -1,6 +1,5 @@
 package br.com.galsystem.construction.finance.repository;
 
-import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.models.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +19,10 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     Optional<Supplier> findByNameIgnoreCase(String name);
 
     @Query("""
-        SELECT s FROM Supplier s
-        WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
-    """)
-    Page<Supplier> findByFilters(@Param("name") String name, Pageable pageable);
+                SELECT s FROM Supplier s
+                WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
+                             AND (:worker IS NULL OR s.worker = :worker)
+            """)
+    Page<Supplier> findByFilters(@Param("name") String name, @Param("worker") Boolean worker, Pageable pageable);
 
 }

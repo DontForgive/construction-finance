@@ -28,16 +28,19 @@ export class SupplierService {
     size: number = 10,
     sort: string = 'id',
     dir: string = 'ASC',
-    name?: string) {
+    name?: string,
+    worker?:boolean) {
     const params: any = {
       page: page,
       size: size,
       sort: sort,
       dir: dir,
-      name: ''
+      name: '',
+      worker: ''
     };
 
     if (name) params.name = name;
+    if (worker) params.worker = worker;
 
     return this.httpClient.get<ApiResponse<Supplier>>(`${this.API}supplier`, {
       params: params,

@@ -20,6 +20,6 @@ public class Supplier {
     private String name;
 
     @Builder.Default
-    private boolean worker = false;
+    private Boolean worker = false;
 
 }
