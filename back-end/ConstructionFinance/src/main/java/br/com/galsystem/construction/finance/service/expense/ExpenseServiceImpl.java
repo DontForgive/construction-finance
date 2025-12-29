@@ -84,13 +84,14 @@ public class ExpenseServiceImpl implements ExpenseService {
             String paymentMethod,
             final LocalDate startDate,
             final LocalDate endDateDate,
+            final Long serviceContractId,
             final Pageable pageable
     ) {
         if (paymentMethod != null && paymentMethod.isBlank()) {
             paymentMethod = null;
         }
 
-        return repository.findByFilters(description, supplierId, payerId, categoryId, paymentMethod, startDate, endDateDate, pageable)
+        return repository.findByFilters(description, supplierId, payerId, categoryId, paymentMethod, startDate, endDateDate, serviceContractId, pageable)
                 .map(mapper::toDTO);
     }
 

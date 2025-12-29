@@ -81,6 +81,20 @@
               </mat-form-field>
             </div>
 
+            <!-- Filtro Contrato -->
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Contrato de Serviço</mat-label>
+                <mat-select [(ngModel)]="filterServiceContractId" name="filterServiceContractId">
+                  <mat-option [value]="null">Todos</mat-option>
+                  <mat-option *ngFor="let contract of serviceContracts" [value]="contract.id">
+                    {{ contract.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+
 
           </div>
 

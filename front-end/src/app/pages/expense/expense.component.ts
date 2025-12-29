@@ -35,13 +35,14 @@ export class ExpenseComponent implements OnInit {
   filterPaymentMethod: string = "";
   filterStartDate: string = "";
   filterEndDate: string = "";
+  filterServiceContractId: number | null = null;
 
 
   public list_expenses: Expense[] = [];
   suppliers: Supplier[] = [];
   payers: Payer[] = [];
   categories: Category[] = [];
-  serviceContract: ServiceContractDTO[] = [];
+  serviceContracts: ServiceContractDTO[] = [];
   somaTotal: number = 0;
   somaTotalResult: string = '';
   private readonly API = `${environment.API_NO_BAR}`;
@@ -51,7 +52,7 @@ export class ExpenseComponent implements OnInit {
     private supplierService: SupplierService,
     private payerService: PayerService,
     private categoryService: CategoryService,
-    private contractService: ServiceContractService,
+    private serviceContractService: ServiceContractService,
     private dialog: MatDialog,
     private toast: ToastService
   ) { }
@@ -77,10 +78,10 @@ export class ExpenseComponent implements OnInit {
         paymentMethod: this.filterPaymentMethod,
         startDate: this.filterStartDate, // 🔹 início do período
         endDate: this.filterEndDate,     // 🔹 fim do período
+        serviceContractId: this.filterServiceContractId,
       })
       .subscribe({
         next: (res) => {
-          console.log('RES EXPENSE: ', res.data.content);
           this.list_expenses = res.data.content;
           this.totalElements = res.data.totalElements;
           this.totalPages = res.data.totalPages;
@@ -169,6 +170,7 @@ export class ExpenseComponent implements OnInit {
     this.filterStartDate = "";
     this.filterEndDate = "";
     this.filterCategoryId = null;
+    this.filterServiceContractId = null;
     this.listExpenses(0);
   }
 
@@ -193,9 +195,9 @@ export class ExpenseComponent implements OnInit {
   }
 
   loadContractServices(){
-    this.contractService.getServiceContracts().subscribe({
+    this.serviceContractService.getServiceContracts().subscribe({
       next: (res) => {
-        this.serviceContract = res.data.content;
+        this.serviceContracts = res.data.content;
       },
       error: (err) => {
         console.error("Erro ao carregar contratos de serviço:", err);

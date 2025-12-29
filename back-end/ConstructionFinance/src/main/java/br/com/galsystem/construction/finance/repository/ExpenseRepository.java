@@ -23,8 +23,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:payerId IS NULL OR e.payer.id = :payerId)
                   AND (:categoryId IS NULL OR e.category.id = :categoryId)
                   AND ((:paymentMethod IS NULL OR :paymentMethod = '') OR e.paymentMethod = :paymentMethod)
-                    AND (e.date >= COALESCE(:startDate, e.date))
-                   AND (e.date <= COALESCE(:endDate, e.date))
+                  AND (e.date >= COALESCE(:startDate, e.date))
+                  AND (e.date <= COALESCE(:endDate, e.date))
+                  AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
             """)
     Page<Expense> findByFilters(
             @Param("description") String description,
@@ -34,6 +35,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("paymentMethod") String paymentMethod,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
+            @Param("serviceContractId") Long serviceContractId,
             Pageable pageable
     );
 

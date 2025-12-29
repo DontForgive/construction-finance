@@ -46,6 +46,7 @@ export class ExpenseService {
       paymentMethod?: string;
       startDate?: string;
       endDate?: string;
+      serviceContractId?: number;
     }
   ) {
     const params: any = {
@@ -60,6 +61,7 @@ export class ExpenseService {
       paymentMethod: "",
       startDate: "",
       endDate: "",
+      serviceContractId: ""
     };
 
     if (filters) {
@@ -71,6 +73,7 @@ export class ExpenseService {
       if (filters.startDate)
         params.startDate = this.formatDate(filters.startDate);
       if (filters.endDate) params.endDate = this.formatDate(filters.endDate);
+      if( filters.serviceContractId) params.serviceContractId = filters.serviceContractId;
     }
 
     return this.httpClient.get<ApiResponse<Expense>>(`${this.API}expenses`, {

@@ -44,7 +44,8 @@ public class ExpenseController {
             @RequestParam(required = false) final Long categoryId,
             @RequestParam(required = false) final String paymentMethod,
             @RequestParam(required = false) final LocalDate startDate,
-            @RequestParam(required = false) final LocalDate endDate
+            @RequestParam(required = false) final LocalDate endDate,
+            @RequestParam(required = false) final Long serviceContractId
     ) {
         final int safePage = Math.max(page, 0);
         final int safeSize = Math.min(Math.max(size, 1), 100);
@@ -52,10 +53,9 @@ public class ExpenseController {
         final Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         final Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-
         final Page<ExpenseDTO> result = service.list(
                 description, supplierId, payerId, categoryId,
-                paymentMethod, startDate, endDate, pageable
+                paymentMethod, startDate, endDate, serviceContractId, pageable
         );
 
         final Response<Page<ExpenseDTO>> resp = new Response<>();

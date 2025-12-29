@@ -19,6 +19,7 @@ public interface ExpenseService {
             String paymentMethod,
             LocalDate startDate,
             LocalDate endDate,
+            Long serviceContractId,
             Pageable pageable
     );
 
