@@ -73,7 +73,7 @@ export class ExpenseService {
       if (filters.startDate)
         params.startDate = this.formatDate(filters.startDate);
       if (filters.endDate) params.endDate = this.formatDate(filters.endDate);
-      if( filters.serviceContractId) params.serviceContractId = filters.serviceContractId;
+      if (filters.serviceContractId) params.serviceContractId = filters.serviceContractId;
     }
 
     return this.httpClient.get<ApiResponse<Expense>>(`${this.API}expenses`, {
@@ -138,6 +138,7 @@ export class ExpenseService {
     );
   }
 
+
   generateAndOpenReceipt(expenseId: number): void {
     Swal.fire({
       title: 'Gerando recibo...',
@@ -167,4 +168,96 @@ export class ExpenseService {
     });
   }
 
+  exportExpensesToExcel({
+    supplierId,
+    payerId,
+    categoryId,
+    paymentMethod,
+    startDate,
+    endDate,
+    serviceContractId,
+  }: {
+    supplierId?: number;
+    payerId?: number;
+    categoryId?: number;
+    paymentMethod?: string;
+    startDate?: string;
+    endDate?: string;
+    serviceContractId?: number;
+  }) {
+
+    const params: any = {
+      supplierId: supplierId ?? '',
+      payerId: payerId ?? '',
+      categoryId: categoryId ?? '',
+      paymentMethod: paymentMethod ?? '',
+      startDate: startDate ? this.formatDate(startDate) : '',
+      endDate: endDate ? this.formatDate(endDate) : '',
+      serviceContractId: serviceContractId ?? '',
+    };
+
+    Swal.fire({
+      title: 'Gerando Excel...',
+      text: 'Aguarde enquanto preparamos seu relatório 📊',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.httpClient.post(
+      `${this.API}api/reports/expenses/xlsx`,
+      null,
+      {
+        headers: this.getAuthHeaders(),
+        params,
+        responseType: 'blob',
+        observe: 'response' // 🔹 IMPORTANTE: Observa a resposta completa para ler os headers
+      }
+    ).subscribe({
+      next: (response) => {
+        Swal.close();
+
+        // 🔹 Tenta extrair o nome do arquivo do header Content-Disposition
+        const contentDisposition = response.headers.get('content-disposition');
+        let fileName = 'despesas.xlsx'; // fallback
+
+        if (contentDisposition) {
+          const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+          if (fileNameMatch && fileNameMatch.length > 1) {
+            fileName = fileNameMatch[1];
+          }
+        }
+
+        const blob = response.body as Blob;
+        const fileURL = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = fileURL;
+        a.download = fileName; // 🔹 Usa o nome vindo do back-end
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(fileURL), 10000);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Excel gerado!',
+          text: 'Download iniciado com sucesso 🚀',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao gerar Excel',
+          text: 'Não foi possível gerar o arquivo 😕'
+        });
+        console.error(err);
+      }
+    });
+  }
 }

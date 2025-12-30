@@ -194,7 +194,7 @@ export class ExpenseComponent implements OnInit {
     });
   }
 
-  loadContractServices(){
+  loadContractServices() {
     this.serviceContractService.getServiceContracts().subscribe({
       next: (res) => {
         this.serviceContracts = res.data.content;
@@ -235,4 +235,17 @@ export class ExpenseComponent implements OnInit {
       });
     }
   }
+
+  exportToExcel() {
+    this.service.exportExpensesToExcel({
+      supplierId: this.filterSupplierId,
+      payerId: this.filterPayerId,
+      categoryId: this.filterCategoryId,
+      paymentMethod: this.filterPaymentMethod,
+      startDate: this.filterStartDate,
+      endDate: this.filterEndDate,
+      serviceContractId: this.filterServiceContractId,
+    });
+  }
+
 }
