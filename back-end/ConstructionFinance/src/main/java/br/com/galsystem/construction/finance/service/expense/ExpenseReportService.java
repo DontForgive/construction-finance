@@ -2,10 +2,14 @@ package br.com.galsystem.construction.finance.service.expense;
 
 import br.com.galsystem.construction.finance.dto.charts.ExpenseKpiDTO;
 import br.com.galsystem.construction.finance.dto.expense.ChartDataDTO;
+import br.com.galsystem.construction.finance.dto.expense.ExpenseDTO;
 import br.com.galsystem.construction.finance.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +20,7 @@ import java.util.List;
 public class ExpenseReportService {
 
     private final ExpenseRepository repository;
+    private final ExpenseService expenseService;
 
     // --- Por Categoria
     public List<ChartDataDTO> getTotalByCategory(LocalDate start,
@@ -110,5 +115,76 @@ public class ExpenseReportService {
         );
     }
 
+    // TODO - function generateXLSX()
+
+    public byte[] generateExpensesXLSX(LocalDate startDate,
+                                       LocalDate endDate,
+                                       Long supplierId,
+                                       Long payerId,
+                                       Long categoryId,
+                                       Long serviceContractId,
+                                       String paymentMethod
+    ) {
+        List<ExpenseDTO> expenses = expenseService.listAll(startDate, endDate, supplierId, payerId, categoryId, serviceContractId, paymentMethod);
+
+        try (Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = wb.createSheet("Pagamentos");
+            CreationHelper helper = wb.getCreationHelper();
+
+            // Estilos
+            CellStyle headerStyle = wb.createCellStyle();
+            Font headerFont = wb.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+
+            CellStyle dateStyle = wb.createCellStyle();
+            dateStyle.setDataFormat(helper.createDataFormat().getFormat("dd/mm/yyyy"));
+
+            CellStyle currencyStyle = wb.createCellStyle();
+            currencyStyle.setDataFormat(helper.createDataFormat().getFormat("#,##0.00"));
+
+            String[] columns = {"Data", "Descrição", "Valor", "Fornecedor", "Pagador", "Categoria", "Método", "Contrato"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int rowNum = 1;
+            for (ExpenseDTO expense : expenses) {
+                Row row = sheet.createRow(rowNum++);
+
+                Cell dateCell = row.createCell(0);
+                if (expense.date() != null) {
+                    dateCell.setCellValue(expense.date());
+                    dateCell.setCellStyle(dateStyle);
+                }
+
+                row.createCell(1).setCellValue(expense.description());
+
+                Cell amountCell = row.createCell(2);
+                if (expense.amount() != null) {
+                    amountCell.setCellValue(expense.amount().doubleValue());
+                    amountCell.setCellStyle(currencyStyle);
+                }
+
+                row.createCell(3).setCellValue(expense.supplierName());
+                row.createCell(4).setCellValue(expense.payerName());
+                row.createCell(5).setCellValue(expense.categoryName());
+                row.createCell(6).setCellValue(expense.paymentMethod());
+                row.createCell(7).setCellValue(expense.serviceContractName());
+            }
+
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            wb.write(out);
+            return out.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar relatório de despesas", e);
+        }
+    }
 
 }

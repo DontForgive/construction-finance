@@ -6,10 +6,7 @@ import br.com.galsystem.construction.finance.service.expense.ExpenseReportServic
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -95,4 +92,27 @@ public class ExpenseReportController {
     ) {
         return ResponseEntity.ok(service.getKpis(start, end, categoryId, supplierId, payerId));
     }
+
+    @PostMapping("/xlsx")
+    public ResponseEntity<byte[]> generateExpensesXLSX(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long serviceContractId,
+            @RequestParam(required = false) String paymentMethod
+
+    ) {
+        byte[] reportBytes = service.generateExpensesXLSX(startDate, endDate, supplierId, payerId, categoryId, serviceContractId, paymentMethod);
+
+        String fileName = "pagamentos_" + LocalDate.now() + ".xlsx";
+
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .contentType(org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(reportBytes);
+
+    }
+
 }

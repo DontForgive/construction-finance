@@ -95,6 +95,23 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .map(mapper::toDTO);
     }
 
+    @Override
+    public List<ExpenseDTO> listAll(
+            final LocalDate startDate,
+            final LocalDate endDateDate,
+            final Long supplierId,
+            final Long payerId,
+            final Long categoryId,
+            final Long serviceContractId,
+            String paymentMethod
+    ) {
+
+        List<Expense> expenses = repository.findAll(startDate, endDateDate, supplierId, payerId, categoryId, serviceContractId, paymentMethod);
+
+        return mapper.toListDTO(expenses);
+
+    }
+
 
     @Override
     @Transactional(readOnly = true)

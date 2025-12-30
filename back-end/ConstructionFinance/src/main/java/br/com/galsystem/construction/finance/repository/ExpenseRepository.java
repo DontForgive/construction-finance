@@ -39,6 +39,26 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             Pageable pageable
     );
 
+    @Query("""
+            SELECT e FROM Expense e
+            WHERE (:supplierId IS NULL OR e.supplier.id = :supplierId)
+              AND (:payerId IS NULL OR e.payer.id = :payerId) 
+              AND (:categoryId IS NULL OR e.category.id = :categoryId)
+              AND ((:paymentMethod IS NULL OR :paymentMethod = '') OR e.paymentMethod = :paymentMethod)
+              AND (e.date >= COALESCE(:startDate, e.date))
+              AND (e.date <= COALESCE(:endDate, e.date))
+              AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
+            """)
+    List<Expense> findAll(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("supplierId") Long supplierId,
+            @Param("payerId") Long payerId,
+            @Param("categoryId") Long categoryId,
+            @Param("serviceContractId") Long serviceContractId,
+            @Param("paymentMethod") String paymentMethod
+    );
+
     // --- Por Categoria
     @Query("""
                 SELECT c.name AS label, SUM(e.amount) AS value

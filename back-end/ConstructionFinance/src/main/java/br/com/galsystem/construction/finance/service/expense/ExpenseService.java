@@ -25,6 +25,8 @@ public interface ExpenseService {
 
     ExpenseDTO findById(Long id);
 
+    List<ExpenseDTO> listAll(LocalDate startDate, LocalDate endDateDate, Long supplierId, Long payerId, Long categoryId, Long serviceContractId, String paymentMethod);
+            
     ExpenseDTO create(ExpenseCreateDTO dto);
 
     ExpenseDTO update(Long id, ExpenseUpdateDTO dto);

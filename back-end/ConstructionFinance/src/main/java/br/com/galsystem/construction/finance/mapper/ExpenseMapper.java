@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ExpenseMapper {
 
@@ -20,6 +22,16 @@ public interface ExpenseMapper {
     @Mapping(source = "serviceContract.id", target = "serviceContractId")
     @Mapping(source = "serviceContract.name", target = "serviceContractName")
     ExpenseDTO toDTO(Expense entity);
+
+    @Mapping(source = "supplier.id", target = "supplierId")
+    @Mapping(source = "supplier.name", target = "supplierName")
+    @Mapping(source = "payer.id", target = "payerId")
+    @Mapping(source = "payer.name", target = "payerName")
+    @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "category.name", target = "categoryName")
+    @Mapping(source = "serviceContract.id", target = "serviceContractId")
+    @Mapping(source = "serviceContract.name", target = "serviceContractName")
+    List<ExpenseDTO> toListDTO(List<Expense> entities);
 
     // Associações (supplier/payer) são setadas no service
     @Mapping(target = "supplier", ignore = true)
