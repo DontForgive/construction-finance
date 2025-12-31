@@ -152,6 +152,8 @@ public class ExpenseReportService {
             }
 
             int rowNum = 1;
+            BigDecimal totalValue = BigDecimal.ZERO;
+
             for (ExpenseDTO expense : expenses) {
                 Row row = sheet.createRow(rowNum++);
 
@@ -174,7 +176,24 @@ public class ExpenseReportService {
                 row.createCell(5).setCellValue(expense.categoryName());
                 row.createCell(6).setCellValue(expense.paymentMethod());
                 row.createCell(7).setCellValue(expense.serviceContractName());
+
+                totalValue = totalValue.add(expense.amount());
             }
+
+            Row summaryRow = sheet.createRow(rowNum + 1);
+            summaryRow.createCell(0).setCellValue("Total de Pagamentos:" + expenses.size());
+
+            summaryRow.createCell(1).setCellValue("Valor Pago: ");
+            summaryRow.createCell(2).setCellValue("R$ " + totalValue.doubleValue());
+
+            summaryRow.getCell(0).setCellStyle(currencyStyle);
+            summaryRow.getCell(1).setCellStyle(currencyStyle);
+            summaryRow.getCell(2).setCellStyle(currencyStyle);
+
+            summaryRow.getCell(0).setCellStyle(headerStyle);
+            summaryRow.getCell(1).setCellStyle(headerStyle);
+            summaryRow.getCell(2).setCellStyle(headerStyle);
+
 
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -106,7 +107,7 @@ public class ExpenseReportController {
     ) {
         byte[] reportBytes = service.generateExpensesXLSX(startDate, endDate, supplierId, payerId, categoryId, serviceContractId, paymentMethod);
 
-        String fileName = "pagamentos_" + LocalDate.now() + ".xlsx";
+        String fileName = "pagamentos_" + LocalDateTime.now() + ".xlsx";
 
         return org.springframework.http.ResponseEntity.ok()
                 .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
