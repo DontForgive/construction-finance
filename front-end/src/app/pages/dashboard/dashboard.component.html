@@ -12,7 +12,7 @@
       <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="row g-3">
 
         <!-- Data (range) -->
-        <div class="col-md-4">
+        <div class="col-md-2">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Período</mat-label>
             <mat-date-range-input [formGroup]="filterForm" [rangePicker]="picker">
@@ -55,6 +55,19 @@
             <mat-select formControlName="payerId">
               <mat-option *ngFor="let payer of payers" [value]="payer.id">
                 {{ payer.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Filtro Contrato -->
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Contrato de Serviço</mat-label>
+            <mat-select formControlName="serviceContractId">
+              <mat-option [value]="null">Todos</mat-option>
+              <mat-option *ngFor="let contract of serviceContracts" [value]="contract.id">
+                {{ contract.name }}
               </mat-option>
             </mat-select>
           </mat-form-field>

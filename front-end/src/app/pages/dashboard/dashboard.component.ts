@@ -9,6 +9,8 @@ import { SupplierService } from '../supplier/supplier.service';
 import { PayerService } from '../payer/payer.service';
 import { CategoryService } from '../category/category.service';
 import { ToastService } from 'app/utils/toastr';
+import { ServiceContractDTO } from '../serviceContract/service-contract.dto';
+import { ServiceContractService } from '../serviceContract/serviceContract.service';
 
 @Component({
   selector: 'dashboard-cmp',
@@ -38,6 +40,7 @@ export class DashboardComponent implements OnInit {
   suppliers: Supplier[] = [];
   payers: Payer[] = [];
   categories: Category[] = [];
+  serviceContracts: ServiceContractDTO[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -45,14 +48,17 @@ export class DashboardComponent implements OnInit {
     private supplierService: SupplierService,
     private payerService: PayerService,
     private categoryService: CategoryService,
-    private toast: ToastService
+    private toast: ToastService,
+    private serviceContractService: ServiceContractService,
+
   ) {
     this.filterForm = this.fb.group({
       startDate: [null],
       endDate: [null],
       categoryId: [null],
       supplierId: [null],
-      payerId: [null]
+      payerId: [null],
+      serviceContractId: [null]
     });
   }
 
@@ -62,18 +68,19 @@ export class DashboardComponent implements OnInit {
     this.loadPayers();
     this.loadSuppliers();
     this.loadCategories();
+    this.loadContractServices();
   }
 
   onClear(): void {
     this.filterForm.reset();
     this.loadAllCharts();
-    this.loadKpis(); 
+    this.loadKpis();
   }
 
   /** Aplica os filtros e recarrega gráficos */
   applyFilters() {
     this.loadAllCharts();
-    this.loadKpis(); 
+    this.loadKpis();
   }
 
   /** 🔹 Carrega todos os gráficos */
@@ -163,62 +170,62 @@ export class DashboardComponent implements OnInit {
 
   /** 🔹 Gráfico por Mês */
   private loadMonthChart() {
-  this.reportService.getByMonth(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
-    const labels = data.map(d => d.label);
-    const values = data.map(d => d.value);
+    this.reportService.getByMonth(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
+      const labels = data.map(d => d.label);
+      const values = data.map(d => d.value);
 
-    const canvas = document.getElementById('chartMonth') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d')!;
+      const canvas = document.getElementById('chartMonth') as HTMLCanvasElement;
+      const ctx = canvas.getContext('2d')!;
 
-    if (this.chartMonth) this.chartMonth.destroy();
+      if (this.chartMonth) this.chartMonth.destroy();
 
-    // ★ Gradiente bonito
-    const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, 'rgba(107, 208, 152, 0.35)');
-    gradient.addColorStop(1, 'rgba(107, 208, 152, 0.02)');
+      // ★ Gradiente bonito
+      const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+      gradient.addColorStop(0, 'rgba(107, 208, 152, 0.35)');
+      gradient.addColorStop(1, 'rgba(107, 208, 152, 0.02)');
 
-    this.chartMonth = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Despesas por mês',
-          data: values,
-          borderColor: '#41c983',
-          borderWidth: 3,
-          backgroundColor: gradient,     
-          pointBackgroundColor: '#41c983',
-          pointBorderColor: '#fff',
-          pointRadius: 6,                
-          pointHoverRadius: 10,
-          tension: 0.35                   
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true
-          },
-          tooltip: {
-            usePointStyle: true,
-            padding: 12
-          }
+      this.chartMonth = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Despesas por mês',
+            data: values,
+            borderColor: '#41c983',
+            borderWidth: 3,
+            backgroundColor: gradient,
+            pointBackgroundColor: '#41c983',
+            pointBorderColor: '#fff',
+            pointRadius: 6,
+            pointHoverRadius: 10,
+            tension: 0.35
+          }]
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: 'rgba(0,0,0,0.05)' }
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              usePointStyle: true,
+              padding: 12
+            }
           },
-          x: {
-            grid: { display: false },
-            ticks: { autoSkip: true, maxTicksLimit: 12 }
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { autoSkip: true, maxTicksLimit: 12 }
+            }
           }
         }
-      }
+      });
     });
-  });
-}
+  }
 
 
   /** 🔹 Gráfico por Fornecedor */
@@ -246,10 +253,18 @@ export class DashboardComponent implements OnInit {
   }
 
   /** 🔹 Gráfico por Pagador */
+  private randomColor(): string {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgba(${r}, ${g}, ${b}, 0.7)`;
+  }
+
   private loadPayerChart() {
     this.reportService.getByPayer(this.getFilters()).subscribe((data: ChartDataDTO[]) => {
       const labels = data.map(d => d.label);
       const values = data.map(d => d.value);
+      const colors = values.map(() => this.randomColor());
 
       this.ctx = document.getElementById('chartPayer');
       if (this.chartPayer) this.chartPayer.destroy();
@@ -260,14 +275,18 @@ export class DashboardComponent implements OnInit {
           labels,
           datasets: [{
             label: 'Despesas por pagador',
-            backgroundColor: '#fcc468',
+            backgroundColor: colors,
+            borderColor: colors,
             data: values
           }]
         },
-        options: { legend: { display: false } }
+        options: {
+          plugins: { legend: { display: false } }
+        }
       });
     });
   }
+
 
   loadSuppliers() {
     this.supplierService.getSuppliers(0, 100).subscribe({
@@ -292,6 +311,17 @@ export class DashboardComponent implements OnInit {
         this.toast.error("Erro ao carregar categorias", "Erro");
         console.error(err);
       },
+    });
+  }
+
+  loadContractServices() {
+    this.serviceContractService.getServiceContracts().subscribe({
+      next: (res) => {
+        this.serviceContracts = res.data.content;
+      },
+      error: (err) => {
+        console.error("Erro ao carregar contratos de serviço:", err);
+      }
     });
   }
 }
