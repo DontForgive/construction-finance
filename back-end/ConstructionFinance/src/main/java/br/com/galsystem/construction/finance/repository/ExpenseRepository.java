@@ -69,6 +69,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:categoryId IS NULL OR c.id = :categoryId)
                   AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
                   AND (:payerId IS NULL OR e.payer.id = :payerId)
+                  AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
                 GROUP BY c.name
                 ORDER BY SUM(e.amount) DESC
             """)
@@ -77,7 +78,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                           Long userId,
                                           Long categoryId,
                                           Long supplierId,
-                                          Long payerId);
+                                          Long payerId,
+                                          Long serviceContractId);
 
     // --- Por Mês
     @Query(value = """
@@ -90,6 +92,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:categoryId IS NULL OR e.category_id = :categoryId)
                   AND (:supplierId IS NULL OR e.supplier_id = :supplierId)
                   AND (:payerId IS NULL OR e.payer_id = :payerId)
+                  AND (:serviceContractId IS NULL OR e.service_contract_id = :serviceContractId)
                 GROUP BY TO_CHAR(e.date, 'YYYY-MM')
                 ORDER BY TO_CHAR(e.date, 'YYYY-MM')
             """, nativeQuery = true)
@@ -98,7 +101,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                        Long userId,
                                        Long categoryId,
                                        Long supplierId,
-                                       Long payerId);
+                                       Long payerId,
+                                       Long serviceContractId);
 
 
     // --- Por Fornecedor
@@ -110,6 +114,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:userId IS NULL OR e.user.id = :userId)
                   AND (:categoryId IS NULL OR e.category.id = :categoryId)
                   AND (:payerId IS NULL OR e.payer.id = :payerId)
+                  AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
                 GROUP BY s.name
                 ORDER BY SUM(e.amount) DESC
             """)
@@ -117,7 +122,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                           LocalDate end,
                                           Long userId,
                                           Long categoryId,
-                                          Long payerId);
+                                          Long payerId,
+                                          Long serviceContractId);
 
     // --- Por Método de Pagamento
     @Query("""
@@ -129,6 +135,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:categoryId IS NULL OR e.category.id = :categoryId)
                   AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
                   AND (:payerId IS NULL OR e.payer.id = :payerId)
+                  AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
                 GROUP BY e.paymentMethod
                 ORDER BY SUM(e.amount) DESC
             """)
@@ -137,7 +144,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                                Long userId,
                                                Long categoryId,
                                                Long supplierId,
-                                               Long payerId);
+                                               Long payerId,
+                                               Long serviceContractId);
+
 
     // --- Por Pagador
     @Query("""
@@ -148,6 +157,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                   AND (:userId IS NULL OR e.user.id = :userId)
                   AND (:categoryId IS NULL OR e.category.id = :categoryId)
                   AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
+                  AND (:serviceContractId IS NULL OR e.serviceContract.id = :serviceContractId)
                 GROUP BY p.name
                 ORDER BY SUM(e.amount) DESC
             """)
@@ -155,7 +165,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                                        LocalDate end,
                                        Long userId,
                                        Long categoryId,
-                                       Long supplierId);
+                                       Long supplierId,
+                                       Long serviceContractId);
 
     @Query(value = """
             SELECT COALESCE(SUM(e.amount), 0)

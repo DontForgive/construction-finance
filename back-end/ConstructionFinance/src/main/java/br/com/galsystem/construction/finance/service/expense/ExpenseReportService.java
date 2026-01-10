@@ -28,12 +28,14 @@ public class ExpenseReportService {
                                                  Long userId,
                                                  Long categoryId,
                                                  Long supplierId,
-                                                 Long payerId) {
+                                                 Long payerId,
+                                                 Long serviceContractId) {
 
         LocalDate safeStart = start != null ? start : LocalDate.of(1900, 1, 1);
         LocalDate safeEnd = end != null ? end : LocalDate.of(2100, 12, 31);
 
-        return repository.getTotalByCategory(safeStart, safeEnd, userId, categoryId, supplierId, payerId);
+        return repository.getTotalByCategory(safeStart, safeEnd, userId, categoryId, supplierId, payerId, serviceContractId);
+
     }
 
     // --- Por Mês
@@ -42,12 +44,13 @@ public class ExpenseReportService {
                                               Long userId,
                                               Long categoryId,
                                               Long supplierId,
-                                              Long payerId) {
+                                              Long payerId,
+                                              Long serviceContractId) {
 
         LocalDate safeStart = start != null ? start : LocalDate.of(1900, 1, 1);
         LocalDate safeEnd = end != null ? end : LocalDate.of(2100, 12, 31);
 
-        return repository.getTotalByMonth(safeStart, safeEnd, userId, categoryId, supplierId, payerId);
+        return repository.getTotalByMonth(safeStart, safeEnd, userId, categoryId, supplierId, payerId, serviceContractId);
     }
 
     // --- Por Fornecedor
@@ -55,12 +58,13 @@ public class ExpenseReportService {
                                                  LocalDate end,
                                                  Long userId,
                                                  Long categoryId,
-                                                 Long payerId) {
+                                                 Long payerId,
+                                                 Long serviceContractId) {
 
         LocalDate safeStart = start != null ? start : LocalDate.of(1900, 1, 1);
         LocalDate safeEnd = end != null ? end : LocalDate.of(2100, 12, 31);
 
-        return repository.getTotalBySupplier(safeStart, safeEnd, userId, categoryId, payerId);
+        return repository.getTotalBySupplier(safeStart, safeEnd, userId, categoryId, payerId, serviceContractId);
     }
 
     // --- Por Método de Pagamento
@@ -69,12 +73,13 @@ public class ExpenseReportService {
                                                       Long userId,
                                                       Long categoryId,
                                                       Long supplierId,
-                                                      Long payerId) {
+                                                      Long payerId,
+                                                      Long serviceContractId) {
 
         LocalDate safeStart = start != null ? start : LocalDate.of(1900, 1, 1);
         LocalDate safeEnd = end != null ? end : LocalDate.of(2100, 12, 31);
 
-        return repository.getTotalByPaymentMethod(safeStart, safeEnd, userId, categoryId, supplierId, payerId);
+        return repository.getTotalByPaymentMethod(safeStart, safeEnd, userId, categoryId, supplierId, payerId, serviceContractId);
     }
 
     // --- Por Pagador
@@ -82,12 +87,13 @@ public class ExpenseReportService {
                                               LocalDate end,
                                               Long userId,
                                               Long categoryId,
-                                              Long supplierId) {
+                                              Long supplierId,
+                                              Long serviceContractId) {
 
         LocalDate safeStart = start != null ? start : LocalDate.of(1900, 1, 1);
         LocalDate safeEnd = end != null ? end : LocalDate.of(2100, 12, 31);
 
-        return repository.getTotalByPayer(safeStart, safeEnd, userId, categoryId, supplierId);
+        return repository.getTotalByPayer(safeStart, safeEnd, userId, categoryId, supplierId, serviceContractId);
     }
 
     public ExpenseKpiDTO getKpis(

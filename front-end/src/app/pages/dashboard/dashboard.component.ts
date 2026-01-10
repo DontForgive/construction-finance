@@ -100,7 +100,8 @@ export class DashboardComponent implements OnInit {
       end: f.endDate,
       categoryId: f.categoryId,
       supplierId: f.supplierId,
-      payerId: f.payerId
+      payerId: f.payerId,
+      serviceContractId: f.serviceContractId 
     };
   }
 

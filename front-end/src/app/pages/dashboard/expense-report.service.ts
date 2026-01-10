@@ -63,6 +63,7 @@ export class ExpenseReportService {
     if (filters.categoryId) params.categoryId = filters.categoryId;
     if (filters.supplierId) params.supplierId = filters.supplierId;
     if (filters.payerId) params.payerId = filters.payerId;
+    if (filters.serviceContractId) params.serviceContractId = filters.serviceContractId;
 
     return params;
   }

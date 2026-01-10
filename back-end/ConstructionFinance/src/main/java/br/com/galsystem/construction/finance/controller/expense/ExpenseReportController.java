@@ -28,9 +28,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Long supplierId,
-            @RequestParam(required = false) Long payerId
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return service.getTotalByCategory(start, end, userId, categoryId, supplierId, payerId);
+        return service.getTotalByCategory(start, end, userId, categoryId, supplierId, payerId, serviceContractId);
     }
 
     // --- Por Mês
@@ -41,9 +42,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Long supplierId,
-            @RequestParam(required = false) Long payerId
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return service.getTotalByMonth(start, end, userId, categoryId, supplierId, payerId);
+        return service.getTotalByMonth(start, end, userId, categoryId, supplierId, payerId, serviceContractId);
     }
 
     // --- Por Fornecedor
@@ -53,9 +55,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long payerId
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return service.getTotalBySupplier(start, end, userId, categoryId, payerId);
+        return service.getTotalBySupplier(start, end, userId, categoryId, payerId, serviceContractId);
     }
 
     // --- Por Método de Pagamento
@@ -66,9 +69,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Long supplierId,
-            @RequestParam(required = false) Long payerId
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return service.getTotalByPaymentMethod(start, end, userId, categoryId, supplierId, payerId);
+        return service.getTotalByPaymentMethod(start, end, userId, categoryId, supplierId, payerId, serviceContractId);
     }
 
     // --- Por Pagador
@@ -78,9 +82,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long supplierId
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return service.getTotalByPayer(start, end, userId, categoryId, supplierId);
+        return service.getTotalByPayer(start, end, userId, categoryId, supplierId, serviceContractId);
     }
 
     @GetMapping("/kpis")
