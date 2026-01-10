@@ -165,13 +165,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
               AND e.category_id = COALESCE(:categoryId, e.category_id)
               AND e.supplier_id = COALESCE(:supplierId, e.supplier_id)
               AND e.payer_id = COALESCE(:payerId, e.payer_id)
+              AND (:serviceContractId IS NULL OR e.service_contract_id = :serviceContractId)
             """, nativeQuery = true)
     BigDecimal getTotalExpenses(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end,
             @Param("categoryId") Long categoryId,
             @Param("supplierId") Long supplierId,
-            @Param("payerId") Long payerId
+            @Param("payerId") Long payerId,
+            @Param("serviceContractId") Long serviceContractId
     );
 
 
@@ -183,13 +185,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
               AND (:categoryId IS NULL OR e.category.id = :categoryId)
               AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
               AND (:payerId IS NULL OR e.payer.id = :payerId)
+              AND (:serviceContractId IS NULL OR e.serviceContract = :serviceContractId)
             """)
     Long getTotalPayers(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end,
             @Param("categoryId") Long categoryId,
             @Param("supplierId") Long supplierId,
-            @Param("payerId") Long payerId
+            @Param("payerId") Long payerId,
+            @Param("serviceContractId") Long serviceContractId
     );
 
 
@@ -201,13 +205,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
               AND (:categoryId IS NULL OR e.category.id = :categoryId)
               AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
               AND (:payerId IS NULL OR e.payer.id = :payerId)
+              AND (:serviceContractId IS NULL OR e.serviceContract = :serviceContractId)
             """)
     Long getTotalSuppliers(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end,
             @Param("categoryId") Long categoryId,
             @Param("supplierId") Long supplierId,
-            @Param("payerId") Long payerId
+            @Param("payerId") Long payerId,
+            @Param("serviceContractId") Long serviceContractId
     );
 
 
@@ -219,13 +225,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
               AND (:categoryId IS NULL OR e.category.id = :categoryId)
               AND (:supplierId IS NULL OR e.supplier.id = :supplierId)
               AND (:payerId IS NULL OR e.payer.id = :payerId)
+              AND (:serviceContractId IS NULL OR e.serviceContract = :serviceContractId)
             """)
     Long getTotalCategories(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end,
             @Param("categoryId") Long categoryId,
             @Param("supplierId") Long supplierId,
-            @Param("payerId") Long payerId
+            @Param("payerId") Long payerId,
+            @Param("serviceContractId") Long serviceContractId
     );
 
 

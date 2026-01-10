@@ -95,17 +95,18 @@ public class ExpenseReportService {
             LocalDate end,
             Long categoryId,
             Long supplierId,
-            Long payerId
+            Long payerId,
+            Long serviceContractId
     ) {
         // 🔹 Total de despesas = FILTRADO
         BigDecimal totalExpenses = repository.getTotalExpenses(
-                start, end, categoryId, supplierId, payerId
+                start, end, categoryId, supplierId, payerId, serviceContractId
         );
 
         // 🔹 As contagens serão SEMPRE gerais (null null null null null)
-        Long totalPayers = repository.getTotalPayers(null, null, null, null, null);
-        Long totalSuppliers = repository.getTotalSuppliers(null, null, null, null, null);
-        Long totalCategories = repository.getTotalCategories(null, null, null, null, null);
+        Long totalPayers = repository.getTotalPayers(null, null, null, null, null, null);
+        Long totalSuppliers = repository.getTotalSuppliers(null, null, null, null, null, null);
+        Long totalCategories = repository.getTotalCategories(null, null, null, null, null, null);
 
         return new ExpenseKpiDTO(
                 totalExpenses != null ? totalExpenses : BigDecimal.ZERO,

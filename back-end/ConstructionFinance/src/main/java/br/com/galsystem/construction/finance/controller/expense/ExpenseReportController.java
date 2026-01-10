@@ -89,9 +89,10 @@ public class ExpenseReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Long supplierId,
-            @RequestParam(required = false) Long payerId
+            @RequestParam(required = false) Long payerId,
+            @RequestParam(required = false) Long serviceContractId
     ) {
-        return ResponseEntity.ok(service.getKpis(start, end, categoryId, supplierId, payerId));
+        return ResponseEntity.ok(service.getKpis(start, end, categoryId, supplierId, payerId, serviceContractId));
     }
 
     @PostMapping("/xlsx")

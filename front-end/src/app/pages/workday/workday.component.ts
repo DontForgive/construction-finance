@@ -38,11 +38,19 @@ export class WorkdayComponent implements OnInit {
 
 
   loadSuppliers() {
-    this.supplierService.getSuppliers(0, 100).subscribe({
+    const page = 0;
+    const size = 100;
+    const sort = '';
+    const dir = '';
+    const name = '';
+    const worker = true;
+
+    this.supplierService.getSuppliers(page, size, sort, dir, name, worker).subscribe({
       next: (res) => (this.suppliers = res.data.content),
       error: (err) => console.error("Erro ao carregar fornecedores:", err),
     });
   }
+
 
 
   loadWorkDays(): void {
