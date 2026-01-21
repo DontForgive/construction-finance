@@ -1,7 +1,11 @@
 package br.com.galsystem.construction.finance.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,6 +33,12 @@ public class User {
 
     @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    @Column(name = "banner_url")
+    private String bannerUrl;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

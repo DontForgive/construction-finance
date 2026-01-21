@@ -10,11 +10,17 @@ import lombok.*;
 @RequiredArgsConstructor
 @Builder
 public class UserDTO {
-    @NonNull private Long id;
-    @NonNull private String email;
-    @NonNull private String username;
+    @NonNull
+    private Long id;
+    @NonNull
+    private String email;
+    @NonNull
+    private String username;
     @Column(name = "full_name")
     private String fullName;
     @Column(name = "phone_number")
     private String phoneNumber;
+    private String profilePictureUrl;
+    private String bannerUrl;
+
 }

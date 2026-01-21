@@ -28,11 +28,17 @@
         <!-- Avatar / User menu -->
         <li class="nav-item" ngbDropdown placement="bottom-right">
           <a class="nav-link d-flex align-items-center gap-2" ngbDropdownToggle id="userMenu" style="cursor: pointer;"
-            aria-label="Abrir menu do usuário">
-            <img src="https://media.lordicon.com/icons/wired/gradient/44-avatar-user-in-circle.svg"
-              alt="Foto do usuário" width="30" height="30" class="avatar rounded-circle">
+             aria-label="Abrir menu do usuário">
+            <img
+              [src]="profilePicture"
+              alt="Foto do usuário"
+              width="30"
+              height="30"
+              class="avatar rounded-circle"
+            >
             <span class="d-none d-lg-inline fw-semibold">{{ username }}</span>
           </a>
+
 
           <div ngbDropdownMenu aria-labelledby="userMenu" class="dropdown-menu dropdown-menu-end shadow">
             <div class="px-3 py-2 small text-muted d-lg-none">

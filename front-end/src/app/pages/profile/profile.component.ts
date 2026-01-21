@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import Swal from 'sweetalert2';
-import { ProfileService } from './profile.service';
-import { ToastService } from 'app/utils/toastr';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {ProfileService} from './profile.service';
+import {ToastService} from 'app/utils/toastr';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {ImagesService} from '../images/images.service';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -11,11 +13,19 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class ProfileComponent implements OnInit {
   profileForm!: FormGroup;
+  avatarPreviewUrl: string | null = null;
+  bannerPreviewUrl: string | null = null;
+  private readonly API = `${environment.API_NO_BAR}`
 
-
-  constructor(private service: ProfileService, private toast: ToastService,
+  constructor(
+    private service: ProfileService,
+    private toast: ToastService,
     private fb: FormBuilder,
-  ) { }
+    private imagesService: ImagesService
+  ) {
+  }
+
+
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
@@ -23,21 +33,83 @@ export class ProfileComponent implements OnInit {
       username: [''],
       fullName: [''],
       email: [''],
-      phoneNumber: ['']
+      phoneNumber: [''],
+      profilePictureUrl: [''],
+      bannerUrl: ['']
     });
 
     this.getProfile();
   }
 
-  onSubmit(){
+  onSubmit() {
     this.updateProfile();
+  }
+
+  private uploadAndSetUrl(file: File, fieldName: 'profilePictureUrl' | 'bannerUrl'): void {
+    Swal.fire({
+      title: 'Enviando imagem...',
+      text: 'Por favor, aguarde.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const request$ =
+      fieldName === 'profilePictureUrl'
+        ? this.service.updateProfilePicture(file)
+        : this.service.updateBanner(file);
+
+    request$.subscribe({
+      next: (res: any) => {
+        Swal.close();
+
+        const data = res?.data;
+
+        if (fieldName === 'profilePictureUrl' && data?.profilePictureUrl) {
+          this.profileForm.patchValue({profilePictureUrl: data.profilePictureUrl});
+          this.avatarPreviewUrl = data.profilePictureUrl;
+        }
+        this.getProfile()
+
+        this.toast.success(res?.message || 'Imagem atualizada com sucesso!');
+      },
+      error: (err) => {
+        Swal.close();
+        this.toast.error(err?.error?.message || 'Erro ao enviar imagem.');
+      }
+    });
+  }
+
+  onSelectAvatar(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.avatarPreviewUrl = URL.createObjectURL(file);
+    this.uploadAndSetUrl(file, 'profilePictureUrl');
+
+    input.value = '';
+  }
+
+  onSelectBanner(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.bannerPreviewUrl = URL.createObjectURL(file);
+    this.uploadAndSetUrl(file, 'bannerUrl');
+
+    input.value = '';
   }
 
   updateProfile(): void {
     if (this.profileForm.invalid) {
       this.toast.error('Formulário inválido. Verifique os campos e tente novamente.');
       return;
-    } 
+    }
     const profileData = this.profileForm.value;
 
     Swal.fire({
@@ -54,12 +126,12 @@ export class ProfileComponent implements OnInit {
             this.toast.success(res.message || 'Perfil atualizado com sucesso!');
           } else {
             this.toast.warning(res.message || 'Não foi possível atualizar o perfil.');
-          } 
+          }
         },
         error: (err) => {
           Swal.close();
           this.toast.error(err.error?.message || 'Ocorreu um erro ao atualizar o perfil.');
-        } 
+        }
       });
   }
 
@@ -71,10 +143,16 @@ export class ProfileComponent implements OnInit {
         username: data.username,
         fullName: data.fullName,
         email: data.email,
-        phoneNumber: data.phoneNumber
+        phoneNumber: data.phoneNumber,
+        profilePictureUrl: data.profilePictureUrl,
+        bannerUrl: data.bannerUrl
       });
+
+      this.avatarPreviewUrl = this.API + data.profilePictureUrl || null;
+      this.bannerPreviewUrl = this.API + data.bannerUrl || null;
     });
   }
+
 
   updatePassword(): void {
     Swal.fire({
@@ -83,7 +161,7 @@ export class ProfileComponent implements OnInit {
       <div class="text-start">
         <label>Senha Atual</label>
         <input id="swal-password" type="password" class="swal2-input" placeholder="Digite sua senha atual">
-        
+
         <label>Nova Senha</label>
         <input id="swal-new-password" type="password" class="swal2-input" placeholder="Digite a nova senha">
 
@@ -115,11 +193,11 @@ export class ProfileComponent implements OnInit {
           return false;
         }
 
-        return { password, newPassword, confirmNewPassword };
+        return {password, newPassword, confirmNewPassword};
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        const { password, newPassword, confirmNewPassword } = result.value;
+        const {password, newPassword, confirmNewPassword} = result.value;
 
         Swal.fire({
           title: 'Alterando senha...',

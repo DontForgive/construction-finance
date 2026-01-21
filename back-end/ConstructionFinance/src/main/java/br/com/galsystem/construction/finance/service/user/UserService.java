@@ -2,13 +2,13 @@ package br.com.galsystem.construction.finance.service.user;
 
 import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
-import br.com.galsystem.construction.finance.exception.NotFoundException;
+import br.com.galsystem.construction.finance.files.UploadArea;
 import br.com.galsystem.construction.finance.mapper.UserMapper;
-import br.com.galsystem.construction.finance.models.PasswordResetToken;
 import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import br.com.galsystem.construction.finance.response.PasswordUpdateResponse;
 import br.com.galsystem.construction.finance.response.Response;
+import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final FileStorageService fileStorageService;
 
 
     public Page<UserDTO> findByFilters(final String username, final String email, final Pageable pageable) {
@@ -78,7 +80,7 @@ public class UserService {
 
             final User saved = userRepository.save(user);
             // DTO de saída
-            final UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername(), saved.getFullName(), saved.getPhoneNumber());
+            final UserDTO dto = new UserDTO(saved.getId(), saved.getEmail(), saved.getUsername(), saved.getFullName(), saved.getPhoneNumber(), saved.getProfilePictureUrl(), saved.getBannerUrl());
             resp.setStatus(201);
             resp.setMessage("Usuário cadastrado com sucesso!");
             resp.setData(dto);
@@ -126,6 +128,7 @@ public class UserService {
 
         return new PasswordUpdateResponse(200, "Senha alterada com sucesso");
     }
+
     public Long getAuthenticatedUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -143,5 +146,66 @@ public class UserService {
         }
         throw new UsernameNotFoundException("Tipo de autenticação desconhecido");
     }
+
+    @Transactional
+    public Response<UserDTO> updateProfilePicture(final MultipartFile file) {
+        final Long userId = getAuthenticatedUserId();
+        final Response<UserDTO> resp = new Response<>();
+
+        final User user = userRepository.findById(userId)
+                .orElse(null);
+
+        if (user == null) {
+            resp.setStatus(404);
+            resp.setMessage("Usuário não encontrado");
+            return resp;
+        }
+
+        final String oldUrl = user.getProfilePictureUrl();
+        final String newUrl = fileStorageService.store(UploadArea.USERS, file);
+
+        user.setProfilePictureUrl(newUrl);
+        userRepository.save(user);
+
+        if (oldUrl != null && !oldUrl.isBlank() && !oldUrl.equals(newUrl)) {
+            fileStorageService.deleteByPublicUrl(oldUrl);
+        }
+
+        resp.setStatus(200);
+        resp.setMessage("Foto de perfil atualizada com sucesso");
+        resp.setData(userMapper.toDTO(user));
+        return resp;
+    }
+
+    @Transactional
+    public Response<UserDTO> updateBanner(final MultipartFile file) {
+        final Long userId = getAuthenticatedUserId();
+        final Response<UserDTO> resp = new Response<>();
+
+        final User user = userRepository.findById(userId)
+                .orElse(null);
+
+        if (user == null) {
+            resp.setStatus(404);
+            resp.setMessage("Usuário não encontrado");
+            return resp;
+        }
+
+        final String oldUrl = user.getBannerUrl();
+        final String newUrl = fileStorageService.store(UploadArea.USERS, file);
+
+        user.setBannerUrl(newUrl);
+        userRepository.save(user);
+
+        if (oldUrl != null && !oldUrl.isBlank() && !oldUrl.equals(newUrl)) {
+            fileStorageService.deleteByPublicUrl(oldUrl);
+        }
+
+        resp.setStatus(200);
+        resp.setMessage("Banner atualizado com sucesso");
+        resp.setData(userMapper.toDTO(user));
+        return resp;
+    }
+
 
 }

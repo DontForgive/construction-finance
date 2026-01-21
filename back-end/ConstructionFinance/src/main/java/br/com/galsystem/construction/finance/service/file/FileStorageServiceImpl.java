@@ -22,25 +22,23 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    @Value("${app.files.storage-root}")
-    private String storageRoot;
-
-    @Value("${app.files.public-base-url}")
-    private String publicBaseUrl; // ex.: /files
-
     // Extensões permitidas por área (ajuste conforme a sua regra)
     private static final Map<UploadArea, Set<String>> ALLOWED_EXT = Map.of(
             UploadArea.EXPENSES, Set.of("pdf", "png", "jpg", "jpeg", "webp"),
             UploadArea.SUPPLIERS, Set.of("pdf", "png", "jpg", "jpeg", "webp"),
-            UploadArea.CATEGORIES, Set.of("png", "jpg", "jpeg", "webp")
+            UploadArea.CATEGORIES, Set.of("png", "jpg", "jpeg", "webp"),
+            UploadArea.USERS, Set.of("png", "jpg", "jpeg", "webp")
     );
-
     // Tipos de conteúdo permitidos (básico)
     private static final Set<String> ALLOWED_TYPES = Set.of(
             MediaType.APPLICATION_PDF_VALUE,
             MediaType.IMAGE_PNG_VALUE,
             MediaType.IMAGE_JPEG_VALUE
     );
+    @Value("${app.files.storage-root}")
+    private String storageRoot;
+    @Value("${app.files.public-base-url}")
+    private String publicBaseUrl; // ex.: /files
 
     @Override
     public String store(final UploadArea area, final MultipartFile file) {

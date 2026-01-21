@@ -1,4 +1,5 @@
 package br.com.galsystem.construction.finance.controller.user;
+
 import br.com.galsystem.construction.finance.dto.user.UpdatePasswordRequest;
 import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
@@ -14,8 +15,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Optional;
 
 
@@ -114,8 +118,8 @@ public class UserController {
 
         return ResponseEntity.ok(resp);
     }
-    
-    @PutMapping("/profile")
+
+    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response<UserDTO>> updateProfile(@RequestBody UserDTO dto) {
         Long userId = userService.getAuthenticatedUserId();
         Optional<User> opt = userService.findById(userId);
@@ -129,10 +133,13 @@ public class UserController {
         }
 
         User user = opt.get();
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setFullName(dto.getFullName());
-        user.setPhoneNumber(dto.getPhoneNumber());
+
+        if (dto.getUsername() != null) user.setUsername(dto.getUsername());
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getFullName() != null) user.setFullName(dto.getFullName());
+        if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getProfilePictureUrl() != null) user.setProfilePictureUrl(dto.getProfilePictureUrl());
+        if (dto.getBannerUrl() != null) user.setBannerUrl(dto.getBannerUrl());
 
         UserCreateDTO userDTO = userMapper.toUserCreateDTO(user);
         Response<UserDTO> updatedUser = userService.save(userDTO);
@@ -144,4 +151,18 @@ public class UserController {
 
         return ResponseEntity.ok(resp);
     }
+
+    @PutMapping(value = "/profile/picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<UserDTO>> uploadProfilePicture(@RequestPart("file") final MultipartFile file) {
+        final Response<UserDTO> resp = userService.updateProfilePicture(file);
+        return ResponseEntity.status(resp.getStatus()).body(resp);
+    }
+
+    @PutMapping(value = "/profile/banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<UserDTO>> uploadBanner(@RequestPart("file") final MultipartFile file) {
+        final Response<UserDTO> resp = userService.updateBanner(file);
+        return ResponseEntity.status(resp.getStatus()).body(resp);
+    }
+
+
 }

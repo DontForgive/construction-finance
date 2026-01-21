@@ -1,0 +1,65 @@
+/* Mantém o visual do card, só adiciona UI do upload */
+
+.profile-banner-wrap {
+  position: relative;
+  overflow: hidden;
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem;
+}
+
+.profile-banner-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.05);
+}
+
+.profile-banner-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
+  opacity: .95;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.profile-avatar-img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  opacity: 0;
+  transition: opacity .2s ease-in-out;
+  pointer-events: none;
+}
+
+.profile-avatar-overlay-text {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+.profile-avatar-wrap:hover .profile-avatar-overlay {
+  opacity: 1;
+}
