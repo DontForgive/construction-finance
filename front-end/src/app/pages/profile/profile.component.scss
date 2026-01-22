@@ -63,3 +63,25 @@
 .profile-avatar-wrap:hover .profile-avatar-overlay {
   opacity: 1;
 }
+
+
+
+/* cropper img */
+
+.profile-cropper-modal {
+  max-width: 90vw;
+  width: auto;
+  max-height: 85vh;
+  overflow: auto;
+}
+
+.profile-cropper-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 65vh;
+  overflow: auto;
+  min-height: 320px;
+}
+
+

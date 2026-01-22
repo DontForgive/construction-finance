@@ -5,6 +5,7 @@ import {ToastService} from 'app/utils/toastr';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ImagesService} from '../images/images.service';
 import {environment} from '../../../environments/environment';
+import { ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-profile',
@@ -17,15 +18,20 @@ export class ProfileComponent implements OnInit {
   bannerPreviewUrl: string | null = null;
   private readonly API = `${environment.API_NO_BAR}`
 
+  isCropperOpen = false;
+  imageChangedEvent: Event | null = null;
+  croppedImageBase64: string | null = null;
+  imageFile: File | null = null;
+
+  zoom = 0.1;
+  transform: ImageTransform = { scale: 1 };
+
   constructor(
     private service: ProfileService,
     private toast: ToastService,
-    private fb: FormBuilder,
-    private imagesService: ImagesService
+    private fb: FormBuilder
   ) {
   }
-
-
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
@@ -62,14 +68,23 @@ export class ProfileComponent implements OnInit {
       next: (res: any) => {
         Swal.close();
 
-        const data = res?.data;
+        const user = res?.data;
 
-        if (fieldName === 'profilePictureUrl' && data?.profilePictureUrl) {
-          this.profileForm.patchValue({profilePictureUrl: data.profilePictureUrl});
-          this.avatarPreviewUrl = data.profilePictureUrl;
+        if (fieldName === 'profilePictureUrl') {
+          const url = user?.profilePictureUrl ? (this.API + user.profilePictureUrl) : null;
+          if (url) {
+            this.profileForm.patchValue({ profilePictureUrl: user.profilePictureUrl });
+            this.avatarPreviewUrl = url;
+          }
+        } else {
+          const url = user?.bannerUrl ? (this.API + user.bannerUrl) : null;
+          if (url) {
+            this.profileForm.patchValue({ bannerUrl: user.bannerUrl });
+            this.bannerPreviewUrl = url;
+          }
         }
-        this.getProfile()
 
+        this.service.refreshProfile(); // atualiza navbar e quem estiver escutando
         this.toast.success(res?.message || 'Imagem atualizada com sucesso!');
       },
       error: (err) => {
@@ -79,6 +94,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+
   onSelectAvatar(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -86,11 +102,26 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.avatarPreviewUrl = URL.createObjectURL(file);
-    this.uploadAndSetUrl(file, 'profilePictureUrl');
+    this.imageFile = file;
+    this.imageChangedEvent = null;
+    this.croppedImageBase64 = null;
 
+    this.zoom = 1;
+    this.transform = { scale: 1 };
+
+    this.isCropperOpen = true;
     input.value = '';
   }
+
+  onZoomChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    const v = Number(value);
+    const safe = Number.isFinite(v) ? v : 1;
+
+    this.zoom = safe;
+    this.transform = { ...this.transform, scale: this.zoom };
+  }
+
 
   onSelectBanner(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -103,6 +134,60 @@ export class ProfileComponent implements OnInit {
     this.uploadAndSetUrl(file, 'bannerUrl');
 
     input.value = '';
+  }
+
+  onImageCropped(event: ImageCroppedEvent): void {
+    this.croppedImageBase64 = event.base64 || null;
+  }
+
+
+  cancelCrop(): void {
+    this.isCropperOpen = false;
+    this.imageChangedEvent = null;
+    this.imageFile = null;
+    this.croppedImageBase64 = null;
+
+    this.zoom = 1;
+    this.transform = { scale: 1 };
+
+  }
+
+
+  confirmCrop(): void {
+    if (!this.croppedImageBase64) {
+      this.toast.warning('Ajuste o recorte antes de confirmar.');
+      return;
+    }
+
+    const file = this.base64ToFile(this.croppedImageBase64, 'avatar.png');
+
+    this.avatarPreviewUrl = this.croppedImageBase64;
+
+    this.isCropperOpen = false;
+    this.imageChangedEvent = null;
+    this.imageFile = null;
+
+    this.uploadAndSetUrl(file, 'profilePictureUrl');
+  }
+
+
+  private base64ToFile(base64: string, filename: string): File {
+    const parts = base64.split(',');
+    const header = parts[0] || '';
+    const data = parts[1] || '';
+
+    const mimeMatch = header.match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+
+    const binary = atob(data);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
+
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    return new File([bytes], filename, { type: mime });
   }
 
   updateProfile(): void {
@@ -248,4 +333,5 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  protected readonly HTMLInputElement = HTMLInputElement;
 }

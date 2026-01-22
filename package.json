@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "ngx-image-cropper": "^9.1.6",
     "ngx-mask": "^14.3.2"
   }
 }

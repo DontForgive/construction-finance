@@ -36,6 +36,7 @@ import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogCom
 import { ServiceContractComponent } from 'app/pages/serviceContract/serviceContract.component';
 import { ServiceContractDialogComponent } from 'app/pages/serviceContract/serviceContract-dialog-components';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ImageCropperModule } from 'ngx-image-cropper';
 
 
 @NgModule({
@@ -51,7 +52,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatIconModule,
     MatButtonModule,
     ToastrModule.forRoot({
-      positionClass: 'toast-top-right', 
+      positionClass: 'toast-top-right',
       timeOut: 1500,
       closeButton: true,
       progressBar: true,
@@ -65,8 +66,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatCardModule,
     GalleriaModule,
     MatProgressBarModule,
-    MatCheckboxModule
-    
+    MatCheckboxModule,
+    ImageCropperModule
+
   ],
   exports: [
     GalleriaModule
@@ -90,12 +92,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     WorkdayAddDialogComponent,
     ServiceContractComponent,
     ServiceContractDialogComponent,
-    
+
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
     { provide: LOCALE_ID, useValue: 'pt-BR' }
-    
+
   ],
 })
 
