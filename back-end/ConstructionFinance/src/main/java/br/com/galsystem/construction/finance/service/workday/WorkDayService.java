@@ -1,13 +1,14 @@
 package br.com.galsystem.construction.finance.service.workday;
 
 
+import br.com.galsystem.construction.finance.dto.workday.WorkDayBulkPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayCreateDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayDTO;
-import br.com.galsystem.construction.finance.dto.workday.WorkDayPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayUpdateDTO;
 import br.com.galsystem.construction.finance.enums.WorkDayStatus;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
+import br.com.galsystem.construction.finance.files.UploadArea;
 import br.com.galsystem.construction.finance.mapper.WorkDayMapper;
 import br.com.galsystem.construction.finance.models.Expense;
 import br.com.galsystem.construction.finance.models.Supplier;
@@ -15,9 +16,11 @@ import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.models.WorkDay;
 import br.com.galsystem.construction.finance.repository.*;
 import br.com.galsystem.construction.finance.security.auth.CurrentUser;
+import br.com.galsystem.construction.finance.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,6 +40,9 @@ public class WorkDayService {
     private final CategoryRepository categoryRepository;
     private final CurrentUser currentUser;
     private final UserRepository userRepository;
+    private final PayerRepository payerRepository;
+    private final ServiceContractRepository serviceContractRepository;
+    private final FileStorageService fileStorageService;
 
     @Transactional
     public WorkDayDTO create(WorkDayCreateDTO dto) {
@@ -84,7 +90,7 @@ public class WorkDayService {
     }
 
     @Transactional
-    public void registerPayment(WorkDayPaymentDTO dto) {
+    public void registerBulkPayment(WorkDayBulkPaymentDTO dto, MultipartFile file) {
         if (dto.workdayIds() == null || dto.workdayIds().isEmpty()) {
             throw new NotFoundException("Nenhum registro de WorkDay informado para pagamento.");
         }
@@ -94,14 +100,18 @@ public class WorkDayService {
             throw new NotFoundException("Nenhum WorkDay encontrado para os IDs informados.");
         }
 
-        BigDecimal total = workdays.stream()
+        BigDecimal amount = dto.amount() != null ? BigDecimal.valueOf(dto.amount()) : workdays.stream()
                 .map(WorkDay::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         final Long uid = currentUser.id();
-
         final User user = userRepository.findById(uid)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário autenticado não encontrado"));
+
+        String attachmentUrl = null;
+        if (file != null && !file.isEmpty()) {
+            attachmentUrl = fileStorageService.store(UploadArea.EXPENSES, file);
+        }
 
         Expense expense = Expense.builder()
                 .user(user)
@@ -109,7 +119,11 @@ public class WorkDayService {
                 .description(dto.description())
                 .supplier(dto.supplierId() != null ? supplierRepository.getReferenceById(dto.supplierId()) : null)
                 .category(dto.categoryId() != null ? categoryRepository.getReferenceById(dto.categoryId()) : null)
-                .amount(total)
+                .payer(dto.payerId() != null ? payerRepository.getReferenceById(dto.payerId()) : null)
+                .serviceContract(dto.serviceContractId() != null ? serviceContractRepository.getReferenceById(dto.serviceContractId()) : null)
+                .paymentMethod(dto.paymentMethod())
+                .amount(amount)
+                .attachmentUrl(attachmentUrl)
                 .build();
 
         expenseRepository.save(expense);

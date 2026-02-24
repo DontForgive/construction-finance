@@ -1,30 +1,32 @@
 package br.com.galsystem.construction.finance.controller.workday;
 
 
+import br.com.galsystem.construction.finance.dto.workday.WorkDayBulkPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayCreateDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayDTO;
-import br.com.galsystem.construction.finance.dto.workday.WorkDayPaymentDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayUpdateDTO;
-import br.com.galsystem.construction.finance.repository.CategoryRepository;
-import br.com.galsystem.construction.finance.repository.ExpenseRepository;
-import br.com.galsystem.construction.finance.repository.SupplierRepository;
-import br.com.galsystem.construction.finance.repository.WorkDayRepository;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.workday.WorkDayService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/work-days")
 @RequiredArgsConstructor
+@Slf4j
 public class WorkDayController {
 
     private final WorkDayService workDayService;
-
+    private final ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<Response<WorkDayDTO>> create(@RequestBody WorkDayCreateDTO dto) {
@@ -36,9 +38,47 @@ public class WorkDayController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping(
+            value = "/pay-bulk",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Response<Void>> payBulk(
+            @RequestParam("workdayIds") String workdayIdsJson,
+            @RequestParam("supplierId") Long supplierId,
+            @RequestParam("description") String description,
+            @RequestParam("paymentDate") String paymentDate,
+            @RequestParam("payerId") Long payerId,
+            @RequestParam("categoryId") Long categoryId,
+            @RequestParam(value = "serviceContractId", required = false) Long serviceContractId,
+            @RequestParam("paymentMethod") String paymentMethod,
+            @RequestParam("amount") Double amount,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws Exception {
+
+        List<Long> workdayIds = objectMapper.readValue(workdayIdsJson, new TypeReference<List<Long>>() {
+        });
+
+        WorkDayBulkPaymentDTO dto = new WorkDayBulkPaymentDTO(
+                workdayIds,
+                supplierId,
+                description,
+                java.time.LocalDate.parse(paymentDate),
+                payerId,
+                categoryId,
+                serviceContractId,
+                paymentMethod,
+                amount
+        );
+
+        workDayService.registerBulkPayment(dto, file);
+
+        return ResponseEntity.ok(new Response<>(200, "Pagamento em lote registrado com sucesso", null, null));
+    }
+
     @PostMapping("/pay")
-    public ResponseEntity<Response<Void>> pay(@RequestBody WorkDayPaymentDTO dto) {
-        workDayService.registerPayment(dto);
+    public ResponseEntity<Response<Void>> pay(@RequestBody WorkDayBulkPaymentDTO dto) {
+        workDayService.registerBulkPayment(dto, null);
         return ResponseEntity.ok(new Response<>(200, "Pagamento registrado com sucesso", null, null));
     }
 
