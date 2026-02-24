@@ -106,11 +106,15 @@ export class LoginComponent {
           this.toastr.success('Login realizado com sucesso!', 'Bem-vindo');
           this.router.navigate(['/dashboard']);
         }
-        this.loading = false;
       },
-      error: () => {
-        this.toastr.error('Usuário ou senha inválidos', 'Erro de login');
+      error: (err: Error) => {
         this.loading = false;
+        Swal.fire(
+          'Erro ao fazer login',
+          err.message || 'Erro desconhecido',
+          'error'
+        )
+        // this.toastr.error(err.message || 'Erro ao fazer login', 'Erro de login');
       }
     });
   }

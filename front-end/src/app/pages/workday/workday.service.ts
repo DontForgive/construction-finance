@@ -4,6 +4,7 @@ import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
 import { Observable } from 'rxjs';
 import { WorkDay, WorkDayPaymentDTO } from './workday';
+import {WorkdayBulkPaymentDTO} from './WorkdayBulkPaymentDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,34 @@ export class WorkdayService {
 
   pay(dto: WorkDayPaymentDTO): Observable<any> {
     return this.httpClient.post<any>(`${this.API}/pay`, dto, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  payBulk(dto: WorkdayBulkPaymentDTO, file?: File | null): Observable<any> {
+    const formData = new FormData();
+
+    formData.append('workdayIds', JSON.stringify(dto.workdayIds));
+    formData.append('supplierId', String(dto.supplierId));
+    formData.append('description', dto.description);
+    formData.append('paymentDate', dto.paymentDate);
+
+    formData.append('payerId', String(dto.payerId));
+    formData.append('categoryId', String(dto.categoryId));
+    formData.append('serviceContractId', String(dto.serviceContractId));
+    formData.append('paymentMethod', dto.paymentMethod);
+
+    formData.append('amount', String(dto.amount));
+
+    if (file) {
+      formData.append('file', file);
+    }
+
+    formData.forEach((value, key) => {
+      console.log('[FormData]', key, value);
+    });
+
+    return this.httpClient.post<any>(`${this.API}/pay-bulk`, formData, {
       headers: this.getAuthHeaders()
     });
   }
@@ -57,6 +86,10 @@ export class WorkdayService {
     return this.httpClient.delete<any>(`${this.API}/${id}`, {
       headers: this.getAuthHeaders()
     });
+  }
+
+  payExpense(id){
+    alert("PAGO!")
   }
 
 }
