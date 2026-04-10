@@ -72,6 +72,10 @@ export class AuthService {
     return this.http.post<any>(`${environment.API}auth/forgot-password`, { email });
   }
 
+  confirmResetPassword(data: { token: string; newPassword: string }): Observable<any> {
+    return this.http.post<any>(`${environment.API}auth/reset-password`, data);
+  }
+
   /**
    * Retorna o payload decodificado do usuário (claims do JWT).
    */

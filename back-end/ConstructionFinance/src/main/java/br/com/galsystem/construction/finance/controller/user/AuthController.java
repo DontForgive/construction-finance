@@ -1,25 +1,24 @@
 package br.com.galsystem.construction.finance.controller.user;
 
 import br.com.galsystem.construction.finance.dto.user.LoginRequestDTO;
+import br.com.galsystem.construction.finance.dto.user.ResetPasswordRequestDTO;
 import br.com.galsystem.construction.finance.dto.user.UserCreateDTO;
 import br.com.galsystem.construction.finance.dto.user.UserDTO;
-import br.com.galsystem.construction.finance.models.User;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.auth.AuthService;
 import br.com.galsystem.construction.finance.service.user.ResetPasswordService;
 import br.com.galsystem.construction.finance.service.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Tag(name = "Auth", description = "Login")
 @RestController
@@ -67,6 +66,21 @@ public class AuthController {
             response.setMessage("Um link de redefinição foi enviado para o e-mail informado.");
             return ResponseEntity.ok(response);
 
+        } catch (Exception e) {
+            response.setStatus(400);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Response<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO body) {
+        Response<Void> response = new Response<>();
+        try {
+            resetPasswordService.resetPassword(body.getToken(), body.getNewPassword());
+            response.setStatus(200);
+            response.setMessage("Senha alterada com sucesso.");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.setStatus(400);
             response.setMessage(e.getMessage());

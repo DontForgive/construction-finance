@@ -1,6 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
   <div class="container-fluid">
     <div class="navbar-wrapper">
+      <div class="navbar-minimize">
+        <button
+          id="minimizeSidebar"
+          type="button"
+          class="btn btn-link btn-icon"
+          (click)="toggleDesktopSidebar()"
+          aria-label="Minimizar menu"
+        >
+          <i class="nc-icon" [ngClass]="sidebarCollapsed ? 'nc-minimal-right' : 'nc-minimal-left'"></i>
+        </button>
+      </div>
       <div class="navbar-toggle">
         <button type="button" class="navbar-toggler" (click)="sidebarToggle()">
           <span class="navbar-toggler-bar bar1"></span>

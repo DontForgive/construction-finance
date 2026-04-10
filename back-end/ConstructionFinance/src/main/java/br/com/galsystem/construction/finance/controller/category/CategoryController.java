@@ -6,7 +6,7 @@ import br.com.galsystem.construction.finance.dto.category.CategoryUpdateDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.category.CategoryService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/categories")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CategoryController {
 
     private final CategoryService service;

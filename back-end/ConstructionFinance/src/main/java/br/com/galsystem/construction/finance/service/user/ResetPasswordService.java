@@ -6,8 +6,10 @@ import br.com.galsystem.construction.finance.repository.PasswordResetTokenReposi
 import br.com.galsystem.construction.finance.repository.UserRepository;
 import br.com.galsystem.construction.finance.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,7 +23,11 @@ public class ResetPasswordService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
+
+    @Transactional
     public void createPasswordResetToken(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
@@ -36,10 +42,11 @@ public class ResetPasswordService {
 
         tokenRepository.save(resetToken);
 
-        String resetUrl = "https://seusite.com/reset-password?token=" + token;
+        String resetUrl = frontendUrl + "/reset-password?token=" + token;
         emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Token inválido ou inexistente."));
@@ -57,7 +64,7 @@ public class ResetPasswordService {
 
         tokenRepository.delete(resetToken);
 
-         emailService.sendEmail(user.getEmail(), "Senha alterada com sucesso", "Sua senha foi redefinida com sucesso.");
+        emailService.sendEmail(user.getEmail(), "Senha alterada com sucesso", "Sua senha foi redefinida com sucesso.");
     }
 }
 

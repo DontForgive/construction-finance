@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthLayoutComponent } from './auth-layout.component';
 import { AuthLayoutRoutes } from './auth-layout.routing';
 import { LoginComponent } from 'app/pages/login/login.component';
+import { ResetPasswordComponent } from 'app/pages/reset-password/reset-password.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { LoginComponent } from 'app/pages/login/login.component';
   ],
   declarations: [
     AuthLayoutComponent, // precisa estar aqui
-    LoginComponent       // precisa estar aqui
+    LoginComponent,       // precisa estar aqui
+    ResetPasswordComponent
   ]
 })
 export class AuthLayoutModule {}

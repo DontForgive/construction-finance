@@ -18,6 +18,7 @@ export class NavbarComponent implements OnInit {
   private nativeElement: Node;
   private toggleButton;
   private sidebarVisible: boolean;
+  public sidebarCollapsed = false;
 
   public isCollapsed = true;
   @ViewChild('navbar-cmp', { static: false }) button;
@@ -68,11 +69,22 @@ export class NavbarComponent implements OnInit {
   }
 
   sidebarToggle(): void {
+    if (window.innerWidth > 991) {
+      this.toggleDesktopSidebar();
+      return;
+    }
+
     if (this.sidebarVisible === false) {
       this.sidebarOpen();
     } else {
       this.sidebarClose();
     }
+  }
+
+  toggleDesktopSidebar(): void {
+    const html = document.getElementsByTagName('html')[0];
+    html.classList.toggle('sidebar-collapsed');
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
   sidebarOpen(): void {

@@ -12,7 +12,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/dashboard',       title: 'Dashboard',            icon:'nc-chart-bar-32',   class: '' },
     { path: '/workday',         title: 'Dias Trabalhados',     icon: 'nc-calendar-60',   class: '' },
     { path: '/expense',         title: 'Lançamentos',          icon:'nc-money-coins',    class: '' },
-    { path: '/contractService', title: 'Contratos de Serviço', icon:'nc-money-coins',    class: '' },
+    { path: '/contractService', title: 'Contratos de Serviço', icon:'nc-single-copy-04', class: '' },
     { path: '/images',          title: 'Galeria',              icon:'nc-image',          class: '' },
     { path: '/category',        title: 'Categorias',           icon:'nc-bullet-list-67', class: '' },
     { path: '/supplier',        title: 'Fornecedores',         icon:'nc-briefcase-24',   class: '' },

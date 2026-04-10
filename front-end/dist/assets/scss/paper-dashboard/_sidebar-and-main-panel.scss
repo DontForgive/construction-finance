@@ -305,17 +305,52 @@
         min-height: calc(100vh - 123px);
         margin-top: 93px;
     }
-
-     .navbar{
-        margin-bottom: 0;
-    }
-
-
-    .header{
-        margin-bottom: 50px;
-    }
 }
 
+html.sidebar-collapsed {
+  .sidebar {
+    width: 80px !important;
+    @include transition (0.3s, cubic-bezier(0.685, 0.0473, 0.346, 1));
+    overflow: hidden;
+  }
+
+  .sidebar .sidebar-wrapper {
+    width: 80px !important;
+  }
+
+  .sidebar .logo {
+    padding-left: 8px;
+  }
+
+  .sidebar .logo .logo-normal {
+    display: none !important;
+  }
+
+  .sidebar .logo .logo-mini {
+    float: none;
+    margin: 12px auto;
+  }
+
+  .sidebar .nav > li > a {
+    padding: 10px 0;
+    text-align: center;
+  }
+
+  .sidebar .nav > li > a i {
+    margin-right: 0;
+    display: block;
+    font-size: 22px;
+    width: 100%;
+  }
+
+  .sidebar .nav > li > a p {
+    display: none;
+  }
+
+  .main-panel {
+    width: calc(100% - 80px) !important;
+  }
+}
 
 .perfect-scrollbar-on{
   .sidebar,
