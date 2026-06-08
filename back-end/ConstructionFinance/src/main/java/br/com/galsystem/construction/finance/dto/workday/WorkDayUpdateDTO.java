@@ -23,6 +23,8 @@ public class WorkDayUpdateDTO {
 
     private String note;
 
+    private Long supplierId;
+
     private WorkDayStatus status;
 
 }

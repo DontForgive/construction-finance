@@ -4,9 +4,11 @@ import br.com.galsystem.construction.finance.dto.workday.WorkDayCreateDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayDTO;
 import br.com.galsystem.construction.finance.dto.workday.WorkDayUpdateDTO;
 import br.com.galsystem.construction.finance.models.WorkDay;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface WorkDayMapper {
@@ -17,5 +19,6 @@ public interface WorkDayMapper {
 
     WorkDay toEntity(WorkDayCreateDTO dto);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(@MappingTarget WorkDay entity, WorkDayUpdateDTO dto);
 }

@@ -25,12 +25,20 @@ export class WorkdayAddDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    let initialDate = null;
+    if (this.data?.date) {
+      // Se a data vier como string (Ex: 2024-05-20), o mat-datepicker precisa de um objeto Date.
+      // Adicionamos 'T00:00:00' para evitar problemas de fuso horário ao criar o objeto Date
+      const dateStr = typeof this.data.date === 'string' ? this.data.date.split('T')[0] + 'T00:00:00' : this.data.date;
+      initialDate = new Date(dateStr);
+    }
+
     this.form = this.fb.group({
-      date: [null, Validators.required],
-      supplierId: [null, Validators.required],
-      hoursWorked: [null],
-      dailyValue: [null, Validators.required],
-      note: ['']
+      date: [initialDate, Validators.required],
+      supplierId: [this.data?.supplierId || null, Validators.required],
+      hoursWorked: [this.data?.hoursWorked || null],
+      dailyValue: [this.data?.dailyValue || null, Validators.required],
+      note: [this.data?.note || '']
     });
 
     this.loadSuppliers();
@@ -43,7 +51,7 @@ export class WorkdayAddDialogComponent implements OnInit {
     const dir = '';
     const name = '';
     const worker = true;
-    
+
     this.supplierService.getSuppliers(page, size,sort, dir, name, worker).subscribe({
       next: (res) => (this.suppliers = res.data.content),
       error: (err) => console.error("Erro ao carregar fornecedores:", err),
@@ -53,13 +61,41 @@ export class WorkdayAddDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) return;
 
-    const dto = this.form.value;
-    this.workdayService.create(dto).subscribe({
+    const formValue = this.form.value;
+
+    // Formata a data para yyyy-MM-dd antes de enviar para o back-end
+    let formattedDate = formValue.date;
+    if (formValue.date instanceof Date) {
+      formattedDate = formValue.date.toISOString().split('T')[0];
+    }
+
+    const dto = {
+      ...formValue,
+      date: formattedDate
+    };
+
+    const request = this.data?.id
+      ? this.workdayService.update(this.data.id, dto)
+      : this.workdayService.create(dto);
+
+    request.subscribe({
       next: (res) => {
-        Swal.fire('Sucesso', 'Registro criado com sucesso!', 'success');
+        const message = this.data?.id ? 'Registro alterado com sucesso!' : 'Registro criado com sucesso!';
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso',
+          text: message,
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true
+        });
         this.dialogRef.close(true);
       },
-      error: () => Swal.fire('Erro', 'Falha ao criar registro', 'error')
+      error: (err) => {
+        console.error("Erro na requisição:", err);
+        const message = this.data?.id ? 'Falha ao alterar registro' : 'Falha ao criar registro';
+        Swal.fire('Erro', message, 'error');
+      }
     });
   }
 }

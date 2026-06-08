@@ -543,6 +543,20 @@ export class WorkdayComponent implements OnInit {
     });
   }
 
+  edit(w: WorkDay): void {
+    const dialogRef = this.dialog.open(WorkdayAddDialogComponent, {
+      width: '600px',
+      disableClose: true,
+      data: w
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadWorkDays();
+      }
+    });
+  }
+
   pay(id: number, initialValues?: any): void {
     const supplierOptions = this.suppliers
       .map(s => `<option value="${s.id}" ${initialValues?.supplierId == s.id ? 'selected' : ''}>${this.escapeHtml(s.name)}</option>`)

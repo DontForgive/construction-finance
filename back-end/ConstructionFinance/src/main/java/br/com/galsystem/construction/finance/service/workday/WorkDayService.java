@@ -63,7 +63,18 @@ public class WorkDayService {
         WorkDay entity = workDayRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Registro não encontrado"));
 
+        if (entity.getStatus() == WorkDayStatus.PAGO) {
+            throw new RuntimeException("Não é possível alterar um registro que já foi PAGO");
+        }
+
         workDayMapper.updateEntity(entity, dto);
+
+        if (dto.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(dto.getSupplierId())
+                    .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+            entity.setSupplier(supplier);
+        }
+
         entity.setUpdatedAt(java.time.LocalDateTime.now());
 
         workDayRepository.save(entity);

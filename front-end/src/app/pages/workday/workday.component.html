@@ -104,6 +104,11 @@
                 </td>
                 <td>{{ w.note || '-' }}</td>
                 <td class="text-center">
+                  <button class="btn btn-sm btn-info me-2" (click)="edit(w)" title="Alterar"
+                    *ngIf="w.status === 'PENDENTE'">
+                    <i class="nc-icon nc-ruler-pencil"></i>
+                  </button>
+
                   <button class="btn btn-sm btn-success me-2" (click)="pay(w.id!)" title="Pagar dia"
                     *ngIf="w.status === 'PENDENTE'">
                     <i class="nc-icon nc-credit-card"></i>
