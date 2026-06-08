@@ -112,8 +112,22 @@
             </div>
             <div class="col-7 col-md-8">
               <div class="numbers">
-                <p class="card-category">{{ kpi.label }}</p>
-                <p class="card-title">{{ kpi.value }}</p>
+                <p class="card-category">
+                  {{ kpi.label }}
+                  <span *ngIf="kpi.label === 'Total Despesas'" (click)="toggleTotalExpenses()" style="cursor: pointer; margin-left: 5px;">
+                    <mat-icon style="font-size: 16px; height: 16px; width: 16px; vertical-align: middle;">
+                      {{ showTotalExpenses ? 'visibility' : 'visibility_off' }}
+                    </mat-icon>
+                  </span>
+                </p>
+                <p class="card-title">
+                  <ng-container *ngIf="kpi.label === 'Total Despesas'; else otherKpi">
+                    {{ showTotalExpenses ? kpi.value : 'R$ ••••••' }}
+                  </ng-container>
+                  <ng-template #otherKpi>
+                    {{ kpi.value }}
+                  </ng-template>
+                </p>
               </div>
             </div>
           </div>

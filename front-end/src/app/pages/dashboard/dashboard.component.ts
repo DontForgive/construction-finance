@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit {
   public chartPayer: any;
   public ctx: any;
 
+  showTotalExpenses: boolean = false;
+
   filterForm: FormGroup;
 
   // KPIs (valores mockados, depois você pode ligar ao backend)
@@ -63,12 +65,18 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.showTotalExpenses = localStorage.getItem('showTotalExpenses') === 'true';
     this.loadAllCharts();
     this.loadKpis();
     this.loadPayers();
     this.loadSuppliers();
     this.loadCategories();
     this.loadContractServices();
+  }
+
+  toggleTotalExpenses() {
+    this.showTotalExpenses = !this.showTotalExpenses;
+    localStorage.setItem('showTotalExpenses', this.showTotalExpenses.toString());
   }
 
   onClear(): void {
@@ -101,7 +109,7 @@ export class DashboardComponent implements OnInit {
       categoryId: f.categoryId,
       supplierId: f.supplierId,
       payerId: f.payerId,
-      serviceContractId: f.serviceContractId 
+      serviceContractId: f.serviceContractId
     };
   }
 
