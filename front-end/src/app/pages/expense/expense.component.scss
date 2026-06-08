@@ -1,0 +1,35 @@
+.table-responsive {
+  .table {
+    font-size: 12px; // Aumentado de 10px para melhor legibilidade
+    table-layout: fixed; // Permite controle preciso das larguras
+    width: 100%;
+
+    th, td {
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // Definição de larguras para colunas
+    .col-id { width: 40px; }
+    .col-date { width: 90px; }
+    .col-description { width: 200px; }
+    .col-amount { width: 110px; }
+    .col-supplier { width: 150px; }
+    .col-payer { width: 120px; }
+    .col-category { width: 120px; }
+    .col-method { width: 100px; }
+    .col-contract { width: 150px; }
+    .col-actions {
+      width: 160px;
+      text-align: center;
+      overflow: visible; // Permite que tooltips e dropdowns apareçam
+    }
+  }
+}
+
+// Estilização para tooltips caso necessário
+::ng-deep .mat-tooltip {
+  font-size: 12px;
+}

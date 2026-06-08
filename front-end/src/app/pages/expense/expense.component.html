@@ -141,34 +141,44 @@
 
       <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-hover" style="font-size: 10px;">
+          <table class="table table-hover">
             <thead class="text-primary">
               <tr>
-                <th>#</th>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Fornecedor</th>
-                <th>Pagador</th>
-                <th>Categoria</th>
-                <th>Método</th>
-                <th>Contrato</th>
-                <th class="text-center">Ações</th>
+                <th class="col-id">#</th>
+                <th class="col-date">Data</th>
+                <th class="col-description">Descrição</th>
+                <th class="col-amount">Valor</th>
+                <th class="col-supplier">Fornecedor</th>
+                <th class="col-payer">Pagador</th>
+                <th class="col-category">Categoria</th>
+                <th class="col-method">Método</th>
+                <th class="col-contract">Contrato</th>
+                <th class="col-actions">Ações</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let expense of list_expenses">
-                <td>{{ expense.id }}</td>
-                <td>{{ expense.date | date:'dd/MM/yyyy' }}</td>
-                <td>{{ expense.description | uppercase }}</td>
-                <td>{{ expense.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-                <td>{{ expense.supplierName || '-' | uppercase }}</td>
-                <td>{{ expense.payerName || '-' | uppercase }}</td>
-                <td>{{ expense.categoryName || '-' | uppercase }}</td>
+                <td class="col-id" [matTooltip]="expense.id.toString()">{{ expense.id }}</td>
+                <td class="col-date">{{ expense.date | date:'dd/MM/yyyy' }}</td>
+                <td class="col-description" [matTooltip]="expense.description | uppercase">
+                  {{ expense.description | uppercase }}
+                </td>
+                <td class="col-amount">{{ expense.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                <td class="col-supplier" [matTooltip]="expense.supplierName || '-'">
+                  {{ expense.supplierName || '-' | uppercase }}
+                </td>
+                <td class="col-payer" [matTooltip]="expense.payerName || '-'">
+                  {{ expense.payerName || '-' | uppercase }}
+                </td>
+                <td class="col-category" [matTooltip]="expense.categoryName || '-'">
+                  {{ expense.categoryName || '-' | uppercase }}
+                </td>
 
-                <td>{{ expense.paymentMethod }}</td>
-                <td>{{ expense.serviceContractName || '-' | uppercase }}</td>
-                <td class="text-center">
+                <td class="col-method">{{ expense.paymentMethod }}</td>
+                <td class="col-contract" [matTooltip]="expense.serviceContractName || '-'">
+                  {{ expense.serviceContractName || '-' | uppercase }}
+                </td>
+                <td class="col-actions">
 
                   <!-- Novo botão gerar recibo -->
                   <button class="btn btn-sm btn-success me-2" (click)="generateReceipt(expense.id)"

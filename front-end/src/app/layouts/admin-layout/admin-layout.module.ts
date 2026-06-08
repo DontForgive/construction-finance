@@ -30,6 +30,7 @@ import { ImagesComponent } from 'app/pages/images/images.component';
 import { PhotoDialogComponent } from 'app/pages/images/photodialog.component';
 import { GalleriaModule } from 'primeng/galleria';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
 import { WorkdayComponent } from 'app/pages/workday/workday.component';
 import { WorkdayAddDialogComponent } from 'app/pages/workday/WorkdayAddDialogComponent';
@@ -67,7 +68,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     GalleriaModule,
     MatProgressBarModule,
     MatCheckboxModule,
-    ImageCropperModule
+    ImageCropperModule,
+    MatTooltipModule
 
   ],
   exports: [
