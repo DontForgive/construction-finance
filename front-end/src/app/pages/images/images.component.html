@@ -50,13 +50,22 @@
   <!-- Grid de miniaturas -->
   <div class="gallery-grid" *ngIf="selectedYear && selectedMonth && photos.length > 0">
     <div class="gallery-item" *ngFor="let photo of photos; let i = index">
-      <img *ngIf="photo.type === 'photo'" [src]="apiUrl + photo.url" [alt]="photo.filename" (click)="openPhoto(i)" />
+      <img *ngIf="photo.type === 'photo'" [src]="apiUrl + photo.thumbnailUrl" [alt]="photo.filename" (click)="openPhoto(i)" loading="lazy" />
       <video *ngIf="photo.type === 'video'" [src]="apiUrl + photo.url" muted (click)="openPhoto(i)"></video>
       <button class="delete-btn pull-right" mat-icon-button color="warn" aria-label="Excluir"
               (click)="$event.stopPropagation(); onDeletePhoto(i)">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
+  </div>
+
+  <!-- Botão Carregar Mais -->
+  <div class="load-more" *ngIf="selectedYear && selectedMonth && currentPage < totalPages - 1">
+    <button mat-stroked-button color="primary" (click)="loadNextPage()" [disabled]="loadingPhotos">
+      <mat-icon *ngIf="!loadingPhotos">expand_more</mat-icon>
+      <mat-spinner *ngIf="loadingPhotos" [diameter]="20"></mat-spinner>
+      {{ loadingPhotos ? 'Carregando...' : 'Carregar Mais' }}
+    </button>
   </div>
 <!-- Fullscreen sem thumbnails -->
 <p-galleria

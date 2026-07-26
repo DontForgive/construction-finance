@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class PhotoDTO {
     private String filename;
     private String url;
+    private String thumbnailUrl;
     private LocalDateTime uploadedAt;
     private String type;
     private String mimeType;

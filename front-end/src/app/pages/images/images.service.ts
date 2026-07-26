@@ -4,7 +4,7 @@ import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
 import { Observable } from 'rxjs';
 import { PhotoDTO } from './Photos';
-import { ApiResponseTest } from 'app/utils/response';
+import { ApiResponseTest, Page } from 'app/utils/response';
 
 @Injectable({
   providedIn: 'root'
@@ -80,20 +80,26 @@ export class ImagesService {
     });
   }
 
-  listPhotos(year: number, month: number): Observable<ApiResponseTest<PhotoDTO[]>> {
-    return this.httpClient.get<ApiResponseTest<PhotoDTO[]>>(`${this.API}/${year}/${month}`, {
+  listPhotos(year: number, month: number, page: number = 0, size: number = 20): Observable<ApiResponseTest<Page<PhotoDTO>>> {
+    return this.httpClient.get<ApiResponseTest<Page<PhotoDTO>>>(`${this.API}/${year}/${month}?page=${page}&size=${size}`, {
       headers: this.getAuthHeaders()
     });
   }
 
-  getAll(): Observable<ApiResponseTest<PhotoDTO[]>> {
-    return this.httpClient.get<ApiResponseTest<PhotoDTO[]>>(`${this.API}/all`, {
+  getAll(page: number = 0, size: number = 20): Observable<ApiResponseTest<Page<PhotoDTO>>> {
+    return this.httpClient.get<ApiResponseTest<Page<PhotoDTO>>>(`${this.API}/all?page=${page}&size=${size}`, {
       headers: this.getAuthHeaders()
     });
   }
 
   deletePhoto(year: number, month: number, name: string): Observable<ApiResponseTest<PhotoDTO>> {
     return this.httpClient.delete<ApiResponseTest<PhotoDTO>>(`${this.API}/${year}/${month}/${name}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  processThumbnails(): Observable<ApiResponseTest<any>> {
+    return this.httpClient.post<ApiResponseTest<any>>(`${this.API}/process-thumbnails`, {}, {
       headers: this.getAuthHeaders()
     });
   }

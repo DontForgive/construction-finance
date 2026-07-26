@@ -29,7 +29,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private service: ProfileService,
     private toast: ToastService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private imagesService: ImagesService
   ) {
   }
 
@@ -329,6 +330,31 @@ export class ProfileComponent implements OnInit {
               });
             }
           });
+      }
+    });
+  }
+
+  processThumbnails(): void {
+    Swal.fire({
+      title: 'Iniciando processamento...',
+      text: 'Por favor, aguarde.',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    this.imagesService.processThumbnails().subscribe({
+      next: (res) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'Iniciado!',
+          text: res.message || 'O processamento de miniaturas foi iniciado em segundo plano. As imagens serão atualizadas gradualmente.',
+          confirmButtonText: 'Ok'
+        });
+      },
+      error: (err) => {
+        Swal.close();
+        this.toast.error(err.error?.message || 'Ocorreu um erro ao iniciar o processamento de miniaturas.');
       }
     });
   }

@@ -17,6 +17,13 @@ export class ImagesComponent implements OnInit {
   months: number[] = [];
   photos: PhotoDTO[] = [];
 
+  // Paginação
+  currentPage = 0;
+  pageSize = 20;
+  totalPages = 0;
+  totalElements = 0;
+  loadingPhotos = false;
+
   selectedYear: number | null = null;
   selectedMonth: number | null = null;
 
@@ -69,20 +76,46 @@ export class ImagesComponent implements OnInit {
   }
 
   openMonth(month: number): void {
-    const videoExtensions = [".mp4", ".mov", ".avi", ".mkv", ".webm"];
-
     if (!this.selectedYear) return;
     this.selectedMonth = month;
-    this.imagesService.listPhotos(this.selectedYear, month).subscribe({
+    this.currentPage = 0;
+    this.photos = [];
+    this.loadPhotos();
+  }
+
+  loadPhotos(): void {
+    if (!this.selectedYear || !this.selectedMonth || this.loadingPhotos) return;
+
+    this.loadingPhotos = true;
+    const videoExtensions = [".mp4", ".mov", ".avi", ".mkv", ".webm"];
+
+    this.imagesService.listPhotos(this.selectedYear, this.selectedMonth, this.currentPage, this.pageSize).subscribe({
       next: (res) => {
-        this.photos = res.data.map((item) => {
+        const page = res.data;
+        this.totalPages = page.totalPages;
+        this.totalElements = page.totalElements;
+
+        const newPhotos = page.content.map((item) => {
           const lower = item.url.toLowerCase();
           const isVideo = videoExtensions.some((ext) => lower.endsWith(ext));
           return { ...item, type: isVideo ? "video" : "photo" };
         });
+
+        this.photos = [...this.photos, ...newPhotos];
+        this.loadingPhotos = false;
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err);
+        this.loadingPhotos = false;
+      },
     });
+  }
+
+  loadNextPage(): void {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadPhotos();
+    }
   }
 
   backToYears(): void {
@@ -175,6 +208,7 @@ export class ImagesComponent implements OnInit {
             showConfirmButton: false,
             timer: 1000,
           });
+          this.totalElements--;
         }
       });
 

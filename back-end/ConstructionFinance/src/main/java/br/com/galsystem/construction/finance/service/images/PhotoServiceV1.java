@@ -1,6 +1,8 @@
 package br.com.galsystem.construction.finance.service.images;
 
 import br.com.galsystem.construction.finance.dto.images.PhotoDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,10 +15,11 @@ public interface PhotoServiceV1 {
 
     List<Integer> listMonths(int year);
 
-    List<PhotoDTO> listPhotos(int year, int month);
+    Page<PhotoDTO> listPhotos(int year, int month, Pageable pageable);
 
-    List<PhotoDTO> getAll();
+    Page<PhotoDTO> getAll(Pageable pageable);
+
+    void generateMissingThumbnails();
 
     PhotoDTO delete(int year, int month, String filename);
-
 }

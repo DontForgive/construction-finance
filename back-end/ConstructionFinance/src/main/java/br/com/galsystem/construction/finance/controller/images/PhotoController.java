@@ -5,13 +5,15 @@ import br.com.galsystem.construction.finance.dto.images.PhotoDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.images.PhotoServiceV1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/photos")
@@ -36,18 +38,31 @@ public class PhotoController {
     }
 
     @GetMapping("/{year}/{month}")
-    public ResponseEntity<Response<List<PhotoDTO>>> listPhotos(@PathVariable final int year, @PathVariable final int month) {
-        return ResponseEntity.ok(new Response<>(200, "Fotos do período", photoService.listPhotos(year, month), null));
+    public ResponseEntity<Response<Page<PhotoDTO>>> listPhotos(
+            @PathVariable final int year,
+            @PathVariable final int month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(new Response<>(200, "Fotos do período", photoService.listPhotos(year, month, pageable), null));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Response<List<PhotoDTO>>> listAll() {
-        return ResponseEntity.ok(new Response<>(200, "Todas as fotos", photoService.getAll(), null));
-    }
- //int year, int month, String filename
-    @DeleteMapping("/{year}/{month}/{name}")
-    public ResponseEntity<Response<PhotoDTO>> removeFile(@PathVariable final int year, @PathVariable final int month, @PathVariable final String name) {
-        return ResponseEntity.ok(new Response<>(200, "Arquivo Removido com Sucesso", photoService.delete(year,month,name), null));
+    public ResponseEntity<Response<Page<PhotoDTO>>> listAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(new Response<>(200, "Todas as fotos", photoService.getAll(pageable), null));
     }
 
+    @PostMapping("/process-thumbnails")
+    public ResponseEntity<Response<Void>> processThumbnails() {
+        photoService.generateMissingThumbnails();
+        return ResponseEntity.ok(new Response<>(200, "Processamento de miniaturas iniciado", null, null));
+    }
+
+    @DeleteMapping("/{year}/{month}/{name}")
+    public ResponseEntity<Response<PhotoDTO>> removeFile(@PathVariable final int year, @PathVariable final int month, @PathVariable final String name) {
+        return ResponseEntity.ok(new Response<>(200, "Arquivo Removido com Sucesso", photoService.delete(year, month, name), null));
+    }
 }
