@@ -5,10 +5,15 @@
         <form class="g-2 align-items-end">
           <div class="row">
             <!-- Campo Nome -->
-            <div class="col-md-6">
+            <div class="col-md-3">
               <label for="filterName" class="form-label">Nome</label>
               <input type="text" id="filterName" class="form-control" placeholder="Pesquisar por nome"
                 [(ngModel)]="filterName" name="filterName">
+            </div>
+            <div class="col-md-3">
+              <label for="filterKeyPix" class="form-label">Chave PIX</label>
+              <input type="text" id="filterKeyPix" class="form-control" placeholder="Pesquisar por chave PIX"
+                [(ngModel)]="filterKeyPix" name="filterKeyPix">
             </div>
 
             <!-- Botão Filtrar -->
@@ -47,6 +52,7 @@
               <tr>
                 <th>#</th>
                 <th>Nome</th>
+                <th>Chave PIX</th>
                 <th>Prestador de Serviço</th>
                 <th class="text-center">Ações</th>
               </tr>
@@ -55,6 +61,7 @@
               <tr *ngFor="let supplier of list_suppliers">
                 <td>{{ supplier.id }}</td>
                 <td>{{ supplier.name|uppercase }}</td>
+                <td>{{ supplier.keyPix }}</td>
                 <td class="text-center">
                   <mat-icon color="primary" *ngIf="supplier.worker" matTooltip="Prestador de serviço">
                     check_circle

@@ -22,4 +22,6 @@ public class Supplier {
     @Builder.Default
     private Boolean worker = false;
 
+    private String keyPix;
+
 }

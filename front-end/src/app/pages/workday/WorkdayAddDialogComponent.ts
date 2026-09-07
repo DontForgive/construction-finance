@@ -50,9 +50,10 @@ export class WorkdayAddDialogComponent implements OnInit {
     const sort = '';
     const dir = '';
     const name = '';
+    const key_pix = '';
     const worker = true;
 
-    this.supplierService.getSuppliers(page, size,sort, dir, name, worker).subscribe({
+    this.supplierService.getSuppliers(page, size,sort, dir, name,key_pix, worker).subscribe({
       next: (res) => (this.suppliers = res.data.content),
       error: (err) => console.error("Erro ao carregar fornecedores:", err),
     });

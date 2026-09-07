@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class SupplierServiceImpl implements SupplierService {
@@ -29,8 +31,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional(readOnly = true)
 //    @Cacheable(value = "supplierList", key = "{#name, #worker, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<SupplierDTO> listar(String name, Boolean worker, Pageable pageable) {
-        return supplierRepository.findByFilters(name, worker, pageable).map(supplierMapper::toDTO);
+    public Page<SupplierDTO> listar(String name, String key_pix, Boolean worker, Pageable pageable) {
+        return supplierRepository.findByFilters(name, key_pix, worker, pageable).map(supplierMapper::toDTO);
     }
 
     @Override
@@ -82,11 +84,21 @@ public class SupplierServiceImpl implements SupplierService {
     })
     public SupplierDTO create(SupplierCreateDTO dto) {
         String name = dto.name().trim();
+        String keyPix = Optional.ofNullable(dto.keyPix())
+                .orElse("")
+                .trim();
+
         if (supplierRepository.existsByNameIgnoreCase(name)) {
             throw new ConflictException("Já existe um Fornecedor com o nome '%s'".formatted(name));
         }
+
+        if (supplierRepository.existsByKeyPixIgnoreCase(keyPix)) {
+            throw new ConflictException("CHAVE PIX já Cadastrada");
+        }
+
         Supplier entity = supplierMapper.toEntity(dto);
         entity.setName(name);
+        entity.setKeyPix(keyPix);
         Supplier saved = supplierRepository.save(entity);
         return supplierMapper.toDTO(saved);
     }
@@ -101,12 +113,21 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier entity = supplierRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Fornecedor com o ID %d não encontrado".formatted(id)));
         String name = dto.name().trim();
+        String keyPix = Optional.ofNullable(dto.keyPix())
+                .orElse("")
+                .trim();
 
         if (!entity.getName().equalsIgnoreCase(name) && supplierRepository.existsByNameIgnoreCase(name)) {
             throw new ConflictException("Já existe um Fornecedor com o nome '%s'".formatted(name));
         }
+
+        if (supplierRepository.existsByKeyPixIgnoreCaseAndIdNot(keyPix, id)) {
+            throw new ConflictException("CHAVE PIX já Cadastrada");
+        }
+
         supplierMapper.updateEntity(entity, dto);
         entity.setName(name);
+        entity.setKeyPix(keyPix);
         Supplier updated = supplierRepository.save(entity);
         return supplierMapper.toDTO(updated);
     }

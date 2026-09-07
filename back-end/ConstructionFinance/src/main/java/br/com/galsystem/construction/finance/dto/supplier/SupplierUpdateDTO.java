@@ -10,7 +10,8 @@ public record SupplierUpdateDTO(
         @Size(min = 2, message = "O nome deve ter no minimo 2 caracteres")
         String name,
         @NotNull(message = "Trabalhador não pode ser nulo ")
-        Boolean worker
+        Boolean worker,
+        String keyPix
 
 ) {
 }

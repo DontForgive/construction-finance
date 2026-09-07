@@ -29,6 +29,7 @@ export class SupplierService {
     sort: string = 'id',
     dir: string = 'ASC',
     name?: string,
+    keyPix?: string,
     worker?:boolean) {
     const params: any = {
       page: page,
@@ -40,6 +41,7 @@ export class SupplierService {
     };
 
     if (name) params.name = name;
+    if (keyPix) params.keyPix = keyPix;
     if (worker) params.worker = worker;
 
     return this.httpClient.get<ApiResponse<Supplier>>(`${this.API}supplier`, {
@@ -60,7 +62,7 @@ export class SupplierService {
     );
   }
 
-    updateSupplier(id: number, data: { name: string; }) {
+    updateSupplier(id: number, data: { name: string; keyPix: string; worker: boolean}) {
     return this.httpClient.put(`${this.API}supplier/${id}`, data, {
       headers: this.getAuthHeaders()
     });

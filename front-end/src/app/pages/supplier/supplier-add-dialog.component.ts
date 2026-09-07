@@ -29,6 +29,11 @@ import { ToastService } from 'app/utils/toastr';
           </mat-error>
         </mat-form-field>
 
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+          <mat-label>Chave PIX</mat-label>
+          <input matInput formControlName="keyPix">
+        </mat-form-field>
+
         <mat-checkbox formControlName="worker">
           É prestador de Serviço?
         </mat-checkbox>
@@ -61,6 +66,7 @@ export class SupplierAddDialogComponent {
   ) {
     this.form = this.fb.group({
       name: [data?.name || '', [Validators.required, Validators.maxLength(120)]],
+      keyPix: [data?.keyPix || ''],
       worker: [data?.worker || false]
     });
   }

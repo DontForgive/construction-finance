@@ -14,6 +14,10 @@ import java.util.Optional;
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsByKeyPixIgnoreCase(String keyPix);
+
+    boolean existsByKeyPixIgnoreCaseAndIdNot(String keyPix, Long id);
+
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
     Optional<Supplier> findByNameIgnoreCase(String name);
@@ -21,8 +25,9 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     @Query("""
                 SELECT s FROM Supplier s
                 WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
+                AND (:keyPix IS NULL OR LOWER(s.keyPix) LIKE LOWER(CONCAT('%', CAST(:keyPix AS string), '%')))
                              AND (:worker IS NULL OR s.worker = :worker)
             """)
-    Page<Supplier> findByFilters(@Param("name") String name, @Param("worker") Boolean worker, Pageable pageable);
+    Page<Supplier> findByFilters(@Param("name") String name, @Param("keyPix") String key_pix, @Param("worker") Boolean worker, Pageable pageable);
 
 }

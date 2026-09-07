@@ -25,6 +25,7 @@ export class SupplierComponent implements OnInit {
 
   public list_suppliers: Supplier[] = [];
   filterName: string = '';
+  filterKeyPix: string = '';
 
   ngOnInit() {
     this.listSuppliers();
@@ -44,7 +45,8 @@ export class SupplierComponent implements OnInit {
       this.pageSize,
       'id',
       'DESC',
-      this.filterName
+      this.filterName,
+      this.filterKeyPix
     ).subscribe(
       (res) => {
         this.list_suppliers = res.data.content;
@@ -60,6 +62,7 @@ export class SupplierComponent implements OnInit {
 
   clearFilters() {
     this.filterName = '';
+    this.filterKeyPix = '';
     this.listSuppliers(0);
   }
 
@@ -119,7 +122,7 @@ export class SupplierComponent implements OnInit {
              Swal.fire({
               icon: 'error',
               title: 'Não foi possível excluir o Fornecedor',
-              text: err.error?.message || 'Erro desconhecido',             
+              text: err.error?.message || 'Erro desconhecido',
             });
           }
         });
