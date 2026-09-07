@@ -9,7 +9,7 @@
                             <mat-form-field appearance="outline" class="w-100">
                                 <mat-label>Nome do Contrato</mat-label>
                                 <input matInput id="filterName" placeholder="Pesquisar por nome do Contrato"
-                                    [(ngModel)]="filterName" name="filterName">
+                [(ngModel)]="filterName" name="filterName" (input)="onFilterChange()">
                             </mat-form-field>
                         </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ServiceContractService } from './serviceContract.service';
 import { CategoryService } from '../category/category.service';
 import { SupplierService } from '../supplier/supplier.service';
@@ -8,13 +8,15 @@ import { ExpenseService } from '../expense/expense.service';
 import { ServiceContractDialogComponent } from './serviceContract-dialog-components';
 import { ServiceContractDTO } from './service-contract.dto';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-serviceContract',
   templateUrl: './serviceContract.component.html',
   styleUrls: ['./serviceContract.component.scss']
 })
-export class ServiceContractComponent implements OnInit {
+export class ServiceContractComponent implements OnInit, OnDestroy {
 
   constructor(private service: ServiceContractService,
     private serviceCategory: CategoryService,
@@ -30,6 +32,9 @@ export class ServiceContractComponent implements OnInit {
   totalElements = 0;
   pageSize = 5;
   pageSizes: number[] = [5, 10, 20, 50];
+
+  private searchSubject = new Subject<void>();
+  private searchSubscription?: Subscription;
 
   filterName: string = '';
   filterDescription: string = '';
@@ -56,6 +61,21 @@ export class ServiceContractComponent implements OnInit {
     this.getContracts();
     this.getCategories();
     this.getSuppliers();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.getContracts(0);
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  onFilterChange() {
+    this.searchSubject.next();
   }
 
 

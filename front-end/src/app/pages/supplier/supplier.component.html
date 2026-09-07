@@ -8,23 +8,34 @@
             <div class="col-md-3">
               <label for="filterName" class="form-label">Nome</label>
               <input type="text" id="filterName" class="form-control" placeholder="Pesquisar por nome"
-                [(ngModel)]="filterName" name="filterName">
+                [(ngModel)]="filterName" name="filterName" (input)="onFilterChange()">
             </div>
             <div class="col-md-3">
               <label for="filterKeyPix" class="form-label">Chave PIX</label>
               <input type="text" id="filterKeyPix" class="form-control" placeholder="Pesquisar por chave PIX"
-                [(ngModel)]="filterKeyPix" name="filterKeyPix">
+                [(ngModel)]="filterKeyPix" name="filterKeyPix" (input)="onFilterChange()">
             </div>
 
+            <div class="col-md-2">
+              <label for="filterWorker" class="form-label">Prestador de Serviço?</label>
+              <select id="filterWorker" class="form-control" [(ngModel)]="filterWorker" name="filterWorker" (change)="listSuppliers(0)">
+                <option value="">Todos</option>
+                <option [value]="true">Sim</option>
+                <option [value]="false">Não</option>
+              </select>
+            </div>
+
+
+
             <!-- Botão Filtrar -->
-            <div class="col-md-3 d-flex">
+            <div class="col-md-2 d-flex">
               <button type="button" class="btn btn-lg btn-primary flex-fill" (click)="listSuppliers(0)">
                 <i class="nc-icon nc-zoom-split"></i> Filtrar
               </button>
             </div>
 
             <!-- Botão Limpar -->
-            <div class="col-md-3 d-flex">
+            <div class="col-md-2 d-flex">
               <button type="button" class="btn btn-lg btn-secondary flex-fill" (click)="clearFilters()">
                 <i class="nc-icon nc-refresh-69"></i> Limpar
               </button>

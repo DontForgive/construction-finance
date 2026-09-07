@@ -1,23 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CategoryService } from './category.service';
 import { Category } from './category';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryAddDialogComponent } from './category-add-dialog.component';
 import Swal from 'sweetalert2';
 import { ToastService } from 'app/utils/toastr';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-category',
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss']
 })
-export class CategoryComponent implements OnInit {
+export class CategoryComponent implements OnInit, OnDestroy {
 
   currentPage = 0;
   totalPages = 0;
   totalElements = 0;
   pageSize = 5;
   pageSizes: number[] = [5, 10, 20, 50];
+
+  private searchSubject = new Subject<void>();
+  private searchSubscription?: Subscription;
 
   constructor(private service: CategoryService, private dialog: MatDialog,
      private toast: ToastService,
@@ -27,6 +32,21 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit() {
     this.listCategories();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.listCategories(0);
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  onFilterChange() {
+    this.searchSubject.next();
   }
 
   filterName: string = '';
@@ -114,7 +134,7 @@ export class CategoryComponent implements OnInit {
                           showConfirmButton: false,
                           timer: 1000
                         });
-            this.listCategories(this.currentPage); 
+            this.listCategories(this.currentPage);
           },
           error: (err) => {
             console.error('Erro ao excluir categoria:', err);

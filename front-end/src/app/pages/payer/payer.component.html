@@ -8,7 +8,7 @@
             <div class="col-md-6">
               <label for="filterName" class="form-label">Nome</label>
               <input type="text" id="filterName" class="form-control" placeholder="Pesquisar por nome"
-                [(ngModel)]="filterName" name="filterName">
+                [(ngModel)]="filterName" name="filterName" (input)="onFilterChange()">
             </div>
             <!-- Botão Filtrar -->
             <div class="col-md-3 d-flex">

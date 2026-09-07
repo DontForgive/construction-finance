@@ -30,19 +30,17 @@ export class SupplierService {
     dir: string = 'ASC',
     name?: string,
     keyPix?: string,
-    worker?:boolean) {
+    worker?: any) {
     const params: any = {
       page: page,
       size: size,
       sort: sort,
-      dir: dir,
-      name: '',
-      worker: ''
+      dir: dir
     };
 
     if (name) params.name = name;
     if (keyPix) params.keyPix = keyPix;
-    if (worker) params.worker = worker;
+    if (worker !== undefined && worker !== null && worker !== '') params.worker = worker;
 
     return this.httpClient.get<ApiResponse<Supplier>>(`${this.API}supplier`, {
       params: params,

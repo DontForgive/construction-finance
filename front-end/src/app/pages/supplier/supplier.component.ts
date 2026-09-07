@@ -1,23 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SupplierService } from './supplier.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Supplier } from './supplier';
 import { SupplierAddDialogComponent } from './supplier-add-dialog.component';
 import Swal from 'sweetalert2';
 import { ToastService } from 'app/utils/toastr';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-supplier',
   templateUrl: './supplier.component.html',
   styleUrls: ['./supplier.component.scss']
 })
-export class SupplierComponent implements OnInit {
+export class SupplierComponent implements OnInit, OnDestroy {
 
   currentPage = 0;
   totalPages = 0;
   totalElements = 0;
   pageSize = 5;
   pageSizes: number[] = [5, 10, 20, 50];
+
+  private searchSubject = new Subject<void>();
+  private searchSubscription?: Subscription;
 
   constructor(private service: SupplierService, private dialog: MatDialog,
      private toast: ToastService,
@@ -26,9 +31,25 @@ export class SupplierComponent implements OnInit {
   public list_suppliers: Supplier[] = [];
   filterName: string = '';
   filterKeyPix: string = '';
+  filterWorker: any = '';
 
   ngOnInit() {
     this.listSuppliers();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.listSuppliers(0);
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  onFilterChange() {
+    this.searchSubject.next();
   }
 
 
@@ -46,7 +67,8 @@ export class SupplierComponent implements OnInit {
       'id',
       'DESC',
       this.filterName,
-      this.filterKeyPix
+      this.filterKeyPix,
+      this.filterWorker
     ).subscribe(
       (res) => {
         this.list_suppliers = res.data.content;
@@ -63,6 +85,7 @@ export class SupplierComponent implements OnInit {
   clearFilters() {
     this.filterName = '';
     this.filterKeyPix = '';
+    this.filterWorker = '';
     this.listSuppliers(0);
   }
 

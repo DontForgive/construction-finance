@@ -28,6 +28,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
                 AND (:keyPix IS NULL OR LOWER(s.keyPix) LIKE LOWER(CONCAT('%', CAST(:keyPix AS string), '%')))
                              AND (:worker IS NULL OR s.worker = :worker)
             """)
-    Page<Supplier> findByFilters(@Param("name") String name, @Param("keyPix") String key_pix, @Param("worker") Boolean worker, Pageable pageable);
+    Page<Supplier> findByFilters(@Param("name") String name, @Param("keyPix") String keyPix, @Param("worker") Boolean worker, Pageable pageable);
 
 }

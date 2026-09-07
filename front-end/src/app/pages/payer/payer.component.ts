@@ -1,23 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PayerService } from './payer.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastService } from 'app/utils/toastr';
 import { PayerAddDialogComponent } from './payer-add-dialog.component';
 import { Payer } from './Payer';
 import Swal from 'sweetalert2';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-payer',
   templateUrl: './payer.component.html',
   styleUrls: ['./payer.component.scss']
 })
-export class PayerComponent implements OnInit {
+export class PayerComponent implements OnInit, OnDestroy {
 
   currentPage = 0;
   totalPages = 0;
   totalElements = 0;
   pageSize = 5;
   pageSizes: number[] = [5, 10, 20, 50];
+
+  private searchSubject = new Subject<void>();
+  private searchSubscription?: Subscription;
 
   //filters
   filterName: string = '';
@@ -28,6 +33,21 @@ export class PayerComponent implements OnInit {
 
   ngOnInit() {
     this.listPayers();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.listPayers(0);
+    });
+  }
+
+  ngOnDestroy() {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  onFilterChange() {
+    this.searchSubject.next();
   }
 
   listPayers(page: number = 0) {
