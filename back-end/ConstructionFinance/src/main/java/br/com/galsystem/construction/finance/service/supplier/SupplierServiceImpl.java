@@ -31,8 +31,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional(readOnly = true)
 //    @Cacheable(value = "supplierList", key = "{#name, #worker, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<SupplierDTO> listar(String name, String key_pix, Boolean worker, Pageable pageable) {
-        return supplierRepository.findByFilters(name, key_pix, worker, pageable).map(supplierMapper::toDTO);
+    public Page<SupplierDTO> listar(String name, String keyPix, Boolean worker, Pageable pageable) {
+        return supplierRepository.findByFilters(name, keyPix, worker, pageable).map(supplierMapper::toDTO);
     }
 
     @Override
