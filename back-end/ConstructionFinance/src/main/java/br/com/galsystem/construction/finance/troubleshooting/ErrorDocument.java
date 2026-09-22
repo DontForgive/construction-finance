@@ -1,6 +1,8 @@
 package br.com.galsystem.construction.finance.troubleshooting;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +12,7 @@ import java.time.Instant;
 @Builder
 public class ErrorDocument {
     @JsonProperty("timestamp")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Instant timestamp;
 
     @JsonProperty("correlationId")
