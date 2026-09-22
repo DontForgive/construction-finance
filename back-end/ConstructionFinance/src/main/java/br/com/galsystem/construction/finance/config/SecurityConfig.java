@@ -109,6 +109,7 @@ public class SecurityConfig {
                         // 🔓 Página inicial
                         .requestMatchers("/", "/index.html", "/index").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/diagnostics/**").permitAll()
 
                         // 🔒 Qualquer outra rota: autenticada
                         .anyRequest().authenticated()
