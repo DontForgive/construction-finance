@@ -24,4 +24,7 @@ public class Supplier {
 
     private String keyPix;
 
+    @Column(length = 50)
+    private String phone;
+
 }
