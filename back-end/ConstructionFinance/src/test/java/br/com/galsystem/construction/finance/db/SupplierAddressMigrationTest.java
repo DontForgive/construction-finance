@@ -7,19 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
 /**
  * Testes unitários da migração V1__add_address_to_supplier.sql (HU-1.1).
  * Validam o conteúdo do arquivo SQL. Os testes funcionais em PostgreSQL
- * (CT-1.1.4 a CT-1.1.13) não fazem parte desta classe.
+ * (CT-1.1.4 a CT-1.1.12) não fazem parte desta classe.
  */
 class SupplierAddressMigrationTest {
 
@@ -41,13 +46,30 @@ class SupplierAddressMigrationTest {
                 colunas, "CT-1.1.1: colunas adicionadas à tabela supplier divergem da spec");
     }
 
-    /** CT-1.1.1 (nome do arquivo): o arquivo segue o padrão V{n}__add_address_to_supplier.sql. */
+    /**
+     * CT-1.1.1 (nome do arquivo): lista os arquivos reais de db/migration no classpath
+     * e confere que o arquivo da HU-1.1 existe e que todos seguem o padrão V{n}__nome.sql.
+     */
     @Test
-    void ct111_nomeDoArquivoSegueOPadraoDeVersionamento() {
+    void ct111_nomeDoArquivoSegueOPadraoDeVersionamento() throws Exception {
+        URL pasta = getClass().getResource("/db/migration");
+        assertNotNull(pasta, "CT-1.1.1: pasta db/migration não encontrada no classpath");
+
+        List<String> nomes;
+        try (Stream<Path> arquivos = Files.list(Paths.get(pasta.toURI()))) {
+            nomes = arquivos.map(p -> p.getFileName().toString())
+                    .filter(n -> n.endsWith(".sql"))
+                    .toList();
+        }
+
+        assertTrue(nomes.contains(ARQUIVO),
+                "CT-1.1.1: " + ARQUIVO + " ausente de db/migration. Encontrados: " + nomes);
+        for (String nome : nomes) {
+            assertTrue(nome.matches("V\\d+__\\w+\\.sql"),
+                    "CT-1.1.1: nome fora do padrão V{n}__nome.sql: " + nome);
+        }
         assertTrue(ARQUIVO.matches("V\\d+__add_address_to_supplier\\.sql"),
-                "CT-1.1.1: nome do arquivo fora do padrão V{n}__add_address_to_supplier.sql");
-        assertNotNull(getClass().getResource(CAMINHO),
-                "CT-1.1.1: migração não encontrada em src/main/resources/db/migration");
+                "CT-1.1.1: nome do arquivo da HU-1.1 fora do padrão V{n}__add_address_to_supplier.sql");
     }
 
     /** CT-1.1.2: tipos e tamanhos declarados, na ordem da spec. */
