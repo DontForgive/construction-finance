@@ -52,14 +52,15 @@ class SupplierCreateDTOValidationTest {
     }
 
     /**
-     * CT-1.2.7: keyPix nulo. A spec (RN-A) manda manter as validações atuais, e o DTO atual não tem NotNull em keyPix;
-     * o service já trata null como vazio. Decisão assumida na noite: mantém-se o comportamento atual (sem violação).
+     * CT-1.2.7 (caso aprovado): keyPix nulo gera violação de NotNull.
+     * DIVERGÊNCIA: SupplierCreateDTO não tem @NotNull em keyPix (RN-A da spec manda manter as validações atuais).
+     * Teste mantido conforme o caso aprovado; deve falhar até a decisão da pessoa (adicionar @NotNull ou alterar o caso).
      */
     @Test
-    void ct127_keyPixNuloNaoGeraViolacao() {
+    void ct127_keyPixNuloGeraViolacaoDeNotNull() {
         SupplierCreateDTO dto = semEndereco("Fornecedor Teste", false, null);
 
-        assertSemViolacao(dto, "CT-1.2.7");
+        assertViolacaoEm(dto, "keyPix", "CT-1.2.7");
     }
 
     /** CT-1.2.10: CEPs inválidos geram violação de Pattern. */
