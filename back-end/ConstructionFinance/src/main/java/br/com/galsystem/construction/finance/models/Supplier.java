@@ -24,4 +24,25 @@ public class Supplier {
 
     private String keyPix;
 
+    @Column(name = "street", length = 150)
+    private String rua;
+
+    @Column(name = "number", length = 10)
+    private String numero;
+
+    @Column(name = "neighborhood", length = 100)
+    private String bairro;
+
+    @Column(name = "city", length = 100)
+    private String cidade;
+
+    @Column(name = "state", length = 2)
+    private String estado;
+
+    @Column(name = "zip_code", length = 8)
+    private String cep;
+
+    @Column(name = "complement", length = 100)
+    private String complemento;
+
 }
