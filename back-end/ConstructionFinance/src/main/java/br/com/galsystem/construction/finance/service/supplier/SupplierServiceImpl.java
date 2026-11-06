@@ -2,6 +2,7 @@ package br.com.galsystem.construction.finance.service.supplier;
 
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
@@ -10,6 +11,8 @@ import br.com.galsystem.construction.finance.mapper.SupplierMapper;
 import br.com.galsystem.construction.finance.models.Supplier;
 import br.com.galsystem.construction.finance.repository.SupplierRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
@@ -27,6 +30,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
     private final SupplierMapper supplierMapper;
+    private final CacheManager cacheManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,10 +41,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    public SupplierDTO findById(Long id) {
+    public SupplierDetailDTO findById(Long id) {
         Supplier entity = supplierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor com ID %d não encontrado".formatted(id)));
-        return supplierMapper.toDTO(entity);
+        return supplierMapper.toDetailDTO(entity);
     }
 
     @Override
@@ -125,12 +129,29 @@ public class SupplierServiceImpl implements SupplierService {
             throw new ConflictException("CHAVE PIX já Cadastrada");
         }
 
+        final String oldName = entity.getName();
+
         entity.setName(name);
         entity.setWorker(dto.getWorker());
         entity.setKeyPix(keyPix);
         applyAddress(entity, dto);
         Supplier updated = supplierRepository.save(entity);
+        evictSupplierByName(oldName);
         return supplierMapper.toDTO(updated);
+    }
+
+    /**
+     * Invalida a chave do nome anterior em supplierByName. A chave do nome novo e supplierList
+     * continuam sendo invalidadas pelas anotações de {@link #update}.
+     */
+    private void evictSupplierByName(final String name) {
+        if (name == null) {
+            return;
+        }
+        Cache cache = cacheManager.getCache("supplierByName");
+        if (cache != null) {
+            cache.evict(name.toLowerCase());
+        }
     }
 
     /**
