@@ -2,6 +2,7 @@ package br.com.galsystem.construction.finance.service.supplier;
 
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
