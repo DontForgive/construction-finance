@@ -107,13 +107,13 @@ public class SupplierServiceImpl implements SupplierService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "supplierList", allEntries = true),
-            @CacheEvict(value = "supplierByName", key = "#dto.name().toLowerCase()", condition = "#dto.name() != null")
+            @CacheEvict(value = "supplierByName", key = "#dto.getName().toLowerCase()", condition = "#dto.getName() != null")
     })
     public SupplierDTO update(Long id, SupplierUpdateDTO dto) {
         Supplier entity = supplierRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Fornecedor com o ID %d não encontrado".formatted(id)));
-        String name = dto.name().trim();
-        String keyPix = Optional.ofNullable(dto.keyPix())
+        String name = dto.getName().trim();
+        String keyPix = Optional.ofNullable(dto.getKeyPix())
                 .orElse("")
                 .trim();
 
@@ -125,11 +125,46 @@ public class SupplierServiceImpl implements SupplierService {
             throw new ConflictException("CHAVE PIX já Cadastrada");
         }
 
-        supplierMapper.updateEntity(entity, dto);
         entity.setName(name);
+        entity.setWorker(dto.getWorker());
         entity.setKeyPix(keyPix);
+        applyAddress(entity, dto);
         Supplier updated = supplierRepository.save(entity);
         return supplierMapper.toDTO(updated);
+    }
+
+    /**
+     * Aplica o endereço campo a campo: ausente mantém o valor atual; null ou vazio limpa; valor atualiza.
+     * Os valores já chegam normalizados pelos setters do DTO.
+     */
+    private void applyAddress(final Supplier entity, final SupplierUpdateDTO dto) {
+        if (dto.isPresent(SupplierUpdateDTO.ZIP_CODE)) {
+            entity.setZipCode(dto.getZipCode());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.STREET)) {
+            entity.setStreet(dto.getStreet());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.NUMBER)) {
+            entity.setNumber(dto.getNumber());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.COMPLEMENT)) {
+            entity.setComplement(dto.getComplement());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.NEIGHBORHOOD)) {
+            entity.setNeighborhood(dto.getNeighborhood());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.CITY)) {
+            entity.setCity(dto.getCity());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.STATE)) {
+            entity.setState(dto.getState());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.COUNTRY)) {
+            entity.setCountry(dto.getCountry());
+        }
+        if (dto.isPresent(SupplierUpdateDTO.REFERENCE)) {
+            entity.setReference(dto.getReference());
+        }
     }
 
     @Override
