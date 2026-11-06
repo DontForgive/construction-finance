@@ -211,6 +211,8 @@ export class SupplierAddDialogComponent {
 
   private loadSupplier(id: number) {
     this.loading = true;
+    // Bloqueia a digitação até o detalhe chegar, para o patchValue não sobrescrever o que o usuário digitou.
+    this.form.disable({ emitEvent: false });
     this.supplierService.getSupplierById(id).subscribe({
       next: (res) => {
         const supplier = res?.data as Supplier;
@@ -221,10 +223,12 @@ export class SupplierAddDialogComponent {
         });
         this.fillAddress(supplier);
         this.loading = false;
+        this.form.enable({ emitEvent: false });
       },
       error: (err) => {
         this.loading = false;
         this.loadFailed = true;
+        this.form.enable({ emitEvent: false });
         Swal.fire({
           icon: 'error',
           title: 'Erro ao carregar o Fornecedor',
@@ -254,7 +258,7 @@ export class SupplierAddDialogComponent {
 
     return {
       name: (v.name ?? '').toString().trim(),
-      keyPix: textOrNull(v.keyPix) as any,
+      keyPix: textOrNull(v.keyPix) ?? '',
       worker: !!v.worker,
       zipCode: zipDigits === '' ? null : zipDigits,
       street: textOrNull(v.street),
