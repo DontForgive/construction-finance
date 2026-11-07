@@ -2,6 +2,7 @@ package br.com.galsystem.construction.finance.service.supplier;
 
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
@@ -37,10 +38,10 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     @Transactional(readOnly = true)
-    public SupplierDTO findById(Long id) {
+    public SupplierDetailDTO findById(Long id) {
         Supplier entity = supplierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fornecedor com ID %d não encontrado".formatted(id)));
-        return supplierMapper.toDTO(entity);
+        return supplierMapper.toDetailDTO(entity);
     }
 
     @Override

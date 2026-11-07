@@ -2,6 +2,7 @@ package br.com.galsystem.construction.finance.controller.supplier;
 
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.supplier.SupplierService;
@@ -50,8 +51,8 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response<SupplierDTO>> findById(@PathVariable final Long id) {
-        final SupplierDTO dto = service.findById(id);
+    public ResponseEntity<Response<SupplierDetailDTO>> findById(@PathVariable final Long id) {
+        final SupplierDetailDTO dto = service.findById(id);
         return ResponseEntity.ok(new Response<>(200, "Fornecedor encontrado", dto, null));
     }
 
