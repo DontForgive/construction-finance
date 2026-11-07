@@ -2,8 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { AuthService } from '../login/auth.service';
-import { ApiResponse } from 'app/utils/response';
-import { Supplier } from './supplier';
+import { ApiResponse, ApiResponsCreate } from 'app/utils/response';
+import { Supplier, SupplierPayload } from './supplier';
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +50,13 @@ export class SupplierService {
   }
 
 
-  createSupplier(supplier: Supplier) {
+  getSupplierById(id: number) {
+    return this.httpClient.get<ApiResponsCreate<Supplier>>(`${this.API}supplier/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  createSupplier(supplier: SupplierPayload) {
     return this.httpClient.post<ApiResponse<Supplier>>(
       `${this.API}supplier`,
       supplier,
@@ -60,7 +66,7 @@ export class SupplierService {
     );
   }
 
-    updateSupplier(id: number, data: { name: string; keyPix: string; worker: boolean}) {
+  updateSupplier(id: number, data: SupplierPayload) {
     return this.httpClient.put(`${this.API}supplier/${id}`, data, {
       headers: this.getAuthHeaders()
     });
