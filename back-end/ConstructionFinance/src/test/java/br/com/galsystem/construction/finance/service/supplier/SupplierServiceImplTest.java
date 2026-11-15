@@ -1,7 +1,9 @@
 package br.com.galsystem.construction.finance.service.supplier;
 
+import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.mapper.SupplierMapper;
 import br.com.galsystem.construction.finance.models.Supplier;
 import br.com.galsystem.construction.finance.repository.SupplierRepository;
@@ -57,6 +59,11 @@ class SupplierServiceImplTest {
                 .build();
     }
 
+    /** Payload SupplierDTO esperado para DS1 (contrato atual, sem campos de endereço). */
+    private static SupplierDTO dtoEsperadoDS1() {
+        return new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true);
+    }
+
     @Test
     @DisplayName("CT-1.1.4 listar repassa filtros, ordenação e paginação ao repositório e devolve Page<SupplierListDTO> com o mesmo total")
     void ct_1_1_4_listar_repassa_filtros_e_paginacao() {
@@ -89,6 +96,60 @@ class SupplierServiceImplTest {
 
         SupplierDTO result = service.findOrCreateByName("Fornecedor Teste Alfa");
 
-        assertThat(result).isEqualTo(new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true));
+        assertThat(result).isEqualTo(dtoEsperadoDS1());
+    }
+
+    @Test
+    @DisplayName("CT-1.1.16 findOrCreateByName sem fornecedor cria o registro e devolve SupplierDTO sem campos de endereço")
+    void ct_1_1_16_findOrCreateByName_criacao_devolve_supplierDTO() {
+        when(repository.findByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(Optional.empty());
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> {
+            Supplier salvo = invocacao.getArgument(0);
+            salvo.setId(1L);
+            return salvo;
+        });
+
+        SupplierDTO result = service.findOrCreateByName("Fornecedor Teste Alfa");
+
+        ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo("Fornecedor Teste Alfa");
+        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.name()).isEqualTo("Fornecedor Teste Alfa");
+        assertThat(result.keyPix()).isNull();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.16 create devolve SupplierDTO com id, nome, chave PIX e prestador, sem campos de endereço")
+    void ct_1_1_16_create_devolve_supplierDTO() {
+        SupplierCreateDTO dto = new SupplierCreateDTO(
+                "Fornecedor Teste Alfa", true, "chave-ficticia-01",
+                "13010000", "Rua das Flores", "120", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01");
+        when(repository.existsByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(false);
+        when(repository.existsByKeyPixIgnoreCase("chave-ficticia-01")).thenReturn(false);
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> {
+            Supplier salvo = invocacao.getArgument(0);
+            salvo.setId(1L);
+            return salvo;
+        });
+
+        SupplierDTO result = service.create(dto);
+
+        assertThat(result).isEqualTo(dtoEsperadoDS1());
+    }
+
+    @Test
+    @DisplayName("CT-1.1.16 update devolve SupplierDTO com id, nome, chave PIX e prestador, sem campos de endereço")
+    void ct_1_1_16_update_devolve_supplierDTO() {
+        SupplierUpdateDTO dto = new SupplierUpdateDTO(
+                "Fornecedor Teste Alfa", true, "chave-ficticia-01",
+                "13010000", "Rua das Flores", "130", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01");
+        when(repository.findById(1L)).thenReturn(Optional.of(fornecedorCompleto()));
+        when(repository.existsByKeyPixIgnoreCaseAndIdNot("chave-ficticia-01", 1L)).thenReturn(false);
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+
+        SupplierDTO result = service.update(1L, dto);
+
+        assertThat(result).isEqualTo(dtoEsperadoDS1());
     }
 }

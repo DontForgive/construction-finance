@@ -129,4 +129,63 @@ describe('SupplierComponent - coluna Endereço (casos HU-1.1)', () => {
 
     expect(service.getSuppliers).toHaveBeenCalledWith(0, component.pageSize, 'id', 'DESC', 'Alfa', 'chave', true);
   });
+
+  it('CT-1.1.14 (parcial, serviço simulado) troca de página pede a página seguinte e mostra o endereço de cada linha, sem repetir itens', () => {
+    const PAGINA_1: Supplier[] = [DS1];
+    const PAGINA_2: Supplier[] = [DS5];
+    service.getSuppliers.and.callFake((page: number) => of({
+      status: 200,
+      message: 'Lista de Fornecedores',
+      data: { content: page === 0 ? PAGINA_1 : PAGINA_2, totalElements: 2, totalPages: 2 }
+    } as any));
+    fixture.detectChanges();
+
+    component.onPageChange({ pageIndex: 1, pageSize: 5 });
+    fixture.detectChanges();
+
+    expect(service.getSuppliers).toHaveBeenCalledWith(1, 5, 'id', 'DESC', '', '', '');
+    const idsExibidos = linhas().map(tr => tr.querySelectorAll('td')[0].textContent?.trim());
+    expect(idsExibidos).toEqual(['5']);
+    const celula = linhas()[0].querySelectorAll('td')[3] as HTMLElement;
+    expect(celula.querySelector('.endereco-principal')?.textContent?.trim()).toBe('Campinas/SP');
+  });
+
+  it('CT-1.1.15 (parcial, serviço simulado) após editar, a tela recarrega e mostra o número salvo na linha', () => {
+    const dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+    dialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+    carregarComFornecedores([DS1]);
+
+    const DS1_EDITADO: Supplier = { ...DS1, number: '130' };
+    service.getSuppliers.and.returnValue(of({
+      status: 200,
+      message: 'Lista de Fornecedores',
+      data: { content: [DS1_EDITADO], totalElements: 1, totalPages: 1 }
+    } as any));
+
+    component.openEditDialog(DS1);
+    fixture.detectChanges();
+
+    const celula = linhas()[0].querySelectorAll('td')[3] as HTMLElement;
+    expect(celula.querySelector('.endereco-secundario')?.textContent?.trim())
+      .toBe('Rua das Flores, 130, sala 3 · Centro · 13010-000');
+  });
+
+  it('CT-1.1.15 (parcial, serviço simulado) após criar, a tela recarrega e mostra o novo fornecedor com endereço', () => {
+    const dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+    dialog.open.and.returnValue({ afterClosed: () => of(true) } as any);
+    carregarComFornecedores([]);
+
+    service.getSuppliers.and.returnValue(of({
+      status: 200,
+      message: 'Lista de Fornecedores',
+      data: { content: [DS1], totalElements: 1, totalPages: 1 }
+    } as any));
+
+    component.openAddDialog();
+    fixture.detectChanges();
+
+    expect(linhas().length).toBe(1);
+    const celula = linhas()[0].querySelectorAll('td')[3] as HTMLElement;
+    expect(celula.querySelector('.endereco-principal')?.textContent?.trim()).toBe('Campinas/SP');
+  });
 });
