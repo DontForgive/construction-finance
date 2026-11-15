@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { ToastService } from 'app/utils/toastr';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { enderecoLinhaPrincipal, enderecoLinhaSecundaria } from './supplier-address';
 
 @Component({
   selector: 'app-supplier',
@@ -52,6 +53,23 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.searchSubject.next();
   }
 
+
+  /** Linha 1 da coluna Endereço (cidade/UF). */
+  addressPrimary(supplier: Supplier): string {
+    return enderecoLinhaPrincipal(supplier);
+  }
+
+  /** Linha 2 da coluna Endereço (logradouro, número, complemento · bairro · CEP). */
+  addressSecondary(supplier: Supplier): string {
+    return enderecoLinhaSecundaria(supplier);
+  }
+
+  /** Texto integral do endereço, usado no atributo title para texto truncado. */
+  addressTitle(supplier: Supplier): string {
+    return [this.addressPrimary(supplier), this.addressSecondary(supplier)]
+      .filter(linha => linha !== '')
+      .join(' · ');
+  }
 
   onPageChange(event: any) {
     this.pageSize = event.pageSize;

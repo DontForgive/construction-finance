@@ -3,6 +3,7 @@ package br.com.galsystem.construction.finance.service.supplier;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
@@ -32,8 +33,8 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional(readOnly = true)
 //    @Cacheable(value = "supplierList", key = "{#name, #worker, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<SupplierDTO> listar(String name, String keyPix, Boolean worker, Pageable pageable) {
-        return supplierRepository.findByFilters(name, keyPix, worker, pageable).map(supplierMapper::toDTO);
+    public Page<SupplierListDTO> listar(String name, String keyPix, Boolean worker, Pageable pageable) {
+        return supplierRepository.findByFilters(name, keyPix, worker, pageable).map(supplierMapper::toListDTO);
     }
 
     @Override

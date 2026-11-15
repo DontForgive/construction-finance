@@ -3,6 +3,7 @@ package br.com.galsystem.construction.finance.controller.supplier;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
+import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.response.Response;
 import br.com.galsystem.construction.finance.service.supplier.SupplierService;
@@ -27,7 +28,7 @@ public class SupplierController {
     private final SupplierService service;
 
     @GetMapping
-    public ResponseEntity<Response<Page<SupplierDTO>>> list(
+    public ResponseEntity<Response<Page<SupplierListDTO>>> list(
             @RequestParam(defaultValue = "0") final int page,
             @RequestParam(defaultValue = "10") final int size,
             @RequestParam(defaultValue = "id") final String sort,
@@ -41,9 +42,9 @@ public class SupplierController {
         final Sort.Direction direction = "DESC".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         final Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, sort));
 
-        final Page<SupplierDTO> result = service.listar(name, keyPix, worker, pageable);
+        final Page<SupplierListDTO> result = service.listar(name, keyPix, worker, pageable);
 
-        final Response<Page<SupplierDTO>> resp = new Response<>();
+        final Response<Page<SupplierListDTO>> resp = new Response<>();
         resp.setStatus(200);
         resp.setMessage("Lista de Fornecedores");
         resp.setData(result);
