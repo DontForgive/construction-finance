@@ -115,6 +115,49 @@ export function textOrNull(value: any): string | null {
   return trimmed === '' ? null : trimmed;
 }
 
+/** CEP para exibição: com máscara quando tem 8 dígitos; senão, o valor como está (sem espaços nas bordas). */
+export function formatCepForDisplay(value: any): string {
+  const digits = digitsOnly(value);
+  if (digits.length === CEP_DIGITS) {
+    return formatCep(digits);
+  }
+  return textOrNull(value) ?? '';
+}
+
+/** Campos de endereço recebidos da listagem (nomes iguais aos da API). */
+export interface AddressFields {
+  zipCode?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  city?: string | null;
+  state?: string | null;
+}
+
+function presentes(partes: (string | null)[]): string[] {
+  return partes.filter((parte): parte is string => parte !== null && parte !== '');
+}
+
+/** Linha 1 da coluna Endereço: cidade/UF. Partes vazias são omitidas. */
+export function enderecoLinhaPrincipal(endereco: AddressFields): string {
+  return presentes([textOrNull(endereco.city), textOrNull(endereco.state)]).join('/');
+}
+
+/** Linha 2 da coluna Endereço: logradouro, número, complemento · bairro · CEP. Partes vazias são omitidas. */
+export function enderecoLinhaSecundaria(endereco: AddressFields): string {
+  const logradouro = presentes([
+    textOrNull(endereco.street),
+    textOrNull(endereco.number),
+    textOrNull(endereco.complement)
+  ]).join(', ');
+  return presentes([
+    logradouro,
+    textOrNull(endereco.neighborhood),
+    formatCepForDisplay(endereco.zipCode)
+  ]).join(' · ');
+}
+
 /** Validador: o nome não pode ser só espaços. */
 export function notBlank(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
