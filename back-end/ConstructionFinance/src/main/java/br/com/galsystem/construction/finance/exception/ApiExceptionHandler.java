@@ -110,6 +110,16 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    // 400 - telefone do fornecedor fora do formato (a mensagem não inclui o valor enviado)
+    @ExceptionHandler(InvalidPhoneException.class)
+    public ResponseEntity<Response<Void>> handleInvalidPhone(final InvalidPhoneException ex) {
+        final Response<Void> body = new Response<>();
+        body.setStatus(400);
+        body.setMessage(ex.getMessage());
+        body.getErros().add("phone: " + ex.getMessage());
+        return ResponseEntity.badRequest().body(body);
+    }
+
     // 500 - fallback genérico
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response<Void>> handleGeneric(final Exception ex, final HttpServletRequest req) throws Exception {

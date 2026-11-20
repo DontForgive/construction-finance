@@ -1,6 +1,7 @@
 package br.com.galsystem.construction.finance.dto.supplier;
 
 import br.com.galsystem.construction.finance.validation.IsoCountry;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -32,6 +33,8 @@ public record SupplierUpdateDTO(
         @IsoCountry
         String country,
         @Size(max = 255, message = "Referência deve ter no máximo 255 caracteres")
-        String reference
+        String reference,
+        @JsonDeserialize(using = CampoOpcional.DeserializadorTexto.class)
+        CampoOpcional<String> phone
 ) {
 }

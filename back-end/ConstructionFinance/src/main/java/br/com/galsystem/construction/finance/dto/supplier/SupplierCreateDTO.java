@@ -32,6 +32,7 @@ public record SupplierCreateDTO(
         @IsoCountry
         String country,
         @Size(max = 255, message = "Referência deve ter no máximo 255 caracteres")
-        String reference
+        String reference,
+        String phone
 ) {
 }

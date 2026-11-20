@@ -1,6 +1,8 @@
 package br.com.galsystem.construction.finance.service.supplier;
 
+import br.com.galsystem.construction.finance.dto.supplier.CampoOpcional;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
+import br.com.galsystem.construction.finance.exception.InvalidPhoneException;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
@@ -23,8 +25,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,11 +65,11 @@ class SupplierServiceImplTest {
 
     /** Payload SupplierDTO esperado para DS1 (contrato atual, sem campos de endereço). */
     private static SupplierDTO dtoEsperadoDS1() {
-        return new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true);
+        return new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true, null);
     }
 
     @Test
-    @DisplayName("CT-1.1.4 listar repassa filtros, ordenação e paginação ao repositório e devolve Page<SupplierListDTO> com o mesmo total")
+    @DisplayName("[legado, sem ID aprovado] listar repassa filtros, ordenação e paginação ao repositório e devolve Page<SupplierListDTO> com o mesmo total")
     void ct_1_1_4_listar_repassa_filtros_e_paginacao() {
         Pageable pageable = PageRequest.of(1, 2, Sort.by(Sort.Direction.DESC, "id"));
         List<Supplier> itens = List.of(fornecedorCompleto(), Supplier.builder().id(2L).name("Beta").city("Santos").build());
@@ -90,7 +94,7 @@ class SupplierServiceImplTest {
     }
 
     @Test
-    @DisplayName("CT-1.1.16 findOrCreateByName com fornecedor existente devolve SupplierDTO sem campos de endereço")
+    @DisplayName("[legado, sem ID aprovado] findOrCreateByName com fornecedor existente devolve SupplierDTO sem campos de endereço")
     void ct_1_1_16_findOrCreateByName_existente_devolve_supplierDTO() {
         when(repository.findByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(Optional.of(fornecedorCompleto()));
 
@@ -100,7 +104,7 @@ class SupplierServiceImplTest {
     }
 
     @Test
-    @DisplayName("CT-1.1.16 findOrCreateByName sem fornecedor cria o registro e devolve SupplierDTO sem campos de endereço")
+    @DisplayName("[legado, sem ID aprovado] findOrCreateByName sem fornecedor cria o registro e devolve SupplierDTO sem campos de endereço")
     void ct_1_1_16_findOrCreateByName_criacao_devolve_supplierDTO() {
         when(repository.findByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(Optional.empty());
         when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> {
@@ -120,11 +124,11 @@ class SupplierServiceImplTest {
     }
 
     @Test
-    @DisplayName("CT-1.1.16 create devolve SupplierDTO com id, nome, chave PIX e prestador, sem campos de endereço")
+    @DisplayName("[legado, sem ID aprovado] create devolve SupplierDTO com id, nome, chave PIX, prestador e telefone nulo")
     void ct_1_1_16_create_devolve_supplierDTO() {
         SupplierCreateDTO dto = new SupplierCreateDTO(
                 "Fornecedor Teste Alfa", true, "chave-ficticia-01",
-                "13010000", "Rua das Flores", "120", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01");
+                "13010000", "Rua das Flores", "120", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01", null);
         when(repository.existsByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(false);
         when(repository.existsByKeyPixIgnoreCase("chave-ficticia-01")).thenReturn(false);
         when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> {
@@ -139,11 +143,11 @@ class SupplierServiceImplTest {
     }
 
     @Test
-    @DisplayName("CT-1.1.16 update devolve SupplierDTO com id, nome, chave PIX e prestador, sem campos de endereço")
+    @DisplayName("[legado, sem ID aprovado] update devolve SupplierDTO com id, nome, chave PIX, prestador e telefone nulo")
     void ct_1_1_16_update_devolve_supplierDTO() {
         SupplierUpdateDTO dto = new SupplierUpdateDTO(
                 "Fornecedor Teste Alfa", true, "chave-ficticia-01",
-                "13010000", "Rua das Flores", "130", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01");
+                "13010000", "Rua das Flores", "130", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01", CampoOpcional.ausente());
         when(repository.findById(1L)).thenReturn(Optional.of(fornecedorCompleto()));
         when(repository.existsByKeyPixIgnoreCaseAndIdNot("chave-ficticia-01", 1L)).thenReturn(false);
         when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
@@ -151,5 +155,167 @@ class SupplierServiceImplTest {
         SupplierDTO result = service.update(1L, dto);
 
         assertThat(result).isEqualTo(dtoEsperadoDS1());
+    }
+
+    /** Fornecedor DS1 com telefone já gravado (base para as alterações de telefone). */
+    private static Supplier fornecedorComTelefone() {
+        Supplier entidade = fornecedorCompleto();
+        entidade.setPhone("21998765432");
+        return entidade;
+    }
+
+    /** Criação com o telefone informado e os demais campos fixos. */
+    private static SupplierCreateDTO criacaoComTelefone(String phone) {
+        return new SupplierCreateDTO("Fornecedor Novo", true, "chave-nova-01",
+                null, null, null, null, null, null, null, null, null, phone);
+    }
+
+    /** Alteração com o campo phone no estado informado (ausente, null, vazio ou valor). */
+    private static SupplierUpdateDTO alteracaoComTelefone(String nome, CampoOpcional<String> phone) {
+        return new SupplierUpdateDTO(nome, true, "chave-ficticia-01",
+                null, null, null, null, null, null, null, null, null, phone);
+    }
+
+    /** Entidade efetivamente passada ao save na criação. */
+    private Supplier salvoNaCriacao(SupplierCreateDTO dto) {
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+        service.create(dto);
+        ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
+        verify(repository).save(captor.capture());
+        return captor.getValue();
+    }
+
+    /** Entidade efetivamente passada ao save na alteração do fornecedor 1. */
+    private Supplier salvoNaAlteracao(Supplier existente, SupplierUpdateDTO dto) {
+        when(repository.findById(1L)).thenReturn(Optional.of(existente));
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+        service.update(1L, dto);
+        ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
+        verify(repository).save(captor.capture());
+        return captor.getValue();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.1 create com telefone mascarado grava somente os dígitos")
+    void ct_1_1_1_create_grava_telefone_somente_digitos() {
+        Supplier gravado = salvoNaCriacao(criacaoComTelefone("(11) 91234-5678"));
+
+        assertThat(gravado.getPhone()).isEqualTo("11912345678");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.2 create com telefone de 10 dígitos grava o mesmo valor")
+    void ct_1_1_2_create_grava_telefone_de_10_digitos() {
+        Supplier gravado = salvoNaCriacao(criacaoComTelefone("1134567890"));
+
+        assertThat(gravado.getPhone()).isEqualTo("1134567890");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.3 create com telefone vazio grava telefone nulo sem erro")
+    void ct_1_1_3_create_telefone_vazio_grava_nulo() {
+        Supplier gravado = salvoNaCriacao(criacaoComTelefone(""));
+
+        assertThat(gravado.getPhone()).isNull();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.4 create sem o campo phone grava telefone nulo sem erro")
+    void ct_1_1_4_create_telefone_ausente_grava_nulo() {
+        Supplier gravado = salvoNaCriacao(criacaoComTelefone(null));
+
+        assertThat(gravado.getPhone()).isNull();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.5 create com telefone de 9 dígitos lança erro de telefone inválido e não grava")
+    void ct_1_1_5_create_telefone_9_digitos_rejeitado() {
+        assertThatThrownBy(() -> service.create(criacaoComTelefone("119123456")))
+                .isInstanceOf(InvalidPhoneException.class);
+
+        verify(repository, never()).save(any(Supplier.class));
+    }
+
+    @Test
+    @DisplayName("CT-1.1.7 create com telefone de 12 dígitos lança erro de telefone inválido e não grava")
+    void ct_1_1_7_create_telefone_12_digitos_rejeitado() {
+        assertThatThrownBy(() -> service.create(criacaoComTelefone("119123456789")))
+                .isInstanceOf(InvalidPhoneException.class);
+
+        verify(repository, never()).save(any(Supplier.class));
+    }
+
+    @Test
+    @DisplayName("CT-1.1.8 update com telefone ausente mantém o telefone atual e atualiza o nome")
+    void ct_1_1_8_update_telefone_ausente_mantem_valor() {
+        Supplier gravado = salvoNaAlteracao(fornecedorComTelefone(),
+                alteracaoComTelefone("Fornecedor Teste Alfa Editado", CampoOpcional.ausente()));
+
+        assertThat(gravado.getPhone()).isEqualTo("21998765432");
+        assertThat(gravado.getName()).isEqualTo("Fornecedor Teste Alfa Editado");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.9 update com telefone null explícito apaga o telefone")
+    void ct_1_1_9_update_telefone_null_apaga() {
+        Supplier gravado = salvoNaAlteracao(fornecedorComTelefone(),
+                alteracaoComTelefone("Fornecedor Teste Alfa", CampoOpcional.de(null)));
+
+        assertThat(gravado.getPhone()).isNull();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.10 update com telefone vazio apaga o telefone")
+    void ct_1_1_10_update_telefone_vazio_apaga() {
+        Supplier gravado = salvoNaAlteracao(fornecedorComTelefone(),
+                alteracaoComTelefone("Fornecedor Teste Alfa", CampoOpcional.de("")));
+
+        assertThat(gravado.getPhone()).isNull();
+    }
+
+    @Test
+    @DisplayName("CT-1.1.11 update com telefone mascarado grava o novo valor somente com dígitos")
+    void ct_1_1_11_update_grava_novo_telefone_normalizado() {
+        Supplier gravado = salvoNaAlteracao(fornecedorComTelefone(),
+                alteracaoComTelefone("Fornecedor Teste Alfa", CampoOpcional.de("(21) 3456-7890")));
+
+        assertThat(gravado.getPhone()).isEqualTo("2134567890");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.12 update com telefone de 9 dígitos lança erro, não grava e mantém o valor anterior")
+    void ct_1_1_12_update_telefone_invalido_mantem_valor_anterior() {
+        Supplier existente = fornecedorComTelefone();
+        when(repository.findById(1L)).thenReturn(Optional.of(existente));
+
+        assertThatThrownBy(() -> service.update(1L,
+                alteracaoComTelefone("Fornecedor Teste Alfa", CampoOpcional.de("119123456"))))
+                .isInstanceOf(InvalidPhoneException.class);
+
+        verify(repository, never()).save(any(Supplier.class));
+        assertThat(existente.getPhone()).isEqualTo("21998765432");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.16 erro de telefone inválido tem a mensagem aprovada e não expõe o valor enviado")
+    void ct_1_1_16_mensagem_do_erro_de_telefone() {
+        assertThatThrownBy(() -> service.create(criacaoComTelefone("119123456")))
+                .isInstanceOf(InvalidPhoneException.class)
+                .hasMessage("Informe um telefone válido com DDD (10 ou 11 dígitos).")
+                .hasMessageNotContaining("119123456");
+    }
+
+    @Test
+    @DisplayName("CT-1.1.18 findOrCreateByName cria fornecedor só com nome e telefone nulo sem falhar")
+    void ct_1_1_18_findOrCreateByName_cria_com_telefone_nulo() {
+        when(repository.findByNameIgnoreCase("Fornecedor Novo")).thenReturn(Optional.empty());
+        when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+
+        service.findOrCreateByName("Fornecedor Novo");
+
+        ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
+        verify(repository).save(captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo("Fornecedor Novo");
+        assertThat(captor.getValue().getPhone()).isNull();
     }
 }

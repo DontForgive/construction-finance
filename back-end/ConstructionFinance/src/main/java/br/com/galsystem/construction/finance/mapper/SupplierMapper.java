@@ -7,6 +7,7 @@ import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.models.Supplier;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
@@ -19,5 +20,7 @@ public interface SupplierMapper {
 
     Supplier toEntity(SupplierCreateDTO dto);
 
+    // phone é tratado no serviço (presença, normalização e validação)
+    @Mapping(target = "phone", ignore = true)
     void updateEntity(@MappingTarget Supplier entity, SupplierUpdateDTO dto);
 }

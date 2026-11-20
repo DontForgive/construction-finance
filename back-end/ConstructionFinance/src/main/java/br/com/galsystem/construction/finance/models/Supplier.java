@@ -51,4 +51,7 @@ public class Supplier {
     @Column(length = 255)
     private String reference;
 
+    @Column(name = "phone", length = 11)
+    private String phone;
+
 }
