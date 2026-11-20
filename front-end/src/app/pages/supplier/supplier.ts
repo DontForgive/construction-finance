@@ -3,6 +3,7 @@ export interface Supplier {
   name: string;
   keyPix: string;
   worker: boolean;
+  phone?: string | null;
   zipCode?: string | null;
   street?: string | null;
   number?: string | null;
@@ -19,6 +20,8 @@ export interface SupplierPayload {
   name: string;
   keyPix: string;
   worker: boolean;
+  /** Somente dígitos ou null. Omitido na edição significa "não alterado". */
+  phone?: string | null;
   zipCode: string | null;
   street: string | null;
   number: string | null;
