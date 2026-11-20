@@ -1,5 +1,4 @@
 import { AbstractControl } from '@angular/forms';
-import { digitsOnly } from './supplier-address';
 import {
   PHONE_EMPTY_DISPLAY,
   PHONE_ERROR_MESSAGE,
@@ -7,6 +6,7 @@ import {
   formatPhoneForDisplay,
   phoneValidator
 } from './supplier-phone';
+import { digitsOnly } from './supplier-address';
 
 /** Executa o validador sobre um valor, como o Angular faria com o controle. */
 function validar(valor: any) {
@@ -37,12 +37,16 @@ describe('supplier-phone (telefone do fornecedor)', () => {
   });
 
   it('CT-1.2.6 rejeita 9 dígitos, 12 dígitos e valor com letra, sem alterar o valor digitado', () => {
-    const valorComLetra = '11a00000001';
+    const controle = { value: '11a00000001' } as AbstractControl;
 
     expect(validar('113000001')).toEqual({ phone: true });
     expect(validar('119000000012')).toEqual({ phone: true });
-    expect(validar(valorComLetra)).toEqual({ phone: true });
-    expect(valorComLetra).toBe('11a00000001');
+    expect(phoneValidator()(controle)).toEqual({ phone: true });
+    expect(controle.value).toBe('11a00000001');
+  });
+
+  it('CT-1.2.6 usa a mensagem fixa de telefone inválido', () => {
+    expect(PHONE_ERROR_MESSAGE).toBe('Informe um telefone válido com DDD (10 ou 11 dígitos).');
   });
 
   it('CT-1.2.7 aceita campo vazio (opcional) pelo validador', () => {
@@ -54,9 +58,5 @@ describe('supplier-phone (telefone do fornecedor)', () => {
     expect(formatPhoneForDisplay(null)).toBe(PHONE_EMPTY_DISPLAY);
     expect(formatPhoneForDisplay('')).toBe(PHONE_EMPTY_DISPLAY);
     expect(formatPhoneForDisplay('11900000001')).toBe('(11) 90000-0001');
-  });
-
-  it('CT-1.2.6 usa a mensagem fixa de telefone inválido', () => {
-    expect(PHONE_ERROR_MESSAGE).toBe('Informe um telefone válido com DDD (10 ou 11 dígitos).');
   });
 });
