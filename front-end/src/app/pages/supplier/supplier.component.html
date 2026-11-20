@@ -64,6 +64,7 @@
                 <th>#</th>
                 <th>Nome</th>
                 <th>Chave PIX</th>
+                <th>Telefone</th>
                 <th>Endereço</th>
                 <th>Prestador de Serviço</th>
                 <th class="text-center">Ações</th>
@@ -74,6 +75,7 @@
                 <td>{{ supplier.id }}</td>
                 <td>{{ supplier.name|uppercase }}</td>
                 <td>{{ supplier.keyPix }}</td>
+                <td>{{ phoneDisplay(supplier) }}</td>
                 <td class="endereco-celula" [title]="addressTitle(supplier)">
                   <div class="endereco-principal" *ngIf="addressPrimary(supplier) as principal">{{ principal }}</div>
                   <div class="endereco-secundario" *ngIf="addressSecondary(supplier) as secundaria">{{ secundaria }}</div>

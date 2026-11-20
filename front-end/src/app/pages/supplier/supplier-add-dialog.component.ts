@@ -3,6 +3,11 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiResponse } from 'app/utils/response';
 import { SupplierService } from './supplier.service';
+import {
+  PHONE_ERROR_MESSAGE,
+  formatPhone,
+  phoneValidator
+} from './supplier-phone';
 import { Supplier, SupplierPayload } from './supplier';
 import Swal from 'sweetalert2';
 import { ToastService } from 'app/utils/toastr';
@@ -21,6 +26,9 @@ import {
   parseServerErrors,
   textOrNull
 } from './supplier-address';
+
+/** Campos que a API pode devolver com erro de validação (endereço e telefone). */
+const SUPPLIER_FORM_FIELDS: readonly string[] = [...ADDRESS_FIELDS, 'phone'];
 
 @Component({
   selector: 'app-supplier-add-dialog',
@@ -46,6 +54,13 @@ import {
         <mat-form-field appearance="outline" class="w-100 mb-3">
           <mat-label>Chave PIX</mat-label>
           <input matInput formControlName="keyPix">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 mb-3">
+          <mat-label>Telefone</mat-label>
+          <input matInput formControlName="phone" inputmode="numeric" placeholder="(00) 00000-0000"
+                 (input)="onPhoneInput()">
+          <mat-error *ngIf="fieldError('phone') as msg">{{ msg }}</mat-error>
         </mat-form-field>
 
         <mat-checkbox formControlName="worker" class="d-block mb-3">
@@ -144,6 +159,9 @@ export class SupplierAddDialogComponent {
   /** Envio em andamento. */
   saving = false;
 
+  /** Telefone salvo no fornecedor, só dígitos (vazio na criação). Base para saber se o campo foi alterado. */
+  private originalPhone = '';
+
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<SupplierAddDialogComponent>,
@@ -155,6 +173,7 @@ export class SupplierAddDialogComponent {
     this.form = this.fb.group({
       name: [data?.name || '', [Validators.required, notBlank(), Validators.maxLength(120)]],
       keyPix: [data?.keyPix || ''],
+      phone: ['', [phoneValidator()]],
       worker: [data?.worker || false],
       zipCode: ['', [cepValidator()]],
       street: ['', [maxTrimmedLength(ADDRESS_MAX_LENGTH.street)]],
@@ -190,6 +209,18 @@ export class SupplierAddDialogComponent {
     }
   }
 
+  /** Aplica a máscara visual do telefone enquanto o usuário digita. */
+  onPhoneInput() {
+    const control = this.form.get('phone');
+    if (!control) {
+      return;
+    }
+    const masked = formatPhone(control.value);
+    if (masked !== control.value) {
+      control.setValue(masked);
+    }
+  }
+
   /** Mensagem de erro do campo (validação local ou devolvida pela API). */
   fieldError(field: string): string | null {
     const errors = this.form.get(field)?.errors;
@@ -198,6 +229,9 @@ export class SupplierAddDialogComponent {
     }
     if (errors['server']) {
       return errors['server'];
+    }
+    if (errors['phone']) {
+      return PHONE_ERROR_MESSAGE;
     }
     if (errors['cep']) {
       return `CEP deve conter ${CEP_DIGITS} dígitos`;
@@ -216,9 +250,11 @@ export class SupplierAddDialogComponent {
     this.supplierService.getSupplierById(id).subscribe({
       next: (res) => {
         const supplier = res?.data as Supplier;
+        this.originalPhone = digitsOnly(supplier?.phone);
         this.form.patchValue({
           name: supplier?.name ?? this.form.get('name')?.value,
           keyPix: supplier?.keyPix ?? '',
+          phone: formatPhone(supplier?.phone),
           worker: supplier?.worker ?? false
         });
         this.fillAddress(supplier);
@@ -255,8 +291,9 @@ export class SupplierAddDialogComponent {
   private buildPayload(): SupplierPayload {
     const v = this.form.value;
     const zipDigits = digitsOnly(v.zipCode);
+    const phoneDigits = digitsOnly(v.phone);
 
-    return {
+    const payload: SupplierPayload = {
       name: (v.name ?? '').toString().trim(),
       keyPix: textOrNull(v.keyPix) ?? '',
       worker: !!v.worker,
@@ -268,8 +305,15 @@ export class SupplierAddDialogComponent {
       city: textOrNull(v.city),
       state: textOrNull(v.state),
       country: textOrNull(v.country),
-      reference: textOrNull(v.reference)
+      reference: textOrNull(v.reference),
+      phone: phoneDigits === '' ? null : phoneDigits
     };
+
+    // Na edição, telefone não alterado não entra no envio: o servidor mantém o valor atual.
+    if (this.data?.id && phoneDigits === this.originalPhone) {
+      delete payload.phone;
+    }
+    return payload;
   }
 
   /**
@@ -282,12 +326,13 @@ export class SupplierAddDialogComponent {
     let text = err?.error?.message || 'Erro desconhecido';
 
     if (err?.status === 400) {
-      const parsed = parseServerErrors(err?.error?.erros, ADDRESS_FIELDS);
+      const parsed = parseServerErrors(err?.error?.erros, SUPPLIER_FORM_FIELDS);
       const fieldNames = Object.keys(parsed.fields);
 
       fieldNames.forEach(field => {
         const control: AbstractControl | null = this.form.get(field);
-        control?.setErrors({ server: parsed.fields[field] });
+        // Mensagem fixa para telefone: o texto técnico da API não é exibido no campo.
+        control?.setErrors({ server: field === 'phone' ? PHONE_ERROR_MESSAGE : parsed.fields[field] });
         control?.markAsTouched();
       });
 

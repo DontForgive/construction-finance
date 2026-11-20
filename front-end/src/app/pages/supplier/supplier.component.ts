@@ -8,6 +8,7 @@ import { ToastService } from 'app/utils/toastr';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { enderecoLinhaPrincipal, enderecoLinhaSecundaria } from './supplier-address';
+import { formatPhoneForDisplay } from './supplier-phone';
 
 @Component({
   selector: 'app-supplier',
@@ -53,6 +54,11 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.searchSubject.next();
   }
 
+
+  /** Telefone da coluna Telefone: máscara quando preenchido, senão —. */
+  phoneDisplay(supplier: Supplier): string {
+    return formatPhoneForDisplay(supplier.phone);
+  }
 
   /** Linha 1 da coluna Endereço (cidade/UF). */
   addressPrimary(supplier: Supplier): string {
