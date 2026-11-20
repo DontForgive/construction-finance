@@ -61,7 +61,7 @@ class SupplierServiceImplTest {
 
     /** Payload SupplierDTO esperado para DS1 (contrato atual, sem campos de endereço). */
     private static SupplierDTO dtoEsperadoDS1() {
-        return new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true);
+        return new SupplierDTO(1L, "Fornecedor Teste Alfa", "chave-ficticia-01", true, null);
     }
 
     @Test
@@ -124,7 +124,7 @@ class SupplierServiceImplTest {
     void ct_1_1_16_create_devolve_supplierDTO() {
         SupplierCreateDTO dto = new SupplierCreateDTO(
                 "Fornecedor Teste Alfa", true, "chave-ficticia-01",
-                "13010000", "Rua das Flores", "120", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01");
+                "13010000", "Rua das Flores", "120", "sala 3", "Centro", "Campinas", "SP", "BR", "ref-01", null);
         when(repository.existsByNameIgnoreCase("Fornecedor Teste Alfa")).thenReturn(false);
         when(repository.existsByKeyPixIgnoreCase("chave-ficticia-01")).thenReturn(false);
         when(repository.save(any(Supplier.class))).thenAnswer(invocacao -> {

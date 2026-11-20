@@ -1,11 +1,13 @@
 package br.com.galsystem.construction.finance.service.supplier;
 
+import br.com.galsystem.construction.finance.dto.supplier.CampoOpcional;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierCreateDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierDetailDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierListDTO;
 import br.com.galsystem.construction.finance.dto.supplier.SupplierUpdateDTO;
 import br.com.galsystem.construction.finance.exception.ConflictException;
+import br.com.galsystem.construction.finance.exception.InvalidPhoneException;
 import br.com.galsystem.construction.finance.exception.NotFoundException;
 import br.com.galsystem.construction.finance.exception.ResourceNotFoundException;
 import br.com.galsystem.construction.finance.mapper.SupplierMapper;
@@ -98,9 +100,11 @@ public class SupplierServiceImpl implements SupplierService {
             throw new ConflictException("CHAVE PIX já Cadastrada");
         }
 
+        final String telefone = normalizarTelefone(dto.phone());
         Supplier entity = supplierMapper.toEntity(dto);
         entity.setName(name);
         entity.setKeyPix(keyPix);
+        entity.setPhone(telefone);
         Supplier saved = supplierRepository.save(entity);
         return supplierMapper.toDTO(saved);
     }
@@ -127,9 +131,16 @@ public class SupplierServiceImpl implements SupplierService {
             throw new ConflictException("CHAVE PIX já Cadastrada");
         }
 
+        // Valida o telefone antes de alterar a entidade. Campo ausente mantém o valor atual.
+        final boolean alterarTelefone = dto.phone() != null && dto.phone().isPresente();
+        final String telefone = alterarTelefone ? normalizarTelefone(dto.phone().valor()) : null;
+
         supplierMapper.updateEntity(entity, dto);
         entity.setName(name);
         entity.setKeyPix(keyPix);
+        if (alterarTelefone) {
+            entity.setPhone(telefone);
+        }
         Supplier updated = supplierRepository.save(entity);
         return supplierMapper.toDTO(updated);
     }
@@ -142,5 +153,23 @@ public class SupplierServiceImpl implements SupplierService {
             throw new NotFoundException("Fornecedor com o ID %d não encontrado".formatted(id));
         }
         supplierRepository.deleteById(id);
+    }
+
+    /**
+     * Remove a máscara do telefone e valida 10 ou 11 dígitos (DDD incluso).
+     * Vazio ou nulo vira null. Letras ou quantidade de dígitos fora do intervalo são rejeitadas.
+     */
+    private static String normalizarTelefone(String telefone) {
+        if (telefone == null || telefone.isBlank()) {
+            return null;
+        }
+        if (telefone.matches(".*\\p{L}.*")) {
+            throw new InvalidPhoneException();
+        }
+        final String digitos = telefone.replaceAll("\\D", "");
+        if (!digitos.matches("\\d{10,11}")) {
+            throw new InvalidPhoneException();
+        }
+        return digitos;
     }
 }

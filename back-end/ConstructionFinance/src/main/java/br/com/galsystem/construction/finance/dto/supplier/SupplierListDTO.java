@@ -15,6 +15,7 @@ public record SupplierListDTO(
         String complement,
         String neighborhood,
         String city,
-        String state
+        String state,
+        String phone
 ) {
 }

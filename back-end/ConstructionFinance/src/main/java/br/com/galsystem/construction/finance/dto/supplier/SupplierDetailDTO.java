@@ -16,6 +16,7 @@ public record SupplierDetailDTO(
         String city,
         String state,
         String country,
-        String reference
+        String reference,
+        String phone
 ) {
 }
