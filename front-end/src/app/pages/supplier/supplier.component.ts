@@ -116,7 +116,9 @@ export class SupplierComponent implements OnInit, OnDestroy {
 
   openAddDialog() {
     const dialogRef = this.dialog.open(SupplierAddDialogComponent, {
-      width: '500px'
+      width: '720px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 32px)'
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -129,7 +131,9 @@ export class SupplierComponent implements OnInit, OnDestroy {
   openEditDialog(supplier: Supplier) {
 
     const dialogRef = this.dialog.open(SupplierAddDialogComponent, {
-      width: '500px',
+      width: '720px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 32px)',
       data: supplier
     });
 
