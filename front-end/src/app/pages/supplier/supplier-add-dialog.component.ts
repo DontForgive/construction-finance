@@ -39,100 +39,147 @@ const SUPPLIER_FORM_FIELDS: readonly string[] = [...ADDRESS_FIELDS, 'phone'];
     </h2>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <mat-dialog-content>
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Nome</mat-label>
-          <input matInput formControlName="name" maxlength="120" required>
-          <mat-error *ngIf="form.get('name')?.hasError('required')">
-            Nome é obrigatório
-          </mat-error>
-          <mat-error *ngIf="form.get('name')?.hasError('maxlength')">
-            Nome deve ter no máximo 120 caracteres
-          </mat-error>
-        </mat-form-field>
+      <mat-dialog-content class="supplier-dialog-content">
+        <section class="supplier-group" aria-labelledby="supplier-group-general">
+          <h3 id="supplier-group-general" class="supplier-group-title">
+            <mat-icon class="supplier-group-icon">badge</mat-icon>
+            Dados gerais
+          </h3>
+          <div class="row supplier-grid">
+            <div class="col-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Nome</mat-label>
+                <input matInput formControlName="name" maxlength="120" required>
+                <mat-error *ngIf="form.get('name')?.hasError('required')">
+                  Nome é obrigatório
+                </mat-error>
+                <mat-error *ngIf="form.get('name')?.hasError('maxlength')">
+                  Nome deve ter no máximo 120 caracteres
+                </mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Chave PIX</mat-label>
-          <input matInput formControlName="keyPix">
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Chave PIX</mat-label>
+                <input matInput formControlName="keyPix">
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Telefone</mat-label>
-          <input matInput formControlName="phone" inputmode="numeric" placeholder="(00) 00000-0000"
-                 (input)="onPhoneInput()">
-          <mat-error *ngIf="fieldError('phone') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6 supplier-checkbox-cell">
+              <mat-checkbox formControlName="worker">
+                É prestador de Serviço?
+              </mat-checkbox>
+            </div>
+          </div>
+        </section>
 
-        <mat-checkbox formControlName="worker" class="d-block mb-3">
-          É prestador de Serviço?
-        </mat-checkbox>
+        <section class="supplier-group" aria-labelledby="supplier-group-contact">
+          <h3 id="supplier-group-contact" class="supplier-group-title">
+            <mat-icon class="supplier-group-icon">phone</mat-icon>
+            Contato
+          </h3>
+          <div class="row supplier-grid">
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Telefone</mat-label>
+                <input matInput formControlName="phone" inputmode="numeric" placeholder="(00) 00000-0000"
+                       (input)="onPhoneInput()">
+                <mat-error *ngIf="fieldError('phone') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </section>
 
-        <h3 class="mat-subheading-2 mb-2">Endereço (opcional)</h3>
+        <section class="supplier-group" aria-labelledby="supplier-group-address">
+          <h3 id="supplier-group-address" class="supplier-group-title">
+            <mat-icon class="supplier-group-icon">place</mat-icon>
+            Endereço (opcional)
+          </h3>
+          <div class="row supplier-grid">
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>CEP</mat-label>
+                <input matInput formControlName="zipCode" inputmode="numeric" maxlength="9"
+                       placeholder="00000-000" (input)="onCepInput()">
+                <mat-error *ngIf="fieldError('zipCode') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>CEP</mat-label>
-          <input matInput formControlName="zipCode" inputmode="numeric" maxlength="9"
-                 placeholder="00000-000" (input)="onCepInput()">
-          <mat-error *ngIf="fieldError('zipCode') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>UF</mat-label>
+                <mat-select formControlName="state">
+                  <mat-option value="">Não informado</mat-option>
+                  <mat-option *ngFor="let uf of ufOptions" [value]="uf.code">{{ uf.code }} - {{ uf.name }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="fieldError('state') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Rua</mat-label>
-          <input matInput formControlName="street">
-          <mat-error *ngIf="fieldError('street') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Rua</mat-label>
+                <input matInput formControlName="street">
+                <mat-error *ngIf="fieldError('street') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Número</mat-label>
-          <input matInput formControlName="number">
-          <mat-error *ngIf="fieldError('number') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Número</mat-label>
+                <input matInput formControlName="number">
+                <mat-error *ngIf="fieldError('number') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Complemento</mat-label>
-          <input matInput formControlName="complement">
-          <mat-error *ngIf="fieldError('complement') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Complemento</mat-label>
+                <input matInput formControlName="complement">
+                <mat-error *ngIf="fieldError('complement') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Bairro</mat-label>
-          <input matInput formControlName="neighborhood">
-          <mat-error *ngIf="fieldError('neighborhood') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Bairro</mat-label>
+                <input matInput formControlName="neighborhood">
+                <mat-error *ngIf="fieldError('neighborhood') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Cidade</mat-label>
-          <input matInput formControlName="city">
-          <mat-error *ngIf="fieldError('city') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Cidade</mat-label>
+                <input matInput formControlName="city">
+                <mat-error *ngIf="fieldError('city') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>UF</mat-label>
-          <mat-select formControlName="state">
-            <mat-option value="">Não informado</mat-option>
-            <mat-option *ngFor="let uf of ufOptions" [value]="uf.code">{{ uf.code }} - {{ uf.name }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="fieldError('state') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
+            <div class="col-12 col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>País</mat-label>
+                <mat-select formControlName="country">
+                  <mat-option value="">Não informado</mat-option>
+                  <mat-option *ngFor="let c of countryOptions" [value]="c.code">{{ c.code }} - {{ c.name }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="fieldError('country') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
 
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>País</mat-label>
-          <mat-select formControlName="country">
-            <mat-option value="">Não informado</mat-option>
-            <mat-option *ngFor="let c of countryOptions" [value]="c.code">{{ c.code }} - {{ c.name }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="fieldError('country') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100 mb-3">
-          <mat-label>Referência</mat-label>
-          <input matInput formControlName="reference">
-          <mat-error *ngIf="fieldError('reference') as msg">{{ msg }}</mat-error>
-        </mat-form-field>
-
+            <div class="col-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Referência</mat-label>
+                <input matInput formControlName="reference">
+                <mat-error *ngIf="fieldError('reference') as msg">{{ msg }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </section>
       </mat-dialog-content>
 
-      <mat-dialog-actions align="end">
+      <mat-dialog-actions align="end" class="supplier-dialog-actions">
         <button mat-stroked-button color="warn" mat-dialog-close type="button">
           <mat-icon class="me-1">close</mat-icon>
           Cancelar
@@ -144,7 +191,8 @@ const SUPPLIER_FORM_FIELDS: readonly string[] = [...ADDRESS_FIELDS, 'phone'];
         </button>
       </mat-dialog-actions>
     </form>
-  `
+  `,
+  styleUrls: ['./supplier-add-dialog.component.scss']
 })
 export class SupplierAddDialogComponent {
   form: FormGroup;

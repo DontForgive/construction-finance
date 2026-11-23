@@ -1,0 +1,96 @@
+// Diálogo de cadastro e edição de fornecedores (somente layout).
+
+// Rolagem interna: título e ações ficam sempre visíveis.
+// 160px reservam título, ações e a margem de 32px do diálogo.
+.supplier-dialog-content {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 8px;
+}
+
+.supplier-group {
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.supplier-group-title {
+  display: flex;
+  align-items: center;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.supplier-group-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  color: #3f51b5;
+}
+
+// Espaçamento vertical único entre as linhas da grade (sem margem por campo).
+.supplier-grid {
+  --bs-gutter-x: 16px;
+  --bs-gutter-y: 0;
+  margin-left: calc(var(--bs-gutter-x) * -0.5);
+  margin-right: calc(var(--bs-gutter-x) * -0.5);
+
+  > [class*='col-'] {
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+  }
+}
+
+// Checkbox alinhado à altura do campo ao lado (a partir de md).
+.supplier-checkbox-cell {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 14px;
+  padding-bottom: 20px;
+}
+
+// Mensagens de validação podem quebrar linha sem corte.
+mat-form-field {
+  max-width: 100%;
+}
+
+mat-error {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.supplier-dialog-actions {
+  padding: 12px 24px 16px;
+  gap: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  button + button {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .supplier-dialog-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .supplier-checkbox-cell {
+    padding-top: 0;
+    padding-bottom: 16px;
+  }
+
+  .supplier-dialog-actions {
+    padding: 12px 16px;
+    justify-content: flex-end;
+  }
+}
